@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  rt:
+    # restart: always
+    build:
+      context: .
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - net
+
+  nginx:
+    restart: always
+    build:
+      context: nginx
+    ports:
+      - "443:443"
+    depends_on:
+      - rt
+    volumes:
+      - ./nginx/certs/:/certs/
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - net
+
+  mailgate:
+    build:
+      context: .
+    # command: ["/usr/bin/getmail", "--rcfile=getmailrc", "-g", "/opt/rt5/etc/getmail"]
+    command: ["/bin/true"]
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge

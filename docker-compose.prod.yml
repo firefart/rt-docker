@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  rt:
+    image: firefart/requesttracker:latest
+
+  nginx:
+    image: firefart/requesttracker:nginx
+
+  mailgate:
+    image: firefart/requesttracker:latest

@@ -6,7 +6,7 @@ services:
       - db
 
   db:
-    image: postgres:latest
+    image: postgres:12
     environment:
       POSTGRES_DB: rt5
       POSTGRES_USER: rt

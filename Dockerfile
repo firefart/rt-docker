@@ -33,12 +33,14 @@ RUN mkdir -p /src \
   && cpanm --install RT::Extension::MergeUsers
 
 RUN apt-get -q -y purge $BUILD_PACKAGES \
+  && apt-get -q -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir -p /opt/rt5/var/data/gpg
 
 EXPOSE 8080
-# USER nobody
+
+USER nobody
 
 CMD [ "/opt/rt5/sbin/rt-server", "--port", "8080"]

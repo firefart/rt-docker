@@ -1,7 +1,7 @@
 FROM debian:10
 
-ENV RUNTIME_PACKAGES="gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx" \
-  BUILD_PACKAGES="build-essential cpanminus wget libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
+ENV RUNTIME_PACKAGES="cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx" \
+  BUILD_PACKAGES="build-essential wget libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \

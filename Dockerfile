@@ -14,9 +14,13 @@ ENV PERL_MM_USE_DEFAULT 1
 ENV HOME /root
 ENV RT rt-5.0.1
 ENV RT_SHA256 6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556
+ENV RT_USER rt
 
-# # Autoconfigure cpan
+# Autoconfigure cpan
 RUN echo q | /usr/bin/perl -MCPAN -e shell
+
+# Create RT user
+RUN useradd -ms /bin/bash ${RT_USER}
 
 # Install RT
 RUN mkdir -p /src \
@@ -25,7 +29,7 @@ RUN mkdir -p /src \
   && tar -C /src -xzf /src/${RT}.tar.gz \
   && rm -f /src/${RT}.tar.gz \
   && cd /src/${RT} \
-  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz \
+  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --with-web-user=${RT_USER} \
   && cpanm --install LWP::Protocol::https IO::Socket::SSL Net::SSLeay HTML::FormatText HTML::TreeBuilder HTML::FormatText::WithLinks HTML::FormatText::WithLinks::AndTables \
   && make -C /src/${RT} fixdeps \
   && make -C /src/${RT} testdeps \
@@ -41,6 +45,6 @@ RUN mkdir -p /opt/rt5/var/data/gpg
 
 EXPOSE 8080
 
-USER nobody
+USER rt
 
 CMD [ "/opt/rt5/sbin/rt-server", "--port", "8080"]

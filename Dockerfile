@@ -1,6 +1,9 @@
 FROM debian:10
 
-ENV RUNTIME_PACKAGES="spawn-fcgi cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx" \
+ENV RT rt-5.0.1
+ENV RT_SHA256 6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556
+
+ENV RUNTIME_PACKAGES="spawn-fcgi wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx" \
   BUILD_PACKAGES="build-essential wget libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
 # Install required packages
@@ -12,15 +15,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # do not ask CPAN questions
 ENV PERL_MM_USE_DEFAULT 1
 ENV HOME /root
-ENV RT rt-5.0.1
-ENV RT_SHA256 6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556
-ENV RT_USER rt
 
 # Autoconfigure cpan
 RUN echo q | /usr/bin/perl -MCPAN -e shell
 
 # Create RT user
-RUN useradd -ms /bin/bash ${RT_USER}
+RUN useradd -ms /bin/bash rt
 
 # Install RT
 RUN mkdir -p /src \
@@ -29,7 +29,7 @@ RUN mkdir -p /src \
   && tar -C /src -xzf /src/${RT}.tar.gz \
   && rm -f /src/${RT}.tar.gz \
   && cd /src/${RT} \
-  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --with-web-user=${RT_USER} \
+  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
   && cpanm --install LWP::Protocol::https IO::Socket::SSL Net::SSLeay HTML::FormatText HTML::TreeBuilder HTML::FormatText::WithLinks HTML::FormatText::WithLinks::AndTables \
   && make -C /src/${RT} fixdeps \
   && make -C /src/${RT} testdeps \
@@ -43,8 +43,12 @@ RUN apt-get -q -y purge $BUILD_PACKAGES \
 
 RUN mkdir -p /opt/rt5/var/data/gpg
 
+# update PATH
+ENV PATH="${PATH}:/opt/rt5/sbin"
+
 EXPOSE 8080
 
 USER rt
+ENV HOME /opt/rt5
 
-CMD [ "spawn-fcgi", "-u", ${RT_USER}, "-g", ${RT_USER}, "-a", "0.0.0.0", "-p", "9000", "--", "/opt/rt5/sbin/rt-server.fcgi" ]
+CMD [ "spawn-fcgi", "-n", "-u", "rt", "-g", "rt", "-a", "0.0.0.0", "-p", "9000", "--", "/opt/rt5/sbin/rt-server.fcgi" ]

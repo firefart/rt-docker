@@ -22,7 +22,8 @@ services:
     depends_on:
       - rt
     volumes:
-      - ./nginx/certs/:/certs/
+      - ./nginx/certs/:/certs/:ro
+      - ./nginx/startup-scripts/:/docker-entrypoint.d/:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
       - net

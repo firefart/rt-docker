@@ -41,7 +41,8 @@ RUN apt-get -q -y purge $BUILD_PACKAGES \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN mkdir -p /opt/rt5/var/data/gpg
+RUN mkdir -p /opt/rt5/var/data/gpg \
+  && mkdir -p /opt/rt5/var/data/smime
 
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin"

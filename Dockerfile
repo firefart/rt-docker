@@ -1,6 +1,6 @@
 FROM debian:10
 
-ENV RUNTIME_PACKAGES="cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx" \
+ENV RUNTIME_PACKAGES="spawn-fcgi cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx" \
   BUILD_PACKAGES="build-essential wget libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
 # Install required packages
@@ -47,4 +47,4 @@ EXPOSE 8080
 
 USER rt
 
-CMD [ "/opt/rt5/sbin/rt-server", "--port", "8080"]
+CMD [ "spawn-fcgi", "-u", ${RT_USER}, "-g", ${RT_USER}, "-a", "0.0.0.0", "-p", "9000", "--", "/opt/rt5/sbin/rt-server.fcgi" ]

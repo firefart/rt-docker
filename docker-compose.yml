@@ -5,8 +5,6 @@ services:
     # restart: always
     build:
       context: .
-    ports:
-      - "127.0.0.1:8080:8080"
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - /etc/localtime:/etc/localtime:ro

@@ -13,6 +13,8 @@ services:
   cron:
     build:
       context: .
+    # the cron daemon needs to run as root
+    user: root
     # https://manpages.debian.org/jessie/cron/cron.8.en.html
     command: [ "/usr/sbin/cron", "-f", "-L", "7" ]
     volumes:

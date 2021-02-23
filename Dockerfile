@@ -3,13 +3,13 @@ FROM debian:10
 ENV RT rt-5.0.1
 ENV RT_SHA256 6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556
 
-ENV RUNTIME_PACKAGES="spawn-fcgi wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl" \
+ENV RUNTIME_PACKAGES="spawn-fcgi wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron" \
   BUILD_PACKAGES="build-essential libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-  && apt-get -q -y install $RUNTIME_PACKAGES \
-  && apt-get -q -y install $BUILD_PACKAGES
+  && apt-get -q -y install --no-install-recommends $RUNTIME_PACKAGES \
+  && apt-get -q -y install --no-install-recommends $BUILD_PACKAGES
 
 # Set up environment
 # do not ask CPAN questions

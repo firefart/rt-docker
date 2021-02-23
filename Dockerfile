@@ -3,7 +3,8 @@ FROM debian:10
 ENV RT rt-5.0.1
 ENV RT_SHA256 6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556
 
-ENV RUNTIME_PACKAGES="ca-certificates spawn-fcgi wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron" \
+# libipc-run-perl is needed as is currently fails to build on debian
+ENV RUNTIME_PACKAGES="ca-certificates spawn-fcgi wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron libipc-run-perl" \
   BUILD_PACKAGES="build-essential libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
 # Install required packages
@@ -38,7 +39,7 @@ RUN mkdir -p /src \
   && cpanm --install LWP::Protocol::https IO::Socket::SSL Net::SSLeay \
   HTML::FormatText HTML::TreeBuilder HTML::FormatText::WithLinks \
   HTML::FormatText::WithLinks::AndTables Text::WordDiff Algorithm::Diff \
-  GraphViz IPC::Run HTML::FormatExternal \
+  GraphViz HTML::FormatExternal \
   # rt dependencies
   && make -C /src/${RT} fixdeps \
   && make -C /src/${RT} testdeps \

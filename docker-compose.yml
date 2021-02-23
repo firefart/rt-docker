@@ -2,9 +2,19 @@ version: "3.7"
 
 services:
   rt:
-    # restart: always
     build:
       context: .
+    volumes:
+      - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - net
+
+  cron:
+    build:
+      context: .
+    # https://manpages.debian.org/jessie/cron/cron.8.en.html
+    command: [ "/usr/sbin/cron", "-f", "-L", "7" ]
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - /etc/localtime:/etc/localtime:ro
@@ -22,16 +32,6 @@ services:
     volumes:
       - ./nginx/certs/:/certs/:ro
       - ./nginx/startup-scripts/:/docker-entrypoint.d/:ro
-      - /etc/localtime:/etc/localtime:ro
-    networks:
-      - net
-
-  mailgate:
-    build:
-      context: .
-    # command: ["/usr/bin/getmail", "--rcfile=getmailrc", "-g", "/opt/rt5/etc/getmail"]
-    command: ["/bin/true"]
-    volumes:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - net

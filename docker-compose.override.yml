@@ -5,6 +5,10 @@ services:
     depends_on:
       - db
 
+  cron:
+    depends_on:
+      - db
+
   db:
     image: postgres:12
     environment:

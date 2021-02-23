@@ -35,7 +35,10 @@ RUN mkdir -p /src \
   # configure with all plugins and with the newly created user
   && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
   # base dependencies
-  && cpanm --install LWP::Protocol::https IO::Socket::SSL Net::SSLeay HTML::FormatText HTML::TreeBuilder HTML::FormatText::WithLinks HTML::FormatText::WithLinks::AndTables Text::WordDiff Algorithm::Diff \
+  && cpanm --install LWP::Protocol::https IO::Socket::SSL Net::SSLeay \
+  HTML::FormatText HTML::TreeBuilder HTML::FormatText::WithLinks \
+  HTML::FormatText::WithLinks::AndTables Text::WordDiff Algorithm::Diff \
+  GraphViz IPC::Run HTML::FormatExternal \
   # rt dependencies
   && make -C /src/${RT} fixdeps \
   && make -C /src/${RT} testdeps \

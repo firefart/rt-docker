@@ -46,6 +46,7 @@ RUN mkdir -p /src \
   && apt-get -q -y autoremove \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && rm -rf /root/.cpanm \
   # run a final dependency check as the purge above also removes some perl system modules that
   # might be needed
   && perl /opt/rt5/sbin/rt-test-dependencies

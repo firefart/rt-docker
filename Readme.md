@@ -22,7 +22,7 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml run --rm rt bash
 
 ### Fix data inconsitencies
 
-Run multiple times until no errors occur
+Run multiple times with the `--resolve` switch until no errors occur
 
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-validator --check' | tee output.txt

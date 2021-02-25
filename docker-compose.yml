@@ -7,6 +7,9 @@ services:
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - /etc/localtime:/etc/localtime:ro
+    # make the host available inside the image
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - net
 
@@ -17,9 +20,17 @@ services:
     user: root
     # https://manpages.debian.org/jessie/cron/cron.8.en.html
     command: [ "/usr/sbin/cron", "-f", "-L", "7" ]
+    # no need for tini here
+    entrypoint: ""
+    depends_on:
+      - rt
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - /etc/localtime:/etc/localtime:ro
+      - ./crontabs:/var/spool/cron/crontabs/rt:ro
+    # make the host available inside the image
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - net
 

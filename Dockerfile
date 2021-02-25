@@ -69,8 +69,8 @@ RUN mkdir -p /var/log/supervisor/ \
 
 # msmtp config
 RUN mkdir /msmtp && chown rt:rt /msmtp
-COPY msmtp_wrapper /usr/local/bin/msmtp_wrapper
-RUN chmod +x /usr/local/bin/msmtp_wrapper
+COPY msmtp_wrapper /usr/bin/msmtp_wrapper
+RUN chmod +x /usr/bin/msmtp_wrapper
 
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin"

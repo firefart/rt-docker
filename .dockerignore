@@ -5,9 +5,3 @@
 *.yml
 crontabs
 *.conf.example
-nginx/startup-scripts/*
-!nginx/startup-scripts/.keep
-nginx/certs/*
-!nginx/certs/.keep
-msmtp/*
-!msmtp/.keep

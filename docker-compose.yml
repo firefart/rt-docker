@@ -57,3 +57,5 @@ services:
 networks:
   net:
     driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: br_rt

@@ -3,8 +3,7 @@ FROM debian:10
 ENV RT="rt-5.0.1"
 ENV RT_SHA256="6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556"
 
-# libipc-run-perl is needed as is currently fails to build on debian
-ENV RUNTIME_PACKAGES="tini ca-certificates spawn-fcgi getmail sendmail wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron libipc-run-perl" \
+ENV RUNTIME_PACKAGES="supervisor ca-certificates spawn-fcgi getmail sendmail wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron" \
   BUILD_PACKAGES="build-essential libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
 # Install required packages
@@ -16,7 +15,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # do not ask CPAN questions
 ENV PERL_MM_USE_DEFAULT="1"
 # use cpanm for dependencies
-ENV RT_FIX_DEPS_CMD="cpanm --self-contained --no-man-pages"
+ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages"
 
 # Autoconfigure cpan
 RUN echo q | /usr/bin/perl -MCPAN -e shell
@@ -61,13 +60,19 @@ RUN mkdir -p /opt/rt5/var/data/gpg \
   && mkdir -p /opt/rt5/etc/getmail \
   && chown rt:rt /opt/rt5/etc/getmail
 
+# supervisord config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN mkdir -p /var/log/supervisor/ \
+  && chown rt:rt /var/log/supervisor/ \
+  && mkdir -p /var/run/supervisord \
+  && chown rt:rt /var/run/supervisord
+
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin"
 
 EXPOSE 8080
 
 USER rt
+WORKDIR /opt/rt5/
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
-
-CMD [ "spawn-fcgi", "-n", "-u", "rt", "-g", "rt", "-a", "0.0.0.0", "-p", "9000", "--", "/opt/rt5/sbin/rt-server.fcgi" ]
+CMD [ "/usr/bin/supervisord" ]

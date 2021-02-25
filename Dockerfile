@@ -70,7 +70,7 @@ RUN mkdir -p /var/log/supervisor/ \
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin"
 
-EXPOSE 8080
+EXPOSE 9000
 
 USER rt
 WORKDIR /opt/rt5/

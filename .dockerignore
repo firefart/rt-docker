@@ -4,7 +4,6 @@
 *.key
 *.yml
 crontabs
-*.conf
 *.conf.example
 nginx/startup-scripts/*
 !nginx/startup-scripts/.keep

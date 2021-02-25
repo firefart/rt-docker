@@ -4,6 +4,8 @@ services:
   rt:
     build:
       context: .
+    image: firefart/requesttracker:latest
+    restart: always
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - /etc/localtime:/etc/localtime:ro
@@ -16,6 +18,8 @@ services:
   cron:
     build:
       context: .
+    image: firefart/requesttracker:latest
+    restart: always
     # the cron daemon needs to run as root
     user: root
     # https://manpages.debian.org/jessie/cron/cron.8.en.html
@@ -35,9 +39,10 @@ services:
       - net
 
   nginx:
-    restart: always
     build:
       context: nginx
+    image: firefart/requesttracker:nginx
+    restart: always
     ports:
       - "443:443"
     depends_on:

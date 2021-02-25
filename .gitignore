@@ -5,7 +5,7 @@ RT_SiteConfig.pm
 TODO
 !dev.sh
 !prod.sh
-crontabs
+crontab
 nginx/startup-scripts/*
 !nginx/startup-scripts/.keep
 nginx/certs/*

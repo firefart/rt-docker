@@ -3,5 +3,4 @@
 *.pem
 *.key
 *.yml
-crontabs
 *.conf.example

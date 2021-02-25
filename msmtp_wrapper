@@ -1,0 +1,4 @@
+#!/bin/bash
+
+/usr/local/bin/msmtp -t -C /msmtp/msmtp.conf
+/usr/bin/logger -t RTmailer -p syslog.info -- CALL /usr/local/bin/msmtp -nt "$@" RETURNED $?

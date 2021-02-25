@@ -6,3 +6,9 @@ TODO
 !dev.sh
 !prod.sh
 crontabs
+nginx/startup-scripts/*
+!nginx/startup-scripts/.keep
+nginx/certs/*
+!nginx/certs/.keep
+msmtp/*
+!msmtp/.keep

@@ -3,7 +3,7 @@ FROM debian:10
 ENV RT="rt-5.0.1"
 ENV RT_SHA256="6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556"
 
-ENV RUNTIME_PACKAGES="supervisor ca-certificates spawn-fcgi getmail sendmail wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron" \
+ENV RUNTIME_PACKAGES="supervisor msmtp ca-certificates spawn-fcgi getmail sendmail wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron" \
   BUILD_PACKAGES="build-essential libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
 # Install required packages
@@ -66,6 +66,11 @@ RUN mkdir -p /var/log/supervisor/ \
   && chown rt:rt /var/log/supervisor/ \
   && mkdir -p /var/run/supervisord \
   && chown rt:rt /var/run/supervisord
+
+# msmtp config
+RUN mkdir /msmtp && chown rt:rt /msmtp
+COPY msmtp_wrapper /usr/local/bin/msmtp_wrapper
+RUN chmod +x /usr/local/bin/msmtp_wrapper
 
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin"

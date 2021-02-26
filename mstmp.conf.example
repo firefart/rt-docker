@@ -2,6 +2,7 @@ defaults
 account default
 host smtp.office365.com
 port 587
+from test@test.com
 tls on
 tls_starttls  on
 tls_trust_file    /etc/pki/tls/certs/ca-bundle.crt

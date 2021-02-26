@@ -8,7 +8,8 @@ services:
     restart: always
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
-      - ./msmtp/msmtp.conf:/msmtp/msmtp.conf:ro
+      - ./msmtp/msmtp.conf:/etc/msmtprc:ro
+      - ./msmtp/:/msmtp:ro
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image
     extra_hosts:
@@ -31,7 +32,8 @@ services:
       - rt
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
-      - ./msmtp/msmtp.conf:/msmtp/msmtp.conf:ro
+      - ./msmtp/msmtp.conf:/etc/msmtprc:ro
+      - ./msmtp/:/msmtp:ro
       - ./crontab:/var/spool/cron/crontabs/rt:ro
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image

@@ -6,10 +6,7 @@ ENV RT_SHA256="6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556"
 ENV RUNTIME_PACKAGES="supervisor msmtp ca-certificates spawn-fcgi getmail wget curl cpanminus gnupg graphviz libssl1.1 zlib1g libgd3 libexpat1 libpq5 perl-modules w3m elinks links html2text lynx openssl cron" \
   BUILD_PACKAGES="build-essential libssl-dev zlib1g-dev libgd-dev libexpat1-dev libpq-dev"
 
-# Install required packages
-RUN DEBIAN_FRONTEND=noninteractive apt-get update \
-  && apt-get -q -y install --no-install-recommends $RUNTIME_PACKAGES \
-  && apt-get -q -y install --no-install-recommends $BUILD_PACKAGES
+ENV DEBIAN_FRONTEND="noninteractive"
 
 # Set up environment
 # do not ask CPAN questions
@@ -17,14 +14,17 @@ ENV PERL_MM_USE_DEFAULT="1"
 # use cpanm for dependencies
 ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages"
 
-# Autoconfigure cpan
-RUN echo q | /usr/bin/perl -MCPAN -e shell
-
 # Create RT user
 RUN useradd -Ms /bin/bash -d /opt/rt5 rt
 
 # Install RT
-RUN mkdir -p /src \
+RUN apt-get update \
+  # Install required packages
+  && apt-get -q -y install --no-install-recommends $RUNTIME_PACKAGES \
+  && apt-get -q -y install --no-install-recommends $BUILD_PACKAGES \
+  # Autoconfigure cpan
+  && echo q | /usr/bin/perl -MCPAN -e shell \
+  && mkdir -p /src \
   # download and extract RT
   # --no-check-certificate is needed as the download domain does not send the full certificate chain
   # it's rather safe here as we do a manual SHA256 check afterwards
@@ -79,6 +79,9 @@ RUN mkdir /msmtp \
 
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin"
+
+# reset debian_frontend in the end
+ENV DEBIAN_FRONTEND teletype
 
 EXPOSE 9000
 

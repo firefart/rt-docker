@@ -50,8 +50,8 @@ RUN apt-get update \
   && rm -rf /root/.cpanm \
   && rm -rf /src/${RT} \
   # run a final dependency check as the purge above also removes some perl system modules that
-  # might be needed
-  && perl /opt/rt5/sbin/rt-test-dependencies
+  # might be needed. Need to pass the with parameters here as we don't have the makefile here
+  && perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
 RUN mkdir -p /opt/rt5/var/data/gpg \
   && chown rt:rt /opt/rt5/var/data/gpg \

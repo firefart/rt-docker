@@ -14,6 +14,9 @@ set -euf -o pipefail
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
+docker pull $(awk '/^FROM / { print $2; exit }' Dockerfile | sed 's/\r$//')
+docker pull $(awk '/^FROM / { print $2; exit }' ./nginx/Dockerfile | sed 's/\r$//')
+
 docker-compose pull
 docker-compose stop
 docker-compose rm -f 

@@ -26,9 +26,7 @@ RUN apt-get update \
   && echo q | /usr/bin/perl -MCPAN -e shell \
   && mkdir -p /src \
   # download and extract RT
-  # --no-check-certificate is needed as the download domain does not send the full certificate chain
-  # it's rather safe here as we do a manual SHA256 check afterwards
-  && wget --no-check-certificate -O /src/${RT}.tar.gz -nv https://download.bestpractical.com/pub/rt/release/${RT}.tar.gz \
+  && wget -O /src/${RT}.tar.gz -nv https://download.bestpractical.com/pub/rt/release/${RT}.tar.gz \
   && echo "${RT_SHA256} /src/${RT}.tar.gz" | sha256sum -c - \
   && tar -C /src -xzf /src/${RT}.tar.gz \
   && rm -f /src/${RT}.tar.gz \

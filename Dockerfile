@@ -27,7 +27,7 @@ RUN apt-get update \
   # IPC::Run currently fails on debian. There are multiple open issues
   # but the error is not fixed so let's use the system version
   # once this bug is fixed, this line can be removed
-  && apt-get install -q -y install --no-install-recommends libipc-run-perl \
+  && apt-get -q -y install --no-install-recommends libipc-run-perl \
   && mkdir -p /src \
   # download and extract RT
   && wget -O /src/${RT}.tar.gz -nv https://download.bestpractical.com/pub/rt/release/${RT}.tar.gz \

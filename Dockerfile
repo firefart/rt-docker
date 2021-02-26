@@ -48,7 +48,6 @@ RUN apt-get update \
   # get rid of build packages
   && apt-get -q -y purge $BUILD_PACKAGES \
   && apt-get -q -y autoremove \
-  && make -C /src/${RT} testdeps \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && rm -rf /root/.cpanm \

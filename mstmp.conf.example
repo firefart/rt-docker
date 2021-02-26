@@ -4,10 +4,10 @@ host smtp.office365.com
 port 587
 from test@test.com
 tls on
-tls_starttls  on
-tls_trust_file    /etc/pki/tls/certs/ca-bundle.crt
+tls_starttls on
+tls_trust_file /etc/pki/tls/certs/ca-bundle.crt
 tls_certcheck on
 auth on
 user user@domain.com
 password password
-logfile /dev/stdout
+logfile /tmp/msmtp.log

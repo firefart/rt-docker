@@ -67,9 +67,11 @@ RUN mkdir -p /var/log/supervisor/ \
   && mkdir -p /var/run/supervisord \
   && chown rt:rt /var/run/supervisord
 
-# msmtp config directory
+# msmtp config
 RUN mkdir /msmtp \
   && chown rt:rt /msmtp \
+  && touch /tmp/msmtp.log \
+  && chown rt:rt /tmp/msmtp.log \
   # also fake sendmail for cronjobs
   && ln -s /usr/bin/msmtp /usr/sbin/sendmail
 

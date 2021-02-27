@@ -42,9 +42,9 @@ RUN make -C /src/${RT} fixdeps \
 
 # cleanup
 RUN rm -rf /root/.cpanm \
-  && rm -rf /src/${RT} \
-  && rm -f /tmp/* \
-  && rm -f /var/tmp/*
+  && rm -rf /src/ \
+  && rm -rf /tmp/* \
+  && rm -rf /var/tmp/*
 
 # run a final dependency check as the purge above also removes some perl system modules that
   # might be needed. Need to pass the with parameters here as we don't have the makefile here

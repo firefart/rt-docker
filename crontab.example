@@ -1,0 +1,10 @@
+MAILTO="user@user.com"
+
+# clean sessions
+0 0 * * * /opt/rt5/sbin/rt-clean-sessions
+
+# refresh full text index
+0 * * * * /opt/rt5/sbin/rt-fulltext-indexer --quiet 2>&1 | grep -v "Words longer than 2047 characters are ignored" | grep -v "word is too long to be indexed"
+
+# get mails
+* * * * * /usr/bin/getmail --rcfile=getmailrc -g /opt/rt5/etc/getmail

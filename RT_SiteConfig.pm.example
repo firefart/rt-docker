@@ -1,5 +1,6 @@
 ### Base configuration ###
 Set($rtname, 'rt');
+Set($WebPort, 443);
 
 Plugin('RT::Extension::MergeUsers');
 

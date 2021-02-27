@@ -20,8 +20,7 @@ RUN mkdir -p /src \
   # download and extract RT
   && wget -O /src/${RT}.tar.gz -nv https://download.bestpractical.com/pub/rt/release/${RT}.tar.gz \
   && echo "${RT_SHA256} /src/${RT}.tar.gz" | sha256sum -c - \
-  && tar -C /src -xzf /src/${RT}.tar.gz \
-  && rm -f /src/${RT}.tar.gz
+  && tar -C /src -xzf /src/${RT}.tar.gz
 
 # Configure RT
 RUN cd /src/${RT} \
@@ -34,16 +33,6 @@ RUN make -C /src/${RT} fixdeps \
   && make -C /src/${RT} install \
   && cpanm --install RT::Extension::MergeUsers
 
-# cleanup
-RUN rm -rf /root/.cpanm \
-  && rm -rf /src/ \
-  && rm -rf /tmp/* \
-  && rm -rf /var/tmp/*
-
-# run a final dependency check as the purge above also removes some perl system modules that
-  # might be needed. Need to pass the with parameters here as we don't have the makefile here
-RUN perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
-
 RUN mkdir -p /opt/rt5/var/data/gpg \
   && chown rt:rt /opt/rt5/var/data/gpg \
   && mkdir -p /opt/rt5/var/data/smime \
@@ -52,8 +41,6 @@ RUN mkdir -p /opt/rt5/var/data/gpg \
   && chown rt:rt /opt/rt5/etc/getmail
 
 FROM perl:slim
-COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
-COPY --from=builder /opt/rt5 /opt/rt5
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -65,6 +52,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 
 # Create RT user
 RUN useradd -Ms /bin/bash -d /opt/rt5 rt
+
+# copy all needed stuff from the builder image
+COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
+COPY --from=builder /opt/rt5 /opt/rt5
+
+# run a final dependency check if we copied all 
+RUN perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
 # supervisord config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

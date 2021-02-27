@@ -10,4 +10,4 @@ tls_certcheck on
 auth on
 user user@domain.com
 password password
-logfile /tmp/msmtp.log
+logfile /dev/stderr

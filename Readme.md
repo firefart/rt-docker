@@ -7,7 +7,7 @@ This is a complete setup for Request Tracker. The production version assumes you
 The following configuration files need to be present before starting:
 
 - RT_SiteConfig.pm : RTs main configuration file. This needs to be present in the root of the dir
-- ./msmtp/msmtp.conf : config for mstmp (outgoing email). See msmtp.conf for an example. Be sure to set the logfile to `/tmp/msmtp.log` as this will be tailed by the image so the logs show up in docker logs.
+- ./msmtp/msmtp.conf : config for mstmp (outgoing email). See msmtp.conf for an example. Be sure to set the logfile to `/dev/stderr` so these logs are viewable via `docker logs`
 - ./nginx/certs/pub.pem : Public TLS certficate for nginx
 - ./nginx/certs/priv.pem : Private key for nginx' TLS certficate
 - crontab : Crontab file that will be run as the RT user. See contab.example for an example

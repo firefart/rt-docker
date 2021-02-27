@@ -1,4 +1,4 @@
-FROM perl:latest
+FROM perl:latest as builder
 
 ENV RT="rt-5.0.1"
 ENV RT_SHA256="6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556"
@@ -12,14 +12,8 @@ RUN useradd -Ms /bin/bash -d /opt/rt5 rt
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
-  supervisor msmtp ca-certificates getmail wget curl gnupg graphviz libssl1.1 zlib1g \
-  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron libgd-dev \
-  # IPC::Run currently fails on debian. There are multiple open issues
-  # but the error is not fixed so let's use the system version
-  # once this bug is fixed, this line can be removed
-  # libipc-run-perl \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  ca-certificates wget gnupg graphviz libssl1.1 zlib1g \
+  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl libgd-dev
 
 # Download and extract RT
 RUN mkdir -p /src \
@@ -56,6 +50,21 @@ RUN mkdir -p /opt/rt5/var/data/gpg \
   && chown rt:rt /opt/rt5/var/data/smime \
   && mkdir -p /opt/rt5/etc/getmail \
   && chown rt:rt /opt/rt5/etc/getmail
+
+FROM perl:slim
+COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
+COPY --from=builder /opt/rt5 /opt/rt5
+
+# Install required packages
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+  && apt-get -q -y install --no-install-recommends \
+  supervisor msmtp ca-certificates getmail wget curl gnupg graphviz libssl1.1 zlib1g \
+  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron libgd-dev \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# Create RT user
+RUN useradd -Ms /bin/bash -d /opt/rt5 rt
 
 # supervisord config
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

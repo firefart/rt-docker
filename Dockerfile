@@ -13,7 +13,7 @@ RUN useradd -Ms /bin/bash -d /opt/rt5 rt
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   supervisor msmtp ca-certificates getmail wget curl gnupg graphviz libssl1.1 zlib1g \
-  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron \
+  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron libgd-dev \
   # IPC::Run currently fails on debian. There are multiple open issues
   # but the error is not fixed so let's use the system version
   # once this bug is fixed, this line can be removed

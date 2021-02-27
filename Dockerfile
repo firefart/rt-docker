@@ -17,7 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   # IPC::Run currently fails on debian. There are multiple open issues
   # but the error is not fixed so let's use the system version
   # once this bug is fixed, this line can be removed
-  libipc-run-perl \
+  # libipc-run-perl \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

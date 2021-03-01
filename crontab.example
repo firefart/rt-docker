@@ -1,4 +1,5 @@
-MAILTO="user@user.com"
+# do NOT use quotes here!
+MAILTO=user@user.com
 
 # clean sessions
 0 0 * * * /opt/rt5/sbin/rt-clean-sessions

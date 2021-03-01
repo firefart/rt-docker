@@ -26,7 +26,7 @@ services:
     # the cron daemon needs to run as root
     user: root
     # this will run the busybox crond
-    command: [ "/usr/sbin/crond", "-f", "-d", "8" ]
+    command: [ "/usr/sbin/crond", "-f", "-l", "8" ]
     # no need for tini here
     entrypoint: ""
     depends_on:
@@ -35,7 +35,7 @@ services:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - ./msmtp/msmtp.conf:/etc/msmtprc:ro
       - ./msmtp/:/msmtp:ro
-      - ./getmail/:/getmail:ro
+      - ./getmail/getmailrc:/getmail/getmailrc:ro
       - ./crontab:/var/spool/cron/crontabs/rt:ro
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image

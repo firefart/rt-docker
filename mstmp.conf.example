@@ -10,4 +10,5 @@ tls_certcheck on
 auth on
 user user@domain.com
 password password
-logfile /dev/stderr
+# use stderr of init process
+logfile /proc/1/fd/2

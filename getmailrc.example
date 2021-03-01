@@ -1,0 +1,18 @@
+[retriever]
+type = SimpleIMAPSSLRetriever
+server = mail.host.com
+username = user@domain.com
+password = pass
+mailboxes = ("INBOX",)
+[destination]
+type = MDA_external
+path = /opt/rt5/bin/rt-mailgate
+user = rt
+group = rt
+arguments = ("--url", "https://rt/", "--queue", "general", "--action", "comment", )
+[options]
+read_all = false
+delete = true
+verbose = 0
+message_log_syslog = true
+message_log_verbose = true

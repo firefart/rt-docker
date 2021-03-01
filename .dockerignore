@@ -3,4 +3,4 @@
 *.pem
 *.key
 *.yml
-*.conf.example
+*.example

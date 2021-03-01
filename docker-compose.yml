@@ -10,6 +10,7 @@ services:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - ./msmtp/msmtp.conf:/etc/msmtprc:ro
       - ./msmtp/:/msmtp:ro
+      - ./getmail/:/getmail:ro
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image
     extra_hosts:
@@ -34,6 +35,7 @@ services:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - ./msmtp/msmtp.conf:/etc/msmtprc:ro
       - ./msmtp/:/msmtp:ro
+      - ./getmail/:/getmail:ro
       - ./crontab:/var/spool/cron/crontabs/rt:ro
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image

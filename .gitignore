@@ -12,3 +12,5 @@ nginx/certs/*
 !nginx/certs/.keep
 msmtp/*
 !msmtp/.keep
+getmail/*
+!getmail/.keep

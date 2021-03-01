@@ -33,13 +33,6 @@ RUN make -C /src/${RT} fixdeps \
   && make -C /src/${RT} install \
   && cpanm --install RT::Extension::MergeUsers
 
-RUN mkdir -p /opt/rt5/var/data/gpg \
-  && chown rt:rt /opt/rt5/var/data/gpg \
-  && mkdir -p /opt/rt5/var/data/smime \
-  && chown rt:rt /opt/rt5/var/data/smime \
-  && mkdir -p /opt/rt5/etc/getmail \
-  && chown rt:rt /opt/rt5/etc/getmail
-
 FROM perl:slim
 
 # Install required packages
@@ -73,8 +66,20 @@ RUN mkdir /msmtp \
   # also fake sendmail for cronjobs
   && ln -s /usr/bin/msmtp /usr/sbin/sendmail
 
+# getmail
+RUN mkdir -p /getmail \
+  && chown rt:rt /getmail
+
+# gpg
+RUN mkdir -p /opt/rt5/var/data/gpg \
+  && chown rt:rt /opt/rt5/var/data/gpg
+
+# smime
+RUN mkdir -p /opt/rt5/var/data/smime \
+  && chown rt:rt /opt/rt5/var/data/smime
+
 # update PATH
-ENV PATH="${PATH}:/opt/rt5/sbin"
+ENV PATH="${PATH}:/opt/rt5/sbin:/opt/rt5/bin"
 
 EXPOSE 9000
 

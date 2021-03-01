@@ -10,6 +10,7 @@ set -euf -o pipefail
 [ ! -f ./nginx/certs/pub.pem ] && { echo "./nginx/certs/pub.pem does not exist."; exit 1; }
 [ ! -f ./nginx/certs/priv.pem ] && { echo "./nginx/certs/priv.pem does not exist."; exit 1; }
 [ ! -f ./crontab ] && { echo "./crontab does not exist."; exit 1; }
+[ ! -f ./getmail/getmailrc ] && { echo "./getmail/getmailrc does not exist."; exit 1; }
 
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1

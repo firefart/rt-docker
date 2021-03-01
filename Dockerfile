@@ -36,10 +36,12 @@ RUN make -C /src/${RT} fixdeps \
 FROM perl:slim
 
 # Install required packages
+# we use busybox-static here for the busybox crond which works
+# without systemd
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   supervisor msmtp ca-certificates getmail wget curl gnupg graphviz libssl1.1 zlib1g \
-  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron \
+  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl busybox-static \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
@@ -59,6 +61,10 @@ RUN mkdir -p /var/log/supervisor/ \
   && chown rt:rt /var/log/supervisor/ \
   && mkdir -p /var/run/supervisord \
   && chown rt:rt /var/run/supervisord
+
+# cron config and install busybox symlinks
+RUN mkdir -p /var/spool/cron/crontabs \
+  && busybox --install
 
 # msmtp config
 RUN mkdir /msmtp \

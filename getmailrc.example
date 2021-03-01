@@ -10,6 +10,7 @@ path = /opt/rt5/bin/rt-mailgate
 user = rt
 group = rt
 arguments = ("--url", "https://rt/", "--queue", "general", "--action", "comment", )
+
 [options]
 read_all = false
 delete = true

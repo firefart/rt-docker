@@ -46,7 +46,7 @@ FROM perl:slim
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   supervisor msmtp ca-certificates getmail wget curl gnupg graphviz libssl1.1 zlib1g \
-  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron libgd-dev \
+  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 

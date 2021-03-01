@@ -9,7 +9,8 @@ type = MDA_external
 path = /opt/rt5/bin/rt-mailgate
 user = rt
 group = rt
-arguments = ("--url", "https://rt/", "--queue", "general", "--action", "comment", )
+# 8080 is the mailgate vhost
+arguments = ("--url", "http://nginx:8080/", "--queue", "general", "--action", "comment")
 
 [options]
 read_all = false

@@ -31,6 +31,8 @@ services:
     entrypoint: ""
     depends_on:
       - rt
+      # we send rt-mailgate over to nginx
+      - nginx
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - ./msmtp/msmtp.conf:/etc/msmtprc:ro

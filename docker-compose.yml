@@ -6,6 +6,9 @@ services:
       context: .
     image: firefart/requesttracker:latest
     restart: always
+    deploy:
+      mode: replicated
+      replicas: 5
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - ./msmtp/msmtp.conf:/etc/msmtprc:ro

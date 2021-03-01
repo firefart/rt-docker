@@ -3,6 +3,9 @@ version: "3.7"
 services:
   rt:
     restart: "no"
+    deploy:
+      mode: replicated
+      replicas: 1
     depends_on:
       - db
 

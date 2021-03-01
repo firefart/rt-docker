@@ -15,11 +15,15 @@ set -euf -o pipefail
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-docker pull $(awk '/^FROM / { print $2; exit }' Dockerfile | sed 's/\r$//')
-docker pull $(awk '/^FROM / { print $2; exit }' ./nginx/Dockerfile | sed 's/\r$//')
+awk '/^FROM / { print $2 }' Dockerfile | xargs -L 1 -I % sh -c 'echo %; docker pull %'
+awk '/^FROM / { print $2 }' ./nginx/Dockerfile | xargs -L 1 -I % sh -c 'echo %; docker pull %'
 
 docker-compose pull
 docker-compose stop
 docker-compose rm -f 
 docker-compose build --progress=plain
 docker-compose up
+
+
+
+grep -ihoE '^FROM ([^\s]+)' Dockerfile

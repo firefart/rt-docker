@@ -12,6 +12,8 @@ The following configuration files need to be present before starting:
 - `./nginx/certs/priv.pem` : Private key for nginx' TLS certficate
 - `crontab` : Crontab file that will be run as the RT user. See contab.example for an example
 
+For output of your crontabs you can use the `/cron` directory
+
 ## Development
 
 ### Create Certificate

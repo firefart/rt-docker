@@ -46,6 +46,7 @@ services:
       - ./gpg/:/opt/rt5/var/data/gpg
       - ./smime/:/opt/rt5/var/data/smime
       - ./crontab:/var/spool/cron/crontabs/rt:ro
+      - ./cron/:/cron
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image
     extra_hosts:

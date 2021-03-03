@@ -62,9 +62,9 @@ RUN mkdir -p /var/log/supervisor/ \
   && mkdir -p /var/run/supervisord \
   && chown rt:rt /var/run/supervisord
 
-# cron config and install busybox symlinks
+# cron config and install busybox symlink for crond
 RUN mkdir -p /var/spool/cron/crontabs \
-  && busybox --install
+  && ln -fs /bin/busybox /usr/sbin/crond
 
 # msmtp config
 RUN mkdir /msmtp \

@@ -7,7 +7,7 @@ ENV RT_SHA256="6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556"
 ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages"
 
 # Create RT user
-RUN useradd -Ms /bin/bash -d /opt/rt5 rt
+RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt5 rt
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -46,7 +46,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Create RT user
-RUN useradd -Ms /bin/bash -d /opt/rt5 rt
+RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt5 rt
 
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5

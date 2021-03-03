@@ -1,6 +1,8 @@
 ### Base configuration ###
 Set($rtname, 'rt');
+Set($WebDomain, 'localhost');
 Set($WebPort, 443);
+Set($CanonicalizeRedirectURLs, 1);
 
 Plugin('RT::Extension::MergeUsers');
 

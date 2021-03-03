@@ -24,6 +24,8 @@ For output of your crontabs you can use the `/cron` directory so te output will 
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker-compose -f ... logs`).
 
+For manual output to stdout and stderr you can write to `/var/log/stdout.log` and `/var/log/stderr.log` which are symlinked with the correct permissions.
+
 ## Create Certificate
 
 This certificate will be used by nginx. If you want another certificate just place it in the folder.
@@ -39,6 +41,8 @@ This initializes a fresh database
 ```bash
 docker-compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'
 ```
+
+You might need to restart the rt service after this step as it crashes if the database is not initialized.
 
 Hint: Add `--skip-create` in dev as the database is created by docker
 

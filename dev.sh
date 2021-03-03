@@ -23,7 +23,3 @@ docker-compose stop
 docker-compose rm -f 
 docker-compose build --progress=plain
 docker-compose up
-
-
-
-grep -ihoE '^FROM ([^\s]+)' Dockerfile

@@ -1,14 +1,16 @@
 defaults
-account default
+
+account smtp
 host smtp.office365.com
 port 587
-from test@test.com
 tls on
 tls_starttls on
-tls_trust_file /etc/pki/tls/certs/ca-bundle.crt
+from test@test.com
+tls_trust_file /msmtp/ca-bundle.crt
 tls_certcheck on
 auth on
 user user@domain.com
-password password
-# use stderr of init process
-logfile /proc/1/fd/2
+password pass
+logfile /var/log/stdout.log
+
+account default : smtp

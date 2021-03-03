@@ -16,5 +16,5 @@ arguments = ("--url", "http://nginx:8080/", "--queue", "general", "--action", "c
 read_all = false
 delete = true
 verbose = 0
-message_log_syslog = true
+message_log = /var/log/stdout.log
 message_log_verbose = true

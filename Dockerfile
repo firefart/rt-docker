@@ -87,8 +87,8 @@ RUN mkdir -p /opt/rt5/var/data/smime \
 # custom stdout and stderr which are accessible by rt user
 RUN ln -sf /proc/1/fd/1 /var/log/stdout.log \
   && ln -sf /proc/1/fd/2 /var/log/stderr.log \
-  && chown rt:rt /var/log/stdout.log \
-  && chown rt:rt /var/log/stderr.log
+  && chown -h rt:rt /var/log/stdout.log \
+  && chown -h rt:rt /var/log/stderr.log
 
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin:/opt/rt5/bin"

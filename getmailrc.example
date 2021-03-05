@@ -4,6 +4,7 @@ server = mail.host.com
 username = user@domain.com
 password = pass
 mailboxes = ("INBOX",)
+
 [destination]
 type = MDA_external
 path = /opt/rt5/bin/rt-mailgate

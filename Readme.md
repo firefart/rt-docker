@@ -24,8 +24,6 @@ For output of your crontabs you can use the `/cron` directory so te output will 
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker-compose -f ... logs`).
 
-For manual output to stdout and stderr you can write to `/var/log/stdout.log` and `/var/log/stderr.log` which are symlinked with the correct permissions.
-
 ## Create Certificate
 
 This certificate will be used by nginx. If you want another certificate just place it in the folder.

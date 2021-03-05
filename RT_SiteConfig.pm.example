@@ -31,7 +31,7 @@ Set(%GnuPGOptions,
   homedir             => '/opt/rt5/var/data/gpg',
   passphrase          => 'PASSPHRASE',
   keyserver           => 'hkps://hkps.pool.sks-keyservers.net',
-  'keyserver-options' =>  'auto-key-retrieve timeout=20 no-check-cert',
+  'keyserver-options' =>  'auto-key-retrieve timeout=20',
   'auto-key-locate'   => 'keyserver',
 );
 

@@ -4,6 +4,10 @@ This is a complete setup for Request Tracker. The production version assumes you
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image will be automatically rebuilt if one of the base images change.
 
+## Instruction
+
+To start use either `./dev.sh` which builds the images locally or `./prod.sh` which uses the prebuilt ones from docker hub. Before running this you also need to add the required configuration files (see Configuration).
+
 ## Configuration
 
 The following configuration files need to be present before starting:

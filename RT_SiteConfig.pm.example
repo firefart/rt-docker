@@ -9,11 +9,11 @@ Plugin('RT::Extension::MergeUsers');
 
 ### Database connection ###
 Set($DatabaseType, 'Pg' );
-Set($DatabaseHost , 'db');
-Set($DatabasePort , '5432');
-Set($DatabaseUser , 'rt');
-Set($DatabasePassword , 'password');
-Set($DatabaseName , 'rt');
+Set($DatabaseHost, 'db');
+Set($DatabasePort, '5432');
+Set($DatabaseUser, 'rt');
+Set($DatabasePassword, 'password');
+Set($DatabaseName, 'rt');
 Set($DatabaseAdmin, "rt");
 
 Set($SendmailPath, '/usr/bin/msmtp');
@@ -31,7 +31,7 @@ Set(%GnuPGOptions,
   homedir             => '/opt/rt5/var/data/gpg',
   passphrase          => 'PASSPHRASE',
   keyserver           => 'hkps://hkps.pool.sks-keyservers.net',
-  'keyserver-options' =>  'auto-key-retrieve timeout=20',
+  'keyserver-options' => 'auto-key-retrieve timeout=20',
   'auto-key-locate'   => 'keyserver',
 );
 

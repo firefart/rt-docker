@@ -1,8 +1,13 @@
-# RT
+# Request Tracker with Docker
 
-This is a complete setup for Request Tracker. The production version assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
+This is a complete setup for Request Tracker with docker and docker-compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image will be automatically rebuilt if one of the base images change.
+
+## Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [docker-compose](https://docs.docker.com/compose/install/)
 
 ## Instruction
 
@@ -48,7 +53,7 @@ You might need to restart the rt service after this step as it crashes if the da
 
 Hint: Add `--skip-create` in dev as the database is created by docker
 
-## Updgrade steps
+## Upgrade steps
 
 ### Upgrade Database
 

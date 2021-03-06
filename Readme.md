@@ -1,6 +1,6 @@
 # Request Tracker with Docker
 
-This is a complete setup for Request Tracker with docker and docker-compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
+This is a complete setup for [Request Tracker](https://bestpractical.com/request-tracker) with docker and docker-compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image will be automatically rebuilt if one of the base images change.
 
@@ -8,6 +8,8 @@ The prebuilt image is available from [https://hub.docker.com/r/firefart/requestt
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [docker-compose](https://docs.docker.com/compose/install/)
+- an external SMTP server to send emails
+- an external IMAP server to receive emails from
 
 ## Instruction
 

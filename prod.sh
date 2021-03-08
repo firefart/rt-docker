@@ -19,10 +19,13 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 # id 1000 is the rt user inside the docker image
 chown 1000 ./gpg
 chown 1000 ./smime
+chown 1000 ./cron
 chmod 0700 ./gpg
 chmod 0700 ./smime
+chmod 0700 ./cron
 find ./gpg -type f -exec chmod 0600 {} \;
 find ./smime -type f -exec chmod 0600 {} \;
+find ./cron -type f -exec chmod 0600 {} \;
 
 docker-compose -f docker-compose.yml pull
 docker-compose -f docker-compose.yml stop

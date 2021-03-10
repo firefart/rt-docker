@@ -28,7 +28,7 @@ The following configuration files need to be present before starting:
 Additional configs:
 
 - `./gpg/` : This folder should contain the gpg keyring if used in rt. Be sure to chmod the files to user 1000 with 0600 so RT will not complain.
-- `./smim/` : This folder should contain the SMIME certificate if configured in RT
+- `./smime/` : This folder should contain the SMIME certificate if configured in RT
 - `./nginx/startup-scripts/` : This folder should contain executable bash files that will be executed on nginx start. This can be used to modify the default nginx config to add client certificate authentication for example. There are several placeholders in the config file which can be replaced with sed to add some config directives at the right places.
 
 For output of your crontabs you can use the `/cron` directory so te output will be available on the host.

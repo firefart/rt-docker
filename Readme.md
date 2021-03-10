@@ -81,7 +81,7 @@ Hint: Add `--skip-create` in dev as the database is created by docker
 docker-compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
 ```
 
-### Fix data inconsitencies
+### Fix data inconsistencies
 
 Run multiple times with the `--resolve` switch until no errors occur
 

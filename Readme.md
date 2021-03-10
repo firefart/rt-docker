@@ -35,6 +35,24 @@ For output of your crontabs you can use the `/cron` directory so te output will 
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker-compose -f ... logs`).
 
+### nginx-startup-scripts
+
+You can use nginx-startup-scripts to change the nginx config on the fly on startup without rebuilding the image. The config contains the patterns `# __SERVER_REPLACE__` and `# __LOCATION_REPLACE__` which can be replaced to inject common patterns in the config.
+
+Here is an example of adding client certificate authentication to the main nginx config:
+
+```bash
+#!/bin/sh
+
+set -e
+
+echo "adding client certificate check"
+client_dn="CN=root,OU=Dep,O=Org,C=AT"
+client_serial="126F4828EA098B11"
+sed -i 's/# __SERVER_REPLACE__/ssl_verify_client on;\nssl_verify_depth 5;\nssl_client_certificate \/certs\/chain.pem;\nif ($ssl_client_verify != SUCCESS) { return 407; }\nif ($ssl_client_s_dn != "'"$client_dn"'") { return 408; }\nif ($ssl_client_serial !~ "'"$client_serial"'") { return 409; }/' /etc/nginx/conf.d/default.conf
+echo "finished"
+```
+
 ## Create Certificate
 
 This certificate will be used by nginx. If you want another certificate just place it in the folder.

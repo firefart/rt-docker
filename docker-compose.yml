@@ -16,6 +16,7 @@ services:
       - ./getmail/getmailrc:/getmail/getmailrc:ro
       - ./gpg/:/opt/rt5/var/data/gpg
       - ./smime/:/opt/rt5/var/data/smime
+      - ./shredder/:/opt/rt5/var/data/RT-Shredder
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image
     extra_hosts:
@@ -47,6 +48,7 @@ services:
       - ./smime/:/opt/rt5/var/data/smime
       - ./crontab:/var/spool/cron/crontabs/rt:ro
       - ./cron/:/cron
+      - ./shredder/:/opt/rt5/var/data/RT-Shredder
       - /etc/localtime:/etc/localtime:ro
     # make the host available inside the image
     extra_hosts:

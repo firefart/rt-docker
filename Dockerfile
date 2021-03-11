@@ -84,6 +84,10 @@ RUN mkdir -p /opt/rt5/var/data/gpg \
 RUN mkdir -p /opt/rt5/var/data/smime \
   && chown rt:rt /opt/rt5/var/data/smime
 
+# shredder dir
+RUN mkdir -p /opt/rt5/var/data/RT-Shredder \
+  && chown rt:rt /opt/rt5/var/data/RT-Shredder
+
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin:/opt/rt5/bin"
 

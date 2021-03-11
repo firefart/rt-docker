@@ -28,13 +28,31 @@ The following configuration files need to be present before starting:
 Additional configs:
 
 - `./gpg/` : This folder should contain the gpg keyring if used in rt. Be sure to chmod the files to user 1000 with 0600 so RT will not complain.
-- `./smim/` : This folder should contain the SMIME certificate if configured in RT
+- `./smime/` : This folder should contain the SMIME certificate if configured in RT
 - `./nginx/startup-scripts/` : This folder should contain executable bash files that will be executed on nginx start. This can be used to modify the default nginx config to add client certificate authentication for example. There are several placeholders in the config file which can be replaced with sed to add some config directives at the right places.
 - `./shredder/` : This directory will be used by the shredder functionality [https://docs.bestpractical.com/rt/latest/RT/Shredder.html](https://docs.bestpractical.com/rt/latest/RT/Shredder.html) so the backups are stored on the host
 
 For output of your crontabs you can use the `/cron` directory so te output will be available on the host.
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker-compose -f ... logs`).
+
+### nginx-startup-scripts
+
+You can use nginx-startup-scripts to change the nginx config on the fly on startup without rebuilding the image. The config contains the patterns `# __SERVER_REPLACE__` and `# __LOCATION_REPLACE__` which can be replaced to inject common patterns in the config.
+
+Here is an example of adding client certificate authentication to the main nginx config:
+
+```bash
+#!/bin/sh
+
+set -e
+
+echo "adding client certificate check"
+client_dn="CN=root,OU=Dep,O=Org,C=AT"
+client_serial="126F4828EA098B11"
+sed -i 's/# __SERVER_REPLACE__/ssl_verify_client on;\nssl_verify_depth 5;\nssl_client_certificate \/certs\/chain.pem;\nif ($ssl_client_verify != SUCCESS) { return 407; }\nif ($ssl_client_s_dn != "'"$client_dn"'") { return 408; }\nif ($ssl_client_serial !~ "'"$client_serial"'") { return 409; }/' /etc/nginx/conf.d/default.conf
+echo "finished"
+```
 
 ## Create Certificate
 
@@ -64,7 +82,7 @@ Hint: Add `--skip-create` in dev as the database is created by docker
 docker-compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
 ```
 
-### Fix data inconsitencies
+### Fix data inconsistencies
 
 Run multiple times with the `--resolve` switch until no errors occur
 

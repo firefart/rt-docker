@@ -31,7 +31,8 @@ RUN cd /src/${RT} \
 RUN make -C /src/${RT} fixdeps \
   && make -C /src/${RT} testdeps \
   && make -C /src/${RT} install \
-  && cpanm --install RT::Extension::MergeUsers
+  && cpanm --install RT::Extension::MergeUsers \
+  && cpanm --install RT::Extension::TerminalTheme
 
 FROM perl:slim
 

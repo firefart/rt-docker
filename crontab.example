@@ -9,3 +9,6 @@ MAILTO=user@user.com
 
 # get mails
 * * * * * /usr/bin/getmail --rcfile=getmailrc -g /getmail
+
+# email dashboards
+0 * * * * /opt/rt5/sbin/rt-email-dashboards

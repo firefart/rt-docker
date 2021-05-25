@@ -17,10 +17,10 @@ export COMPOSE_DOCKER_CLI_BUILD=1
 
 # needed for the gpg and smime stuff
 # id 1000 is the rt user inside the docker image
-chown 1000 ./cron
-chown 1000 ./gpg
-chown 1000 ./smime
-chown 1000 ./shredder
+chown -R 1000:1000 ./cron
+chown -R 1000:1000 ./gpg
+chown -R 1000:1000 ./smime
+chown -R 1000:1000 ./shredder
 
 chmod 0700 ./cron
 chmod 0700 ./gpg
@@ -39,4 +39,4 @@ docker-compose pull
 docker-compose stop
 docker-compose rm -f 
 docker-compose build --progress=plain
-docker-compose up
+docker-compose up --remove-orphans

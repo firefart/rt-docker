@@ -18,3 +18,4 @@ getmail/*
 !getmail/.keep
 gpg/*
 !gpg/.keep
+shredder/*.sql

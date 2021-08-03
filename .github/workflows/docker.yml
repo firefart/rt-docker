@@ -25,8 +25,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push RT
         uses: docker/build-push-action@v2
         with:
           push: true
           tags: firefart/requesttracker:latest
+
+      - name: Build and push NGINX
+        uses: docker/build-push-action@v2
+        with:
+          context: ./nginx/
+          push: true
+          tags: firefart/requesttracker:nginx

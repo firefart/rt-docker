@@ -4,3 +4,5 @@
 *.key
 *.yml
 *.example
+.github/
+.git/

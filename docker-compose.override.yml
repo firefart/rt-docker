@@ -18,7 +18,7 @@ services:
     restart: "no"
 
   db:
-    image: postgres:12
+    image: postgres:13
     environment:
       POSTGRES_DB: rt
       POSTGRES_USER: rt
@@ -31,12 +31,12 @@ services:
       - net
 
   phppgadmin:
-    image: 'docker.io/bitnami/phppgadmin:7-debian-10'
+    image: "docker.io/bitnami/phppgadmin:7"
     environment:
       DATABASE_HOST: "db"
     ports:
-      - '127.0.0.1:8081:8080'
-      - '127.0.0.1:8443:8443'
+      - "127.0.0.1:8081:8080"
+      - "127.0.0.1:8443:8443"
     depends_on:
       - db
     networks:

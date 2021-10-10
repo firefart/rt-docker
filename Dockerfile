@@ -1,7 +1,7 @@
 FROM perl:latest as builder
 
-ENV RT="rt-5.0.1"
-ENV RT_SHA256="6c181cc592c48a2cba8b8df1d45fda0938d70f84ceeba1afc436f16a6090f556"
+ENV RT="rt-5.0.2"
+ENV RT_SHA256="df915ae809277564d9b8a7192ced2517cf6bed6c0301786b69562c0ea9dd9e86"
 
 # use cpanm for dependencies
 ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages"

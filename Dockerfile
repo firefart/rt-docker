@@ -28,7 +28,10 @@ RUN cd /src/${RT} \
   && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
 # Install dependencies
+# GD:Graph is currently not autoinstalled by fixdeps but needed
+# maybe this will be fixed in a later version
 RUN make -C /src/${RT} fixdeps \
+  && cpanm --install GD::Graph \
   && make -C /src/${RT} testdeps \
   && make -C /src/${RT} install \
   && cpanm --install RT::Extension::MergeUsers \

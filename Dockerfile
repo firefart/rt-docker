@@ -30,8 +30,8 @@ RUN cd /src/${RT} \
 # Install dependencies
 # GD:Graph is currently not autoinstalled by fixdeps but needed
 # maybe this will be fixed in a later version
-RUN make -C /src/${RT} fixdeps \
-  && cpanm --install GD::Graph \
+RUN cpanm --install GD::Graph \
+  && make -C /src/${RT} fixdeps \
   && make -C /src/${RT} testdeps \
   && make -C /src/${RT} install \
   && cpanm --install RT::Extension::MergeUsers \

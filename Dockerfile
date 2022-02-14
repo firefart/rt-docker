@@ -27,9 +27,11 @@ RUN cd /src/${RT} \
   # configure with all plugins and with the newly created user
   && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
-# install older version of GD until this is merged/fixed
+# install GD::Graph without running tests as the tests
+# are broken since the latest GD::Image update and
+# the project seems to be dead
 # https://rt.cpan.org/Public/Bug/Display.html?id=140940
-RUN cpanm --no-man-pages install RURBAN/GD-2.73.tar.gz
+RUN cpanm --no-man-pages -n install GD::Graph
 
 # Install dependencies
 RUN make -C /src/${RT} fixdeps \

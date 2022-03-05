@@ -2,7 +2,7 @@
 
 This is a complete setup for [Request Tracker](https://bestpractical.com/request-tracker) with docker and docker-compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
 
-The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image will be automatically rebuilt if one of the base images change.
+The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image is rebuilt on a daily basis.
 
 ## Prerequisites
 

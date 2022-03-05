@@ -27,7 +27,6 @@ Set(%GnuPG,
   OutgoingMessagesFormat => 'RFC'
 );
 
-# sks-keyservers use a self signed certificate so we need to disable certificate checking
 Set(%GnuPGOptions,
   homedir             => '/opt/rt5/var/data/gpg',
   passphrase          => 'PASSPHRASE',

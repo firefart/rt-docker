@@ -31,7 +31,11 @@ RUN cd /src/${RT} \
 # are broken since the latest GD::Image update and
 # the project seems to be dead
 # https://rt.cpan.org/Public/Bug/Display.html?id=140940
-RUN cpanm --no-man-pages -n install GD::Graph
+# Also install Sever::Starter without tests
+# as they constanly fail with timeouts and thus break
+# the build
+RUN cpanm --no-man-pages -n install GD::Graph \
+  && cpanm --no-man-pages -n install Server::Starter
 
 # Install dependencies
 RUN make -C /src/${RT} fixdeps \

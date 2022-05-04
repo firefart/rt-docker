@@ -1,3 +1,23 @@
+FROM debian:bullseye-slim as msmtp-builder
+
+ENV MSMTP_VERSION="1.8.20"
+
+# Install required packages
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+  && apt-get -q -y install --no-install-recommends \
+  wget ca-certificates libgnutls28-dev xz-utils \
+  build-essential automake libtool gettext texinfo pkg-config
+
+RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz \
+  && tar -xf /msmtp.tar.xz \
+  && cd /msmtp-${MSMTP_VERSION} \
+  && autoreconf -i \
+  && ./configure \
+  && make \
+  && make install
+
+#############################################################################
+
 FROM perl:latest as builder
 
 ENV RT="rt-5.0.2"
@@ -44,6 +64,8 @@ RUN make -C /src/${RT} fixdeps \
   && cpanm --install RT::Extension::MergeUsers \
   && cpanm --install RT::Extension::TerminalTheme
 
+#############################################################################
+
 FROM perl:slim
 
 # Install required packages
@@ -51,18 +73,24 @@ FROM perl:slim
 # without systemd
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
-  procps supervisor msmtp ca-certificates getmail wget curl gnupg graphviz libssl1.1 \
+  procps supervisor ca-certificates getmail wget curl gnupg graphviz libssl1.1 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl busybox-static \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+# msmtp - disabled for now to use the newer version
 
 # Create RT user
 RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt5 rt
 
+# copy msmtp
+COPY --from=msmtp-builder /usr/local/bin/msmtp /usr/bin/msmtp
+COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
+# from https://packages.debian.org/bookworm/amd64/msmtp/download
+COPY usr.bin.msmtp /etc/apparmor.d/usr.bin.msmtp
+
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
 COPY --from=builder /opt/rt5 /opt/rt5
-
 # run a final dependency check if we copied all 
 RUN perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 

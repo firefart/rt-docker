@@ -1,0 +1,85 @@
+# Author: Simon Deziel <simon@sdeziel.info>
+
+#include <tunables/global>
+
+profile msmtp /usr/bin/msmtp flags=(attach_disconnected) {
+  #include <abstractions/base>
+  #include <abstractions/dbus-session-strict>
+  #include <abstractions/nameservice>
+  #include <abstractions/p11-kit>
+  #include <abstractions/ssl_certs>
+  #include <abstractions/ssl_keys>
+  #include <abstractions/kerberosclient>
+
+  /usr/bin/msmtp          mr,
+  /etc/aliases            r,
+  /etc/msmtprc            r,
+  /etc/mailname           r,
+  /etc/netrc              r,
+  owner @{HOME}/.msmtp*   r,
+  owner @{HOME}/.netrc    r,
+  owner @{HOME}/.tls-crls r,
+
+  owner @{HOME}/.msmtp*.log wk,
+  /var/log/msmtp            wk,
+
+  owner @{HOME}/**/*msmtprc        r,
+  owner @{HOME}/.config/msmtp/*    r,
+  owner @{HOME}/.cache/msmtp/*     r,
+  owner @{HOME}/.cache/msmtp/*.log wk,
+
+  @{PROC}/@{pid}/loginuid r,
+  /tmp/                   rw,
+  owner /tmp/*            rw,
+
+  # kerberos related
+  /tmp/{,.}krb5cc_* rwk,
+  /etc/gss/mech.d/ r,
+  /etc/gss/mech.d/** r,
+
+  # to type password interactively
+  /dev/tty                rw,
+  owner /dev/pts/[0-9]*   rw,
+
+  dbus send
+       bus=session
+       path=/org/freedesktop/secrets
+       interface=org.freedesktop.Secret.Service,
+  dbus receive
+       bus=session
+       path=/org/freedesktop/secrets
+       interface=org.freedesktop.Secret.Service,
+  dbus send
+       bus=session
+       path=/org/freedesktop/secrets/prompt/*
+       interface=org.freedesktop.Secret.Prompt,
+  dbus receive
+       bus=session
+       path=/org/freedesktop/secrets/prompt/*
+       interface=org.freedesktop.Secret.Prompt,
+  dbus send
+       bus=session
+       path=/org/freedesktop/secrets
+       interface=org.freedesktop.DBus.Properties
+       member=GetAll,
+
+  # secret helpers
+  /{,usr/}bin/bash Cx -> helpers,
+  /{,usr/}bin/dash Cx -> helpers,
+  profile helpers {
+    #include <abstractions/base>
+    /{,usr/}bin/bash mr,
+    /{,usr/}bin/dash mr,
+    /tmp/            rw,
+    owner /tmp/*     rw,
+
+    /usr/bin/secret-tool PUx,
+    /usr/bin/gpg{,2}     PUx,
+    /usr/bin/pass        PUx,
+    /usr/bin/head        PUx,
+    /usr/bin/keyring     PUx,
+    /{,usr/}bin/cat      PUx,
+  }
+
+  #include <local/usr.bin.msmtp>
+}

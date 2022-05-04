@@ -74,7 +74,7 @@ FROM perl:slim
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   procps supervisor ca-certificates getmail wget curl gnupg graphviz libssl1.1 \
-  zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl busybox-static \
+  zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl busybox-static msmtp \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version
@@ -83,10 +83,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt5 rt
 
 # copy msmtp
-COPY --from=msmtp-builder /usr/local/bin/msmtp /usr/bin/msmtp
-COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
+# COPY --from=msmtp-builder /usr/local/bin/msmtp /usr/bin/msmtp
+# COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
 # from https://packages.debian.org/bookworm/amd64/msmtp/download
-COPY usr.bin.msmtp /etc/apparmor.d/usr.bin.msmtp
+# COPY usr.bin.msmtp /etc/apparmor.d/usr.bin.msmtp
 
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5

@@ -32,8 +32,8 @@ find ./gpg -type f -exec chmod 0600 {} \;
 find ./smime -type f -exec chmod 0600 {} \;
 find ./shredder -type f -exec chmod 0600 {} \;
 
-docker-compose -f docker-compose.yml pull
-docker-compose -f docker-compose.yml stop
-docker-compose -f docker-compose.yml rm -f -v -s
-docker-compose -f docker-compose.yml up -d --remove-orphans
+docker compose -f docker-compose.yml pull
+docker compose -f docker-compose.yml stop
+docker compose -f docker-compose.yml rm -f -v -s
+docker compose -f docker-compose.yml up -d --remove-orphans
 docker image prune -f

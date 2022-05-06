@@ -7,7 +7,6 @@ The prebuilt image is available from [https://hub.docker.com/r/firefart/requestt
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/)
-- [docker-compose](https://docs.docker.com/compose/install/)
 - an external SMTP server to send emails
 - an external IMAP server to receive emails from
 
@@ -67,7 +66,7 @@ openssl req -x509 -newkey rsa:4096 -keyout ./nginx/certs/priv.pem -out ./nginx/c
 This initializes a fresh database
 
 ```bash
-docker-compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'
+docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'
 ```
 
 You might need to restart the rt service after this step as it crashes if the database is not initialized.
@@ -79,7 +78,7 @@ Hint: Add `--skip-create` in dev as the database is created by docker
 ### Upgrade Database
 
 ```bash
-docker-compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
+docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
 ```
 
 ### Fix data inconsistencies
@@ -87,5 +86,5 @@ docker-compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./
 Run multiple times with the `--resolve` switch until no errors occur
 
 ```bash
-docker-compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-validator --check --resolve'
+docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-validator --check --resolve'
 ```

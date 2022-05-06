@@ -1,12 +1,12 @@
 # Request Tracker with Docker
 
-This is a complete setup for [Request Tracker](https://bestpractical.com/request-tracker) with docker and docker-compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
+This is a complete setup for [Request Tracker](https://bestpractical.com/request-tracker) with docker and docker compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image is rebuilt on a daily basis.
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/)
+- [Docker](https://docs.docker.com/get-docker/) with the `compose` plugin
 - an external SMTP server to send emails
 - an external IMAP server to receive emails from
 
@@ -33,7 +33,7 @@ Additional configs:
 
 For output of your crontabs you can use the `/cron` directory so the output will be available on the host.
 
-In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker-compose -f ... logs`).
+In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker compose -f ... logs`).
 
 ### nginx-startup-scripts
 

@@ -35,8 +35,8 @@ find ./shredder -type f -exec chmod 0600 {} \;
 awk '/^FROM / { print $2 }' Dockerfile | xargs -L 1 -I % sh -c 'echo %; docker pull %'
 awk '/^FROM / { print $2 }' ./nginx/Dockerfile | xargs -L 1 -I % sh -c 'echo %; docker pull %'
 
-docker-compose pull
-docker-compose stop
-docker-compose rm -f 
-docker-compose build --progress=plain
-docker-compose up --remove-orphans
+docker compose pull
+docker compose stop
+docker compose rm -f 
+docker compose build --progress=plain
+docker compose up --remove-orphans

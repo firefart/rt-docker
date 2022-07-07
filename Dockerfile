@@ -57,6 +57,10 @@ RUN cd /src/${RT} \
 RUN cpanm --no-man-pages -n install GD::Graph \
   && cpanm --no-man-pages -n install Server::Starter
 
+# https://rt.cpan.org/Public/Bug/Display.html?id=143689
+# https://github.com/libwww-perl/URI/issues/102
+RUN cpanm --no-man-pages install URI::file@5.10
+
 # Install dependencies
 RUN make -C /src/${RT} fixdeps \
   && make -C /src/${RT} testdeps \

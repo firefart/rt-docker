@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# this pulls in new images and restarts everything
+# this only restarts prod without pulling in new images
 
 set -euf -o pipefail
 
@@ -15,7 +15,6 @@ check_files
 
 fix_file_perms
 
-docker compose -f docker-compose.yml pull
 docker compose -f docker-compose.yml stop
 docker compose -f docker-compose.yml rm -f -v -s
 docker compose -f docker-compose.yml up -d --remove-orphans

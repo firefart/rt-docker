@@ -7,6 +7,8 @@ RT_SiteConfig.pm
 TODO
 !dev.sh
 !prod.sh
+!bash_functions.sh
+!restart_prod.sh
 crontab
 nginx/startup-scripts/*
 !nginx/startup-scripts/.keep

@@ -18,7 +18,7 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 #############################################################################
 
-FROM perl:5.34 as builder
+FROM perl:5.36.0 as builder
 
 ENV RT="rt-5.0.2"
 ENV RT_SHA256="df915ae809277564d9b8a7192ced2517cf6bed6c0301786b69562c0ea9dd9e86"
@@ -66,7 +66,7 @@ RUN make -C /src/${RT} fixdeps \
 
 #############################################################################
 
-FROM perl:5.34-slim
+FROM perl:5.36.0
 
 # Install required packages
 # we use busybox-static here for the busybox crond which works

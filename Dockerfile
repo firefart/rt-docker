@@ -66,7 +66,7 @@ RUN make -C /src/${RT} fixdeps \
 
 #############################################################################
 
-FROM perl:5.36-slim
+FROM perl:5.36.0-slim
 
 # Install required packages
 # we use busybox-static here for the busybox crond which works

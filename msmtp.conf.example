@@ -11,6 +11,6 @@ tls_certcheck on
 auth on
 user user@domain.com
 password pass
-logfile /dev/stderr
+logfile -
 
 account default : smtp

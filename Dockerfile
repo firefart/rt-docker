@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim as msmtp-builder
 
-ENV MSMTP_VERSION="1.8.20"
+ENV MSMTP_VERSION="1.8.22"
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \

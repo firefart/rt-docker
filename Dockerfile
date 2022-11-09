@@ -64,6 +64,9 @@ RUN make -C /src/${RT} fixdeps \
   && cpanm --install RT::Extension::MergeUsers \
   && cpanm --install RT::Extension::TerminalTheme
 
+# Install LDAP Module
+RUN cpan -i RT::Authen::ExternalAuth
+
 #############################################################################
 
 FROM perl:5.36.0-slim

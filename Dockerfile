@@ -45,7 +45,7 @@ RUN mkdir -p /src \
 # Configure RT
 RUN cd /src/${RT} \
   # configure with all plugins and with the newly created user
-  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
+  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
 # install GD::Graph without running tests as the tests
 # are broken since the latest GD::Image update and

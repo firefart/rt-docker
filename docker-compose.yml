@@ -75,8 +75,10 @@ services:
     image: amir20/dozzle:latest
     restart: always
     environment:
-      - DOZZLE_BASE=/logs
+      - DOZZLE_BASE=${DOZZLE_BASE:-/logs}
       - DOZZLE_NO_ANALYTICS=true
+      - DOZZLE_USERNAME=${DOZZLE_USERNAME:-}
+      - DOZZLE_PASSWORD=${DOZZLE_PASSWORD:-}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:

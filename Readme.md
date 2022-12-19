@@ -35,7 +35,13 @@ For output of your crontabs you can use the `/cron` directory so the output will
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker compose -f ... logs`).
 
-The default config also starts `dozzle` which makes all logs available under `/logs/` without authentication. If you don't want to start it be sure to deactivate it in `docker-compose.yml`.
+The default config also starts `dozzle` which makes all logs available under `/logs/` without authentication. If you don't want to start it be sure to deactivate it in `docker-compose.yml`. To change the path of `/logs/` you can put the environment var `DOZZLE_BASE` in your `.env` file and change the nginx config on startup using a custom startup script.
+If you want to enable authorization on the `logs` endpoint add the following lines with the values of your choice into the `.env` file of the project root.
+
+```
+DOZZLE_USERNAME=root
+DOZZLE_PASSWORD=password
+```
 
 ### nginx-startup-scripts
 

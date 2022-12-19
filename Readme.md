@@ -35,6 +35,8 @@ For output of your crontabs you can use the `/cron` directory so the output will
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker compose -f ... logs`).
 
+The default config also starts `dozzle` which makes all logs available under `/logs/` without authentication. If you don't want to start it be sure to deactivate it in `docker-compose.yml`.
+
 ### nginx-startup-scripts
 
 You can use nginx-startup-scripts to change the nginx config on the fly on startup without rebuilding the image. The config contains the patterns `# __SERVER_REPLACE__` and `# __LOCATION_REPLACE__` which can be replaced to inject common patterns in the config.

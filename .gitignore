@@ -21,3 +21,5 @@ getmail/*
 gpg/*
 !gpg/.keep
 shredder/*.sql
+*.secret
+*.env

@@ -4,5 +4,7 @@
 *.key
 *.yml
 *.example
+*.secret
+*.env
 .github/
 .git/

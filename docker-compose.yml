@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 services:
   rt:
@@ -68,6 +68,17 @@ services:
       - ./nginx/certs/:/certs/:ro
       - ./nginx/startup-scripts/:/docker-entrypoint.d/:ro
       - /etc/localtime:/etc/localtime:ro
+    networks:
+      - net
+
+  dozzle:
+    image: amir20/dozzle:latest
+    restart: always
+    environment:
+      - DOZZLE_BASE=/logs
+      - DOZZLE_NO_ANALYTICS=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - net
 

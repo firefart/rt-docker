@@ -25,3 +25,5 @@ shredder/*.sql
 *.secret
 *.env
 .env
+*.pgpass
+*.json

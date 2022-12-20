@@ -11,3 +11,5 @@
 .env
 .keep
 **/.keep
+*.pgpass
+*.json

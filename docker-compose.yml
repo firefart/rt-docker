@@ -94,6 +94,7 @@ services:
       - full
     restart: always
     environment:
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-root@root.com}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
       PGADMIN_DISABLE_POSTFIX: disable

@@ -12,6 +12,7 @@ TODO
 crontab
 nginx/startup-scripts/*
 !nginx/startup-scripts/.keep
+!nginx/startup-scripts/check_full_profile.sh
 nginx/certs/*
 !nginx/certs/.keep
 msmtp/*

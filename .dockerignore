@@ -9,3 +9,5 @@
 .github/
 .git/
 .env
+.keep
+**/.keep

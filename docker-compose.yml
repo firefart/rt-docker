@@ -64,6 +64,8 @@ services:
       - "0.0.0.0:443:443"
     depends_on:
       - rt
+      - dozzle
+      - pgadmin
     volumes:
       - ./nginx/certs/:/certs/:ro
       - ./nginx/startup-scripts/:/docker-entrypoint.d/:ro
@@ -73,6 +75,8 @@ services:
 
   dozzle:
     image: amir20/dozzle:latest
+    profiles:
+      - full
     restart: always
     environment:
       - DOZZLE_BASE=${DOZZLE_BASE:-/logs}
@@ -83,6 +87,29 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    profiles:
+      - full
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-root@root.com}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
+      PGADMIN_DISABLE_POSTFIX: disable
+    secrets:
+      - pgadmin_password
+    volumes:
+      - vol_pgadmin:/var/lib/pgadmin
+    networks:
+      - net
+
+secrets:
+  pgadmin_password:
+    file: ./pgadmin_password.secret
+
+volumes:
+  vol_pgadmin: {}
 
 networks:
   net:

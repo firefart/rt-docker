@@ -35,13 +35,29 @@ For output of your crontabs you can use the `/cron` directory so the output will
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker compose -f ... logs`).
 
-The default config also starts `dozzle` which makes all logs available under `/logs/` without authentication. If you don't want to start it be sure to deactivate it in `docker-compose.yml`. To change the path of `/logs/` you can put the environment var `DOZZLE_BASE` in your `.env` file and change the nginx config on startup using a custom startup script.
+### Full Profile
+
+There is also a `full` profile in docker compose which enables `dozzle` for viewing logs and `pgadmin` for easy db access. You can enable this profile by `docker compose --profile=full ....` or by setting the `COMPOSE_PROFILES` environment variable to `full`. For example `export COMPOSE_PROFILES=full`
+
+#### Dozzle
+
+The full profile starts `dozzle` which makes all logs available under `/logs/` without authentication. To change the path of `/logs/` you can put the environment var `DOZZLE_BASE` in your `.env` file of the project root and change the nginx config on startup using a custom startup script.
 If you want to enable authorization on the `logs` endpoint add the following lines with the values of your choice into the `.env` file of the project root.
 
 ```
 DOZZLE_USERNAME=root
 DOZZLE_PASSWORD=password
 ```
+
+#### PGADMIN
+
+pgadmin will be available under `/pgadmin`. It requires a master email and password on start so this needs to be configured. For the username put the following line in `.env` with the email of your choice. If you do not supply an email the default will be `root@root.com`.
+
+```
+PGADMIN_DEFAULT_EMAIL=root@root.com
+```
+
+For the password create the file `pgadmin_password.secret` in the project root and simply put your master password in without any special syntax. This will be loaded as a docker secret.
 
 ### nginx-startup-scripts
 

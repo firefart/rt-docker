@@ -54,13 +54,8 @@ RUN cd /src/${RT} \
 # Also install Sever::Starter without tests
 # as they constanly fail with timeouts and thus break
 # the build
-# Date::Extract:
-#   https://rt.cpan.org/Public/Bug/Display.html?id=145774
-#   https://github.com/tarao/perl5-Test-MockTime-HiRes/issues/11
-# we need to disable tests until this bug is fixed
 RUN cpanm --no-man-pages -n install GD::Graph \
-  && cpanm --no-man-pages -n install Server::Starter \
-  && cpanm --no-man-pages -n install Date::Extract
+  && cpanm --no-man-pages -n install Server::Starter
 
 # Install dependencies
 RUN make -C /src/${RT} fixdeps \

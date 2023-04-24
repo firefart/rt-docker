@@ -47,15 +47,10 @@ RUN cd /src/${RT} \
   # configure with all plugins and with the newly created user
   && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
-# install GD::Graph without running tests as the tests
-# are broken since the latest GD::Image update and
-# the project seems to be dead
-# https://rt.cpan.org/Public/Bug/Display.html?id=140940
-# Also install Sever::Starter without tests
+# Install Sever::Starter without tests
 # as they constanly fail with timeouts and thus break
 # the build
-RUN cpanm --no-man-pages -n install GD::Graph \
-  && cpanm --no-man-pages -n install Server::Starter
+RUN cpanm --no-man-pages -n install Server::Starter
 
 # Install dependencies
 RUN make -C /src/${RT} fixdeps \

@@ -20,8 +20,8 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.36 as builder
 
-ENV RT="rt-5.0.3"
-ENV RT_SHA256="e23aee3cb291ccad5e521aeabe0fcd2f076bcfa8b7f801af498a7505e53d8441"
+ENV RT="rt-5.0.4"
+ENV RT_SHA256="916d870d22d92027f843798be6f880aaf1517aebc3f6ab25f456f4e772f4834d"
 
 # use cpanm for dependencies
 ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages"

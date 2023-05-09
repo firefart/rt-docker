@@ -50,7 +50,8 @@ RUN cd /src/${RT} \
 # Install Sever::Starter without tests
 # as they constanly fail with timeouts and thus break
 # the build
-RUN cpanm --no-man-pages -n install Server::Starter
+# Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
+RUN cpanm --no-man-pages -n install Server::Starter CSS::Inliner
 
 # Install dependencies
 RUN make -C /src/${RT} fixdeps \

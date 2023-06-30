@@ -84,7 +84,6 @@ RUN make -C /src/rt fixdeps \
 # Configure RTIR
 RUN cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  # configure with all plugins and with the newly created user
   && make install
 
 #############################################################################

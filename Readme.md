@@ -4,6 +4,8 @@ This is a complete setup for [Request Tracker](https://bestpractical.com/request
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image is rebuilt on a daily basis.
 
+The [Request Tracker for Incident Response (RT-IR)](https://bestpractical.com/rtir) Extension is also installed.
+
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) with the `compose` plugin
@@ -22,7 +24,7 @@ The following configuration files need to be present before starting:
 - `./msmtp/msmtp.conf` : config for mstmp (outgoing email). See msmtp.conf for an example. The ./msmtp folder is also mounted to /msmtp/ in the container so you can load certificates from the config file.
 - `./nginx/certs/pub.pem` : Public TLS certficate for nginx
 - `./nginx/certs/priv.pem` : Private key for nginx' TLS certficate
-- `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent via msmtp to the MAILTO address.
+- `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent via msmtp to the MAILTO address (it uses the msmtp config).
 
 Additional configs:
 
@@ -112,3 +114,21 @@ Run multiple times with the `--resolve` switch until no errors occur
 ```bash
 docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-validator --check --resolve'
 ```
+
+## RT-IR
+
+You can simply enable RT-IR in your `RT_SiteConfig.pm` by including `Plugin('RT::IR');`. Please refer to the [docs](https://docs.bestpractical.com/rtir/latest/index.html) for additional install or upgrade steps.
+
+To initialize the database (ONLY ON THE FIRST RUN!!!! and only after rt is fully set up)
+
+```bash
+docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action insert --skip-create --datafile /opt/rtir/initialdata'
+```
+
+To upgrade
+
+```bash
+docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir --package RT::IR --ext-version 5.0.4'
+```
+
+Restart Webserver after all steps to fully load RT-IR

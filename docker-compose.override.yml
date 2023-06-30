@@ -2,6 +2,9 @@ version: "3.9"
 
 services:
   rt:
+    build:
+      args:
+        ADDITIONAL_CPANM_ARGS: "-n" # disable tests in dev to speed up builds
     restart: "no"
     deploy:
       mode: replicated

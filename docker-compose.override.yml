@@ -10,6 +10,9 @@ services:
       - db
 
   cron:
+    build:
+      args:
+        ADDITIONAL_CPANM_ARGS: "-n" # disable tests in dev to speed up builds
     restart: "no"
     depends_on:
       - db

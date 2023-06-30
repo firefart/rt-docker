@@ -29,8 +29,10 @@ ENV RT="5.0.4"
 ENV RTIR="5.0.4"
 ENV RT_GPG_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 
+ARG ADDITIONAL_CPANM_ARGS=""
+
 # use cpanm for dependencies
-ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages"
+ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 # cpan non interactive mode
 ENV PERL_MM_USE_DEFAULT=1
 

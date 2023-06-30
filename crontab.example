@@ -1,14 +1,28 @@
 # do NOT use quotes here!
 MAILTO=user@user.com
 
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name command to be executed
+
+# * * * * * root date >/proc/1/fd/1 2>/proc/1/fd/2
+
 # clean sessions
-0 0 * * * /opt/rt5/sbin/rt-clean-sessions
+0 0 * * * rt /opt/rt5/sbin/rt-clean-sessions
 
 # refresh full text index
-0 * * * * /opt/rt5/sbin/rt-fulltext-indexer --quiet 2>&1 | grep -v "Words longer than 2047 characters are ignored" | grep -v "word is too long to be indexed"
+0 * * * * rt /opt/rt5/sbin/rt-fulltext-indexer --quiet 2>&1 | grep -v "Words longer than 2047 characters are ignored" | grep -v "word is too long to be indexed"
 
 # get mails
-* * * * * /usr/bin/getmail --rcfile=getmailrc -g /getmail
+* * * * * rt /usr/bin/getmail --rcfile=getmailrc -g /getmail
 
 # email dashboards
-0 * * * * /opt/rt5/sbin/rt-email-dashboards
+0 * * * * rt /opt/rt5/sbin/rt-email-dashboards

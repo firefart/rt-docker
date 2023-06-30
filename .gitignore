@@ -9,6 +9,7 @@ TODO
 !prod.sh
 !bash_functions.sh
 !restart_prod.sh
+!cron_entrypoint.sh
 crontab
 nginx/startup-scripts/*
 !nginx/startup-scripts/.keep

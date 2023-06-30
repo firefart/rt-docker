@@ -90,12 +90,10 @@ RUN cd /src/rtir \
 FROM perl:5.36-slim
 
 # Install required packages
-# we use busybox-static here for the busybox crond which works
-# without systemd
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   procps supervisor ca-certificates getmail wget curl gnupg graphviz libssl1.1 \
-  zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl busybox-static \
+  zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version
@@ -119,10 +117,6 @@ RUN mkdir -p /var/log/supervisor/ \
   && chown rt:rt /var/log/supervisor/ \
   && mkdir -p /var/run/supervisord \
   && chown rt:rt /var/run/supervisord
-
-# cron config and install busybox symlink for crond
-RUN mkdir -p /var/spool/cron/crontabs \
-  && ln -fs /bin/busybox /usr/sbin/crond
 
 # msmtp config
 RUN mkdir /msmtp \
@@ -148,6 +142,16 @@ RUN mkdir -p /opt/rt5/var/data/RT-Shredder \
 
 # RTIR Database stuff for setup
 COPY --chown=rt:rt --from=builder /src/rtir/etc /opt/rtir
+
+# remove default cron jobs
+RUN rm -f /etc/cron.d/* \
+  && rm -f /etc/cron.daily/* \
+  && rm -f /etc/cron.hourly/* \
+  && rm -f /etc/cron.monthly/* \
+  && rm -f /etc/cron.weekly/* \
+  && rm -f /var/spool/cron/crontabs/*
+
+COPY --chown=root:root --chmod=0700 cron_entrypoint.sh /root/cron_entrypoint.sh
 
 # update PATH
 ENV PATH="${PATH}:/opt/rt5/sbin:/opt/rt5/bin"

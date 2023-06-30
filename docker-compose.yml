@@ -31,8 +31,7 @@ services:
     restart: always
     # the cron daemon needs to run as root
     user: root
-    # this will run the busybox crond
-    command: [ "/usr/sbin/crond", "-f", "-l", "8" ]
+    command: [ "/root/cron_entrypoint.sh" ]
     # no need for tini here
     entrypoint: ""
     depends_on:
@@ -46,7 +45,7 @@ services:
       - ./getmail/getmailrc:/getmail/getmailrc:ro
       - ./gpg/:/opt/rt5/var/data/gpg
       - ./smime/:/opt/rt5/var/data/smime
-      - ./crontab:/var/spool/cron/crontabs/rt:ro
+      - ./crontab:/root/crontab:ro # needed so we can add it ro. Permissions are changed in startup script
       - ./cron/:/cron
       - ./shredder/:/opt/rt5/var/data/RT-Shredder
       - /etc/localtime:/etc/localtime:ro

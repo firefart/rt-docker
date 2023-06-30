@@ -24,7 +24,7 @@ The following configuration files need to be present before starting:
 - `./msmtp/msmtp.conf` : config for mstmp (outgoing email). See msmtp.conf for an example. The ./msmtp folder is also mounted to /msmtp/ in the container so you can load certificates from the config file.
 - `./nginx/certs/pub.pem` : Public TLS certficate for nginx
 - `./nginx/certs/priv.pem` : Private key for nginx' TLS certficate
-- `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent via msmtp to the MAILTO address (it uses the msmtp config).
+- `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent to the MAILTO address (it uses the msmtp config).
 
 Additional configs:
 

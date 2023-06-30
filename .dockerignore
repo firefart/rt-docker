@@ -13,3 +13,4 @@
 **/.keep
 *.pgpass
 *.json
+!cron_entrypoint.sh

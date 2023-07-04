@@ -94,7 +94,7 @@ FROM perl:5.36-slim
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   procps supervisor ca-certificates getmail wget curl gnupg graphviz libssl1.1 \
-  zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron \
+  zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version

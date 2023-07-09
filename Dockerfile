@@ -89,6 +89,10 @@ RUN cd /src/rtir \
 #############################################################################
 
 FROM perl:5.38-slim
+LABEL org.opencontainers.image.authors="firefart <firefart@gmail.com>"
+LABEL org.opencontainers.image.title="Request Tracker"
+LABEL org.opencontainers.image.source="https://github.com/firefart/rt-docker"
+LABEL org.opencontainers.image.description="Request Tracker Docker Setup"
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \

@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim as msmtp-builder
+FROM debian:12-slim as msmtp-builder
 
 ENV MSMTP_VERSION="1.8.24"
 ENV MSMTP_GPG_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"

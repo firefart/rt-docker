@@ -27,7 +27,7 @@ jobs:
 
       - name: Docker rt meta
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: firefart/requesttracker
           tags: |
@@ -42,7 +42,7 @@ jobs:
       # add a nginx prefix for the nginx images
       - name: Docker nginx meta
         id: meta_nginx
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: firefart/requesttracker
           tags: |

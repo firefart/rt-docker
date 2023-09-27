@@ -128,7 +128,7 @@ docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./
 To upgrade
 
 ```bash
-docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir --package RT::IR --ext-version 5.0.4'
+docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir/upgrade --package RT::IR --ext-version 5.0.4'
 ```
 
 Restart Webserver after all steps to fully load RT-IR

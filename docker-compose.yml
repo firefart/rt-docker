@@ -31,7 +31,7 @@ services:
     restart: always
     # the cron daemon needs to run as root
     user: root
-    command: [ "/root/cron_entrypoint.sh" ]
+    command: ["/root/cron_entrypoint.sh"]
     # no need for tini here
     entrypoint: ""
     depends_on:
@@ -61,6 +61,7 @@ services:
     image: firefart/requesttracker:nginx-latest
     ports:
       - "0.0.0.0:443:443"
+      - "127.0.0.1:8080:8080" # expose mailgate vhost to host
     depends_on:
       - rt
       - dozzle

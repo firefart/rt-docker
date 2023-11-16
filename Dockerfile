@@ -99,6 +99,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   procps supervisor ca-certificates getmail6 wget curl gnupg graphviz libssl3 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
+  libfcgi-bin \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version
@@ -167,3 +168,5 @@ USER rt
 WORKDIR /opt/rt5/
 
 CMD [ "/usr/bin/supervisord" ]
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD cgi-fcgi -connect localhost:9000 -bind || exit 1

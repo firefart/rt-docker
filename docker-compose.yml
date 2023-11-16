@@ -34,6 +34,9 @@ services:
     command: ["/root/cron_entrypoint.sh"]
     # no need for tini here
     entrypoint: ""
+    # disable the healthcheck from the main dockerfile
+    healthcheck:
+      disable: true
     depends_on:
       - rt
       # we send rt-mailgate over to nginx

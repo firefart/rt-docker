@@ -38,9 +38,13 @@ services:
     healthcheck:
       disable: true
     depends_on:
-      - rt
+      rt:
+        condition: service_healthy
+        restart: true
       # we send rt-mailgate over to nginx
-      - nginx
+      nginx:
+        condition: service_healthy
+        restart: true
     volumes:
       - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
       - ./msmtp/msmtp.conf:/etc/msmtprc:ro
@@ -66,9 +70,15 @@ services:
       - "0.0.0.0:443:443"
       - "127.0.0.1:8080:8080" # expose mailgate vhost to host
     depends_on:
-      - rt
-      - dozzle
-      - pgadmin
+      rt:
+        condition: service_healthy
+        restart: true
+      dozzle:
+        condition: service_healthy
+        restart: true
+      pgadmin:
+        condition: service_healthy
+        restart: true
     volumes:
       - ./nginx/certs/:/certs/:ro
       - ./nginx/startup-scripts/:/docker-entrypoint.d/:ro
@@ -81,6 +91,12 @@ services:
     profiles:
       - full
     restart: always
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 3s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     environment:
       - DOZZLE_BASE=${DOZZLE_BASE:-/logs}
       - DOZZLE_NO_ANALYTICS=true
@@ -101,6 +117,12 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-root@root.com}
       PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
       PGADMIN_DISABLE_POSTFIX: disable
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://localhost:80/misc/ping"]
+      interval: 10s
+      timeout: 10s
+      start_period: 160s
+      retries: 3
     secrets:
       - pgadmin_password
     volumes:

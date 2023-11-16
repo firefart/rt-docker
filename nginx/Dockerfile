@@ -6,5 +6,8 @@ RUN apk add --no-cache bind-tools \
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY mailgate.conf /etc/nginx/conf.d/mailgate.conf
+COPY healthcheck.conf /etc/nginx/conf.d/healthcheck.conf
 COPY full.conf /etc/nginx/full.conf
 RUN rm -f /usr/share/nginx/html/index.html
+
+HEALTHCHECK --interval=10s --timeout=3s CMD curl -f http://localhost:9001/health || exit 1

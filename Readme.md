@@ -11,6 +11,7 @@ The [Request Tracker for Incident Response (RT-IR)](https://bestpractical.com/rt
 - [Docker](https://docs.docker.com/get-docker/) with the `compose` plugin
 - an external SMTP server to send emails
 - an external IMAP server to receive emails from
+- an external Postgres database
 
 ## Instruction
 
@@ -21,7 +22,7 @@ To start use either `./dev.sh` which builds the images locally or `./prod.sh` wh
 The following configuration files need to be present before starting:
 
 - `RT_SiteConfig.pm` : RTs main configuration file. This needs to be present in the root of the dir. See `RT_SiteConfig.pm.example` for an example configration and the needed paths and settings for this configuration.
-- `./msmtp/msmtp.conf` : config for mstmp (outgoing email). See msmtp.conf for an example. The ./msmtp folder is also mounted to /msmtp/ in the container so you can load certificates from the config file.
+- `./msmtp/msmtp.conf` : config for msmtp (outgoing email). See msmtp.conf for an example. The ./msmtp folder is also mounted to /msmtp/ in the container so you can load certificates from the config file.
 - `./nginx/certs/pub.pem` : Public TLS certficate for nginx
 - `./nginx/certs/priv.pem` : Private key for nginx' TLS certficate
 - `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent to the MAILTO address (it uses the msmtp config).
@@ -131,4 +132,4 @@ To upgrade
 docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir/upgrade --package RT::IR --ext-version 5.0.4'
 ```
 
-Restart Webserver after all steps to fully load RT-IR
+Restart docker setup after all steps to fully load RT-IR (just run `./restart_prod.sh`).

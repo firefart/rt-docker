@@ -79,7 +79,10 @@ RUN make -C /src/rt fixdeps \
   && make -C /src/rt testdeps \
   && make -C /src/rt install \
   && cpanm --install RT::Extension::MergeUsers \
-  && cpanm --install RT::Extension::TerminalTheme
+  && cpanm --install RT::Extension::TerminalTheme \
+  # https://github.com/bestpractical/app-wsgetmail
+  # https://metacpan.org/dist/App-wsgetmail
+  && cpanm --install App::wsgetmail
 
 # Configure RTIR
 RUN cd /src/rtir \
@@ -148,6 +151,9 @@ RUN mkdir -p /opt/rt5/var/data/RT-Shredder \
 
 # RTIR Database stuff for setup
 COPY --chown=rt:rt --from=builder /src/rtir/etc /opt/rtir
+
+# wsgetmail
+COPY --chown=rt:rt --from=builder /usr/local/bin/wsgetmail /usr/local/bin/wsgetmail
 
 # remove default cron jobs
 RUN rm -f /etc/cron.d/* \

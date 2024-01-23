@@ -10,8 +10,8 @@ check_files
 
 fix_file_perms
 
-podman-compose pull
-podman-compose stop
-podman-compose down
-podman-compose build --pull
-podman-compose up --remove-orphans
+podman-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.pgadmin.yml pull
+podman-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.pgadmin.yml stop
+podman-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.pgadmin.yml down
+podman-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.pgadmin.yml build --pull
+podman-compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.pgadmin.yml up --remove-orphans

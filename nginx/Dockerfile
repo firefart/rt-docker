@@ -1,4 +1,4 @@
-FROM nginx:alpine
+FROM docker.io/library/nginx:alpine
 
 RUN apk add --no-cache bind-tools \
   && rm -rf /var/cache/apk \

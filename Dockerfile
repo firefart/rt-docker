@@ -1,4 +1,4 @@
-FROM debian:12-slim as msmtp-builder
+FROM docker.io/library/debian:12-slim as msmtp-builder
 
 ENV MSMTP_VERSION="1.8.25"
 ENV MSMTP_GPG_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
@@ -23,7 +23,7 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 #############################################################################
 
-FROM perl:5.39.6 as builder
+FROM docker.io/library/perl:5.39.6 as builder
 
 ENV RT="5.0.5"
 ENV RTIR="5.0.4"
@@ -91,7 +91,7 @@ RUN cd /src/rtir \
 
 #############################################################################
 
-FROM perl:5.39.6-slim
+FROM docker.io/library/perl:5.39.6-slim
 LABEL org.opencontainers.image.authors="firefart <firefart@gmail.com>"
 LABEL org.opencontainers.image.title="Request Tracker"
 LABEL org.opencontainers.image.source="https://github.com/firefart/rt-docker"

@@ -6,9 +6,12 @@ RT_SiteConfig.pm
 *.key
 TODO
 !dev.sh
+!dev_podman.sh
 !prod.sh
+!prod_podman.sh
 !bash_functions.sh
 !restart_prod.sh
+!restart_prod_podman.sh
 !cron_entrypoint.sh
 crontab
 nginx/startup-scripts/*

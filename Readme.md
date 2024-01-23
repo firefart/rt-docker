@@ -1,6 +1,6 @@
-# Request Tracker with Docker
+# Request Tracker with Docker / Podman
 
-This is a complete setup for [Request Tracker](https://bestpractical.com/request-tracker) with docker and docker compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
+This is a complete setup for [Request Tracker](https://bestpractical.com/request-tracker) with docker and docker compose or podman and podman-compose. The production setup assumes you have an external postgres database and an external SMTP server for outgoing emails. A local database server is only started in the dev configuration.
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image is rebuilt on a daily basis.
 
@@ -8,14 +8,14 @@ The [Request Tracker for Incident Response (RT-IR)](https://bestpractical.com/rt
 
 ## Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/) with the `compose` plugin
+- [Docker](https://docs.docker.com/get-docker/) with the `compose` plugin or `podman` with `podman-compose`
 - an external SMTP server to send emails
 - an external IMAP server to receive emails from
 - an external Postgres database
 
 ## Instruction
 
-To start use either `./dev.sh` which builds the images locally or `./prod.sh` which uses the prebuilt ones from docker hub. Before running this you also need to add the required configuration files (see Configuration).
+To start use either `./dev.sh` or `./dev_podman.sh` which builds the images locally or `./prod.sh` or `./prod_podman.sh` which uses the prebuilt ones from docker hub. Before running this you also need to add the required configuration files (see Configuration).
 
 ## Configuration
 
@@ -37,6 +37,12 @@ Additional configs:
 For output of your crontabs you can use the `/cron` directory so the output will be available on the host.
 
 In the default configuration all output from RT, nginx, getmail and msmtp is available via `docker logs` (or `docker compose -f ... logs`).
+
+If you use podman and podman-compose you need to create an `.env` file in the project root and add a custom port to it as a rootless container can't bind to low ports like 443. Example content:
+
+```text
+PORT=8443
+```
 
 ### Full Profile
 
@@ -90,7 +96,7 @@ openssl req -x509 -newkey rsa:4096 -keyout ./nginx/certs/priv.pem -out ./nginx/c
 
 ## Init database
 
-This initializes a fresh database
+This initializes a fresh database (replace `docker compose` with `podman-compose` when running podman instead)
 
 ```bash
 docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'

@@ -4,7 +4,7 @@ services:
   rt:
     build:
       context: .
-    image: firefart/requesttracker:latest
+    image: docker.io/firefart/requesttracker:latest
     restart: always
     deploy:
       mode: replicated
@@ -18,16 +18,13 @@ services:
       - ./smime/:/opt/rt5/var/data/smime
       - ./shredder/:/opt/rt5/var/data/RT-Shredder
       - /etc/localtime:/etc/localtime:ro
-    # make the host available inside the image
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - net
 
   cron:
     build:
       context: .
-    image: firefart/requesttracker:latest
+    image: docker.io/firefart/requesttracker:latest
     restart: always
     # the cron daemon needs to run as root
     user: root
@@ -56,18 +53,15 @@ services:
       - ./cron/:/cron
       - ./shredder/:/opt/rt5/var/data/RT-Shredder
       - /etc/localtime:/etc/localtime:ro
-    # make the host available inside the image
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - net
 
   nginx:
     build:
       context: nginx
-    image: firefart/requesttracker:nginx-latest
+    image: docker.io/firefart/requesttracker:nginx-latest
     ports:
-      - "0.0.0.0:443:443"
+      - "0.0.0.0:${PORT:-443}:443"
       - "127.0.0.1:8080:8080" # expose mailgate vhost to host
     depends_on:
       rt:
@@ -87,7 +81,7 @@ services:
       - net
 
   dozzle:
-    image: amir20/dozzle:latest
+    image: docker.io/amir20/dozzle:latest
     profiles:
       - full
     restart: always
@@ -108,7 +102,7 @@ services:
       - net
 
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: docker.io/dpage/pgadmin4:latest
     profiles:
       - full
     restart: always

@@ -6,6 +6,12 @@ services:
       context: .
     image: docker.io/firefart/requesttracker:latest
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "cgi-fcgi -connect localhost:9000 -bind || exit 1"]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 3
     deploy:
       mode: replicated
       replicas: 5
@@ -63,6 +69,12 @@ services:
     ports:
       - "0.0.0.0:${PORT:-443}:443"
       - "127.0.0.1:8080:8080" # expose mailgate vhost to host
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9001/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
     depends_on:
       rt:
         condition: service_healthy

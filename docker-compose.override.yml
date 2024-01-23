@@ -46,11 +46,5 @@ services:
     networks:
       - net
 
-  dozzle:
-    restart: "no"
-
-  pgadmin:
-    restart: "no"
-
 volumes:
   vol_db: {}

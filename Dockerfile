@@ -36,15 +36,15 @@ ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 # cpan non interactive mode
 ENV PERL_MM_USE_DEFAULT=1
 
-# Create RT user
-RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt5 rt
-
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   ca-certificates wget gnupg graphviz libssl3 zlib1g \
   gpg dirmngr gpg-agent \
   libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl libgd-dev
+
+# Create RT user
+RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt5 rt
 
 # Download and extract RT
 RUN mkdir -p /src \
@@ -107,7 +107,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   dnsutils net-tools lsof \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-# msmtp - disabled for now to use the newer version
 
 # Create RT user
 RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt5 rt

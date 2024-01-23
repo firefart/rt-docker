@@ -83,7 +83,7 @@ services:
   dozzle:
     image: docker.io/amir20/dozzle:latest
     profiles:
-      - full
+      - dozzle
     restart: always
     healthcheck:
       test: ["CMD", "/dozzle", "healthcheck"]
@@ -104,7 +104,7 @@ services:
   pgadmin:
     image: docker.io/dpage/pgadmin4:latest
     profiles:
-      - full
+      - pgadmin
     restart: always
     environment:
       PGADMIN_LISTEN_ADDRESS: 0.0.0.0

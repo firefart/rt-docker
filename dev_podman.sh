@@ -2,7 +2,7 @@
 
 set -euf -o pipefail
 
-export COMPOSE_PROFILES=full
+export COMPOSE_PROFILES=pgadmin
 
 DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$DIR" ]]; then DIR="$PWD"; fi

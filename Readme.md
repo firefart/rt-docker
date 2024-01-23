@@ -44,13 +44,13 @@ If you use podman and podman-compose you need to create an `.env` file in the pr
 PORT=8443
 ```
 
-### Full Profile
+### Profiles
 
-There is also a `full` profile in docker compose which enables `dozzle` for viewing logs and `pgadmin` for easy db access. You can enable this profile by `docker compose --profile=full ....` or by setting the `COMPOSE_PROFILES` environment variable to `full`. For example `export COMPOSE_PROFILES=full`
+There is a `dozzle` and a `pgadmin` profile in docker compose which enables `dozzle` for viewing logs and `pgadmin` for easy db access. You can enable this profiles by `docker compose --profile=dozzle,pgadmin ....` or by setting the `COMPOSE_PROFILES` environment variable to the corresponding values. For example `export COMPOSE_PROFILES=pgadmin,dozzle`. Dozzle might not work in a podman setup as it requires access to the docker socket.
 
 #### Dozzle
 
-The full profile starts `dozzle` which makes all logs available under `/logs/` without authentication. To change the path of `/logs/` you can put the environment var `DOZZLE_BASE` in your `.env` file of the project root and change the nginx config on startup using a custom startup script.
+The `dozzle` profile starts `dozzle` which makes all logs available under `/logs/` without authentication. To change the path of `/logs/` you can put the environment var `DOZZLE_BASE` in your `.env` file of the project root and change the nginx config on startup using a custom startup script.
 If you want to enable authorization on the `logs` endpoint add the following lines with the values of your choice into the `.env` file of the project root.
 
 ```

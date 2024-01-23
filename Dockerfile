@@ -12,8 +12,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 
 RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz \
   && wget -O /msmtp.tar.xz.sig -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz.sig \
-  && gpg --disable-dirmngr --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${MSMTP_GPG_KEY} \
-  && gpg --disable-dirmngr --verify /msmtp.tar.xz.sig /msmtp.tar.xz \
+  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${MSMTP_GPG_KEY} \
+  && gpg --verify /msmtp.tar.xz.sig /msmtp.tar.xz \
   && tar -xf /msmtp.tar.xz \
   && cd /msmtp-${MSMTP_VERSION} \
   && autoreconf -i \
@@ -49,17 +49,17 @@ RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt5 rt
 # Download and extract RT
 RUN mkdir -p /src \
   # import RT signing key
-  && gpg --disable-dirmngr --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${RT_GPG_KEY} \
+  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${RT_GPG_KEY} \
   # download and extract RT
   && wget -O /src/rt.tar.gz -nv https://download.bestpractical.com/pub/rt/release/rt-${RT}.tar.gz \
   && wget -O /src/rt.tar.gz.asc -nv https://download.bestpractical.com/pub/rt/release/rt-${RT}.tar.gz.asc \
-  && gpg --disable-dirmngr --verify /src/rt.tar.gz.asc /src/rt.tar.gz \
+  && gpg --verify /src/rt.tar.gz.asc /src/rt.tar.gz \
   && mkdir -p /src/rt \
   && tar --strip-components=1 -C /src/rt -xzf /src/rt.tar.gz \
   # download and extract RTIR
   && wget -O /src/rtir.tar.gz -nv https://download.bestpractical.com/pub/rt/release/RT-IR-${RTIR}.tar.gz \
   && wget -O /src/rtir.tar.gz.asc -nv https://download.bestpractical.com/pub/rt/release/RT-IR-${RTIR}.tar.gz.asc \
-  && gpg --disable-dirmngr --verify /src/rtir.tar.gz.asc /src/rtir.tar.gz \
+  && gpg --verify /src/rtir.tar.gz.asc /src/rtir.tar.gz \
   && mkdir -p /src/rtir \
   && tar --strip-components=1 -C /src/rtir -xzf /src/rtir.tar.gz
 

@@ -13,5 +13,5 @@ fix_file_perms
 podman-compose pull
 podman-compose stop
 podman-compose down
-podman-compose build --pull --profile=pgadmin
-podman-compose up --remove-orphans --profile=pgadmin
+podman-compose build --pull
+podman-compose up --remove-orphans

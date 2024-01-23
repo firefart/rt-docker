@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  nginx:
+    depends_on:
+      pgadmin:
+        condition: service_healthy
+        restart: true
+
+  pgadmin:
+    image: docker.io/dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-root@root.com}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
+      PGADMIN_DISABLE_POSTFIX: disable
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://localhost:80/misc/ping"]
+      interval: 10s
+      timeout: 10s
+      start_period: 160s
+      retries: 3
+    secrets:
+      - pgadmin_password
+    volumes:
+      - vol_pgadmin:/var/lib/pgadmin
+    networks:
+      - net
+
+secrets:
+  pgadmin_password:
+    file: ./pgadmin_password.secret
+
+volumes:
+  vol_pgadmin: {}

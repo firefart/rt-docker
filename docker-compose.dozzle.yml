@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  nginx:
+    depends_on:
+      dozzle:
+        condition: service_healthy
+        restart: true
+
+  dozzle:
+    image: docker.io/amir20/dozzle:latest
+    restart: always
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 3s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    environment:
+      - DOZZLE_BASE=${DOZZLE_BASE:-/logs}
+      - DOZZLE_NO_ANALYTICS=true
+      - DOZZLE_USERNAME=${DOZZLE_USERNAME:-}
+      - DOZZLE_PASSWORD=${DOZZLE_PASSWORD:-}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - net

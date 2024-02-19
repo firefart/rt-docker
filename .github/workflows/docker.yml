@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"
@@ -61,7 +62,7 @@ jobs:
       - name: Build and push RT
         uses: docker/build-push-action@v5
         with:
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }} # do not push on PRs
           #platforms: linux/amd64,linux/arm/v7,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -72,7 +73,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./nginx/
-          push: true
+          push: ${{ github.ref == 'refs/heads/main' }} # do not push on PRs
           #platforms: linux/amd64,linux/arm/v7,linux/arm64
           tags: ${{ steps.meta_nginx.outputs.tags }}
           labels: ${{ steps.meta_nginx.outputs.labels }}

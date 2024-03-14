@@ -44,13 +44,7 @@ There is also a `full` profile in docker compose which enables `dozzle` for view
 
 #### Dozzle
 
-The full profile starts `dozzle` which makes all logs available under `/logs/` without authentication. To change the path of `/logs/` you can put the environment var `DOZZLE_BASE` in your `.env` file of the project root and change the nginx config on startup using a custom startup script.
-If you want to enable authorization on the `logs` endpoint add the following lines with the values of your choice into the `.env` file of the project root.
-
-```
-DOZZLE_USERNAME=root
-DOZZLE_PASSWORD=password
-```
+The full profile starts `dozzle` which makes all logs available under `/logs/` without authentication. To change the path of `/logs/` you can put the environment var `DOZZLE_BASE` in your `.env` file of the project root and change the nginx config on startup using a custom startup script. For authentication options please see [https://dozzle.dev/guide/authentication#file-based-user-management](https://dozzle.dev/guide/authentication#file-based-user-management).
 
 #### PGADMIN
 
@@ -98,7 +92,13 @@ docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./
 
 You might need to restart the rt service after this step as it crashes if the database is not initialized.
 
+### DEV
+
 Hint: Add `--skip-create` in dev as the database is created by docker
+
+```bash
+docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init --skip-create'
+```
 
 ## Upgrade steps
 

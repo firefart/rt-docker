@@ -38,7 +38,7 @@ jobs:
             # set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
             # set rt version
-            type=raw,value=5.0.5,enable=true
+            type=raw,value=5.0.6,enable=true
             # make a sha tag
             type=sha,enable=true,priority=100,prefix=sha-,suffix=,format=short
             type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-

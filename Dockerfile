@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 FROM debian:12-slim as msmtp-builder
 
 ENV MSMTP_VERSION="1.8.26"

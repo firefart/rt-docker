@@ -26,7 +26,7 @@ services:
     restart: "no"
 
   db:
-    image: postgres:13
+    image: postgres:latest
     environment:
       POSTGRES_DB: rt
       POSTGRES_USER: rt
@@ -49,6 +49,10 @@ services:
 
   pgadmin:
     restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
 
 volumes:
   vol_db: {}

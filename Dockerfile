@@ -25,7 +25,7 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 #############################################################################
 
-FROM perl:5.39.10 as builder
+FROM perl:5.40.0 as builder
 
 ENV RT="5.0.7"
 ENV RTIR="5.0.6"
@@ -93,7 +93,7 @@ RUN cd /src/rtir \
 
 #############################################################################
 
-FROM perl:5.39.10-slim
+FROM perl:5.40.0-slim
 LABEL org.opencontainers.image.authors="firefart <firefart@gmail.com>"
 LABEL org.opencontainers.image.title="Request Tracker"
 LABEL org.opencontainers.image.source="https://github.com/firefart/rt-docker"

@@ -19,6 +19,6 @@ awk '/^FROM / { print $2 }' ./nginx/Dockerfile | xargs -I % sh -c 'echo %; docke
 
 docker compose pull
 docker compose stop
-docker compose rm -f 
+docker compose rm -f
 docker compose build --progress=plain
 docker compose up --remove-orphans

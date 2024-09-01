@@ -10,27 +10,27 @@ function check_files() {
     echo "RT_SiteConfig.pm does not exist. Please see RT_SiteConfig.pm.example for an example configuration."
     exit 1
   fi
-  
+
   if [ ! -f ./msmtp/msmtp.conf ]; then
     echo "./msmtp/msmtp.conf does not exist. Please see msmtp.conf.example for an example configuration."
     exit 1;
   fi
-  
+
   if [ ! -f ./nginx/certs/pub.pem ]; then
     echo "./nginx/certs/pub.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
     exit 1
   fi
-  
+
   if [ ! -f ./nginx/certs/priv.pem ]; then
     echo "./nginx/certs/priv.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
     exit 1
   fi
-  
+
   if [ ! -f ./crontab ]; then
     echo "./crontab does not exist. Please see crontab.example for an example configuration."
     exit 1
   fi
-  
+
   if [ ! -f ./getmail/getmailrc ]; then
     echo "./getmail/getmailrc does not exist. Please see getmailrc.example for an example configuration."
     exit 1

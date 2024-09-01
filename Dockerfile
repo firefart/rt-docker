@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:12-slim as msmtp-builder
+FROM debian:12-slim AS msmtp-builder
 
 ENV MSMTP_VERSION="1.8.26"
 ENV MSMTP_GPG_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
@@ -25,7 +25,7 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 #############################################################################
 
-FROM perl:5.40.0 as builder
+FROM perl:5.40.0 AS builder
 
 ENV RT="5.0.7"
 ENV RTIR="5.0.6"
@@ -69,6 +69,9 @@ RUN mkdir -p /src \
 RUN cd /src/rt \
   # configure with all plugins and with the newly created user
   && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
+
+# install https support for cpanm
+RUN cpanm --no-man-pages install LWP::Protocol::https
 
 # Install Sever::Starter without tests
 # as they constanly fail with timeouts and thus break

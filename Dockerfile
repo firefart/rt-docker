@@ -71,7 +71,8 @@ RUN cd /src/rt \
   && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
 # install https support for cpanm
-RUN cpanm --no-man-pages install LWP::Protocol::https
+# && Temp Fix for https://github.com/Perl-Toolchain-Gang/module-build-tiny/issues/36
+RUN cpanm --no-man-pages install CPAN::Requirements::Dynamic LWP::Protocol::https
 
 # Install Sever::Starter without tests
 # as they constanly fail with timeouts and thus break
@@ -122,7 +123,7 @@ COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
 COPY --from=builder /opt/rt5 /opt/rt5
-# run a final dependency check if we copied all 
+# run a final dependency check if we copied all
 RUN perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
 # supervisord config

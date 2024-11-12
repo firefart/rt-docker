@@ -77,7 +77,9 @@ RUN cpanm --no-man-pages install LWP::Protocol::https
 # as they constanly fail with timeouts and thus break
 # the build
 # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
-RUN cpanm --no-man-pages -n install Server::Starter CSS::Inliner
+RUN cpanm --no-man-pages -n install Server::Starter CSS::Inliner \
+  # https://github.com/simonwistow/Module-Pluggable/issues/27
+  Module::Pluggable
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \

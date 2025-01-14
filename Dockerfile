@@ -9,7 +9,7 @@ ENV MSMTP_GPG_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   wget ca-certificates libgnutls28-dev xz-utils \
-  gpg dirmngr gpg-agent \
+  gpg dirmngr gpg-agent libgsasl-dev libsecret-1-dev \
   build-essential automake libtool gettext texinfo pkg-config
 
 RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz \
@@ -18,7 +18,6 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
   && gpg --verify /msmtp.tar.xz.sig /msmtp.tar.xz \
   && tar -xf /msmtp.tar.xz \
   && cd /msmtp-${MSMTP_VERSION} \
-  && autoreconf -i \
   && ./configure --sysconfdir=/etc \
   && make \
   && make install

@@ -22,7 +22,7 @@ services:
         condition: service_healthy
         restart: true
 
-  nginx:
+  caddy:
     restart: "no"
 
   db:
@@ -44,15 +44,37 @@ services:
     networks:
       - net
 
-  dozzle:
-    restart: "no"
-
   pgadmin:
+    image: dpage/pgadmin4:latest
     restart: "no"
+    ports:
+      - "127.0.0.1:8888:80"
+    environment:
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-root@root.com}
+      PGADMIN_DEFAULT_PASSWORD_FILE: /run/secrets/pgadmin_password
+      PGADMIN_DISABLE_POSTFIX: disable
+    healthcheck:
+      test: ["CMD", "wget", "-O", "-", "http://127.0.0.1:80/misc/ping"]
+      interval: 10s
+      timeout: 10s
+      start_period: 160s
+      retries: 3
     depends_on:
       db:
         condition: service_healthy
         restart: true
+    secrets:
+      - pgadmin_password
+    volumes:
+      - vol_pgadmin:/var/lib/pgadmin
+    networks:
+      - net
+
+secrets:
+  pgadmin_password:
+    file: ./pgadmin_password.secret
 
 volumes:
-  vol_db: {}
+  vol_pgadmin:
+  vol_db:

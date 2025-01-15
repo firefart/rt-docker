@@ -11,7 +11,7 @@ path = /opt/rt5/bin/rt-mailgate
 user = rt
 group = rt
 # 8080 is the mailgate vhost
-arguments = ("--url", "http://nginx:8080/", "--queue", "general", "--action", "correspond",)
+arguments = ("--url", "http://caddy:8080/", "--queue", "general", "--action", "correspond",)
 
 [options]
 read_all = false

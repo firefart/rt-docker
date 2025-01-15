@@ -21,16 +21,6 @@ function check_files() {
     exit 1;
   fi
 
-  if [ ! -f ./certs/pub.pem ]; then
-    echo "./certs/pub.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
-    exit 1
-  fi
-
-  if [ ! -f ./certs/priv.pem ]; then
-    echo "./certs/priv.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
-    exit 1
-  fi
-
   if [ ! -f ./crontab ]; then
     echo "./crontab does not exist. Please see crontab.example for an example configuration."
     exit 1
@@ -45,6 +35,16 @@ function check_files() {
 function check_dev_files() {
   if [ ! -f ./pgadmin_password.secret ]; then
     echo "./pgadmin_password.secret does not exist. Please set a password."
+    exit 1
+  fi
+
+  if [ ! -f ./certs/pub.pem ]; then
+    echo "./certs/pub.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
+    exit 1
+  fi
+
+  if [ ! -f ./certs/priv.pem ]; then
+    echo "./certs/priv.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
     exit 1
   fi
 }

@@ -22,12 +22,14 @@ To start use either `./dev.sh` which builds the images locally or `./prod.sh` wh
 The following configuration files need to be present before starting:
 
 - `RT_SiteConfig.pm` : RTs main configuration file. This needs to be present in the root of the dir. See `RT_SiteConfig.pm.example` for an example configration and the needed paths and settings for this configuration.
-- `./msmtp/msmtp.conf` : config for msmtp (outgoing email). See msmtp.conf for an example. The ./msmtp folder is also mounted to /msmtp/ in the container so you can load certificates from the config file.
-- `./certs/`: This folder should contain all certificates needed for caddy
+- `Caddyfile`: The webserver config. See `Caddyfile.example` for an example.
+- `./msmtp/msmtp.conf` : config for msmtp (outgoing email). See `msmtp.conf.example` for an example. The `./msmtp` folder is also mounted to `/msmtp/` in the container so you can load certificates from the config file.
 - `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent to the MAILTO address (it uses the msmtp config).
+- `./getmail/getmailrc`: This file configures your E-Mail fetching. See `getmailrc.example` for an example. `getmail` configuration docs are available under [https://getmail6.org/configuration.html](https://getmail6.org/configuration.html). The configuration options for `rt-mailgate` which is used to store the emails in request tracker can be viewed under [https://docs.bestpractical.com/rt/5.0.7/rt-mailgate.html](https://docs.bestpractical.com/rt/5.0.7/rt-mailgate.html).
 
 Additional configs:
 
+- `./certs/`: This folder should contain all optional certificates needed for caddy
 - `./gpg/` : This folder should contain the gpg keyring if used in rt. Be sure to chmod the files to user 1000 with 0600 so RT will not complain.
 - `./smime/` : This folder should contain the SMIME certificate if configured in RT
 - `./shredder/` : This directory will be used by the shredder functionality [https://docs.bestpractical.com/rt/latest/RT/Shredder.html](https://docs.bestpractical.com/rt/latest/RT/Shredder.html) so the backups are stored on the host
@@ -36,23 +38,30 @@ For output of your crontabs you can use the `/cron` directory so the output will
 
 In the default configuration all output from RT, caddy, getmail and msmtp is available via `docker logs` (or `docker compose -f ... logs`).
 
-## Create Certificate
+## Webserver
 
-This certificate will be used by caddy. If you want another certificate just place it in the folder.
+The setup uses Caddy as a webserver. You can find an example configuration in [Caddyfile.example](Caddyfile.example). Caddy provides features like auto https with lets encrypt and more stuff that makes it easy to set up. You can find the Caddy documentation here [https://caddyserver.com/docs/caddyfile](https://caddyserver.com/docs/caddyfile).
 
+Previously the setup used nginx
+
+### Create Certificate
+
+If you don't want to use the auto https feature (for example in dev) you can provide your own certificates.
+
+Create a self signed certificate:
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem -days 3650 -nodes
 ```
 
 ## Init database
 
-This initializes a fresh database
+This initializes a fresh database. This is needed on the first run.
 
 ```bash
 docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'
 ```
 
-You might need to restart the rt service after this step as it crashes if the database is not initialized.
+You need to restart the rt service after this step as it crashes if the database is not initialized.
 
 ### DEV
 

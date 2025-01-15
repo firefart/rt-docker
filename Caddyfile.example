@@ -1,0 +1,33 @@
+{
+	# debug
+	admin off
+	auto_https off
+}
+
+# healthchecks
+127.0.0.1:1337 {
+	respond "OK" 200
+}
+
+# mailgate
+:8080 {
+	log
+	reverse_proxy rt:9000 {
+		transport fastcgi
+	}
+}
+
+# request tracker
+:443 {
+	log
+	tls /certs/pub.pem /certs/priv.pem
+
+	# Block access to the unauth mail gateway endpoint
+	# we have a seperate mailgate server for that
+	@blocked path /REST/1.0/NoAuth/mail-gateway
+	respond @blocked "Nope" 403
+
+	reverse_proxy rt:9000 {
+		transport fastcgi
+	}
+}

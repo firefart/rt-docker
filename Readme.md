@@ -42,7 +42,7 @@ In the default configuration all output from RT, caddy, getmail and msmtp is ava
 
 The setup uses Caddy as a webserver. You can find an example configuration in [Caddyfile.example](Caddyfile.example). Caddy provides features like auto https with lets encrypt and more stuff that makes it easy to set up. You can find the Caddy documentation here [https://caddyserver.com/docs/caddyfile](https://caddyserver.com/docs/caddyfile).
 
-Previously the setup used nginx
+Feel free to modify the config to your needs like auto https, certificate based authentication, basic authentication and so on. Just be sure the mailgateway host under port `:8080` is untouched and the main host contains a block for the unauth API path, otherwise everyone with access to your RT instance can create emails without the need to log in first.
 
 ### Create Certificate
 
@@ -104,3 +104,8 @@ docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./
 ```
 
 Restart docker setup after all steps to fully load RT-IR (just run `./restart_prod.sh`).
+
+## Deprecated features
+
+- NGINX: The old setup used nginx for the webserver. If you want to upgrade you need to migrate your nginx config to a Caddy config
+- compose profiles: Previously there were compose profile to also include `dozzle` for viewing logs and `pgadmin` to interact with the database. Both tools are now removed and `pgadmin` is only available in dev mode. If you still need pgadmin you can easily spin it up using docker compose.

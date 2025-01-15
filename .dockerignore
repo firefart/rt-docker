@@ -14,3 +14,4 @@
 *.pgpass
 *.json
 !cron_entrypoint.sh
+Caddyfile

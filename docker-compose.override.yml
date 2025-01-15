@@ -27,6 +27,7 @@ services:
 
   db:
     image: postgres:latest
+    restart: "no"
     environment:
       POSTGRES_DB: rt
       POSTGRES_USER: rt

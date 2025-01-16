@@ -179,4 +179,4 @@ WORKDIR /opt/rt5/
 
 CMD [ "/usr/bin/supervisord" ]
 
-HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD cgi-fcgi -connect localhost:9000 -bind || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:9000 -bind || exit 1

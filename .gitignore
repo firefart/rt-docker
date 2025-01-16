@@ -7,6 +7,7 @@ RT_SiteConfig.pm
 TODO
 !dev.sh
 !prod.sh
+!logs_prod.sh
 !bash_functions.sh
 !restart_prod.sh
 !cron_entrypoint.sh

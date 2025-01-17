@@ -60,35 +60,35 @@ openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem
 
 ```
 {
-	admin off
+  admin off
 }
 
 # healthchecks
 :1337 {
-	respond "OK" 200
+  respond "OK" 200
 }
 
 # mailgate
 :8080 {
-	log
-	reverse_proxy rt:9000 {
-		transport fastcgi
-	}
+  log
+  reverse_proxy rt:9000 {
+    transport fastcgi
+  }
 }
 
 # request tracker
 :443 {
-	log
-	tls user@email.com
+  log
+  tls user@email.com
 
-	# Block access to the unauth mail gateway endpoint
-	# we have a seperate mailgate server for that
-	@blocked path /REST/1.0/NoAuth/mail-gateway
-	respond @blocked "Nope" 403
+  # Block access to the unauth mail gateway endpoint
+  # we have a seperate mailgate server for that
+  @blocked path /REST/1.0/NoAuth/mail-gateway
+  respond @blocked "Nope" 403
 
-	reverse_proxy rt:9000 {
-		transport fastcgi
-	}
+  reverse_proxy rt:9000 {
+    transport fastcgi
+  }
 }
 ```
 
@@ -113,15 +113,15 @@ openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem
 
 # healthchecks
 :1337 {
-	respond "OK" 200
+  respond "OK" 200
 }
 
 # mailgate
 :8080 {
-	log
-	reverse_proxy rt:9000 {
-		transport fastcgi
-	}
+  log
+  reverse_proxy rt:9000 {
+    transport fastcgi
+  }
 }
 
 # request tracker
@@ -165,15 +165,15 @@ openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem
 
 # healthchecks
 :1337 {
-	respond "OK" 200
+  respond "OK" 200
 }
 
 # mailgate
 :8080 {
-	log
-	reverse_proxy rt:9000 {
-		transport fastcgi
-	}
+  log
+  reverse_proxy rt:9000 {
+    transport fastcgi
+  }
 }
 
 # request tracker
@@ -223,15 +223,15 @@ openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem
 
 # healthchecks
 :1337 {
-	respond "OK" 200
+  respond "OK" 200
 }
 
 # mailgate
 :8080 {
-	log
-	reverse_proxy rt:9000 {
-		transport fastcgi
-	}
+  log
+  reverse_proxy rt:9000 {
+    transport fastcgi
+  }
 }
 
 # request tracker

@@ -53,6 +53,292 @@ Create a self signed certificate:
 openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem -days 3650 -nodes
 ```
 
+### Example Caddy Configurations
+
+<details>
+<summary>Caddy on a domain with lets encrypt certificates</summary>
+
+```
+{
+	admin off
+}
+
+# healthchecks
+:1337 {
+	respond "OK" 200
+}
+
+# mailgate
+:8080 {
+	log
+	reverse_proxy rt:9000 {
+		transport fastcgi
+	}
+}
+
+# request tracker
+:443 {
+	log
+	tls user@email.com
+
+	# Block access to the unauth mail gateway endpoint
+	# we have a seperate mailgate server for that
+	@blocked path /REST/1.0/NoAuth/mail-gateway
+	respond @blocked "Nope" 403
+
+	reverse_proxy rt:9000 {
+		transport fastcgi
+	}
+}
+```
+
+</details>
+
+<details>
+<summary>Caddy behind a reverse proxy server with a self signed certificate</summary>
+
+`pub.pem` and `priv.pem` need to be inside the `./certs` folder and will be mounted automatically.
+
+```
+{
+  admin off
+  auto_https off
+
+  servers {
+    trusted_proxies static 10.0.0.0/22
+    client_ip_headers X-Orig-Addr
+    trusted_proxies_strict
+  }
+}
+
+# healthchecks
+:1337 {
+	respond "OK" 200
+}
+
+# mailgate
+:8080 {
+	log
+	reverse_proxy rt:9000 {
+		transport fastcgi
+	}
+}
+
+# request tracker
+:443 {
+  log
+
+  tls /certs/pub.pem /certs/priv.pem
+
+  # Block access to the unauth mail gateway endpoint
+  # we have a seperate mailgate server for that
+  @blocked path /REST/1.0/NoAuth/mail-gateway
+  respond @blocked "Nope" 403
+
+  reverse_proxy rt:9000 {
+    transport fastcgi {
+      env SERVER_NAME {http.request.header.X-Orig-HostHeader}
+    }
+  }
+}
+```
+
+</details>
+
+
+<details>
+<summary>Caddy behind a reverse proxy server with a self signed certificate and client certificate validation</summary>
+
+`pub.pem`, `priv.pem` and `root-ca.pem` need to be inside the `./certs` folder and will be mounted automatically.
+
+```
+{
+  admin off
+  auto_https off
+
+  servers {
+    trusted_proxies static 10.0.0.0/22
+    client_ip_headers X-Orig-Addr
+    trusted_proxies_strict
+  }
+}
+
+# healthchecks
+:1337 {
+	respond "OK" 200
+}
+
+# mailgate
+:8080 {
+	log
+	reverse_proxy rt:9000 {
+		transport fastcgi
+	}
+}
+
+# request tracker
+:443 {
+  log
+
+  tls /certs/pub.pem /certs/priv.pem {
+    protocols tls1.3
+    client_auth {
+      mode require_and_verify
+      trust_pool file /certs/root-ca.pem
+    }
+  }
+
+  # Block access to the unauth mail gateway endpoint
+  # we have a seperate mailgate server for that
+  @blocked path /REST/1.0/NoAuth/mail-gateway
+  respond @blocked "Nope" 403
+
+  reverse_proxy rt:9000 {
+    transport fastcgi {
+      env SERVER_NAME {http.request.header.X-Orig-HostHeader}
+    }
+  }
+}
+```
+
+</details>
+
+
+<details>
+<summary>Caddy behind a reverse proxy server with a self signed certificate and client certificate validation with subject validation</summary>
+
+`pub.pem`, `priv.pem` and `root-ca.pem` need to be inside the `./certs` folder and will be mounted automatically.
+
+```
+{
+  admin off
+  auto_https off
+
+  servers {
+    trusted_proxies static 10.0.0.0/22
+    client_ip_headers X-Orig-Addr
+    trusted_proxies_strict
+  }
+}
+
+# healthchecks
+:1337 {
+	respond "OK" 200
+}
+
+# mailgate
+:8080 {
+	log
+	reverse_proxy rt:9000 {
+		transport fastcgi
+	}
+}
+
+# request tracker
+:443 {
+  @cert-auth {
+    expression {http.request.tls.client.subject} == "CN=Subject,OU=example,O=com,C=xxx"
+  }
+
+  log
+
+  tls /certs/pub.pem /certs/priv.pem {
+    protocols tls1.3
+    client_auth {
+      mode require_and_verify
+      trust_pool file /certs/root-ca.pem
+    }
+  }
+
+  # block everything that is not from a trusted ip range
+  @blocked_trusted not remote_ip 10.0.0.0/22
+  respond @blocked_trusted "Nope" 403
+
+  # Block access to the unauth mail gateway endpoint
+  # we have a seperate mailgate server for that
+  @blocked path /REST/1.0/NoAuth/mail-gateway
+  respond @blocked "Nope" 403
+
+  reverse_proxy @cert-auth rt:9000 {
+    transport fastcgi {
+      env SERVER_NAME {http.request.header.X-Orig-HostHeader}
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Caddy behind a reverse proxy server with a self signed certificate and client certificate validation with subject validation and on a subpath</summary>
+
+`pub.pem`, `priv.pem` and `root-ca.pem` need to be inside the `./certs` folder and will be mounted automatically. The reverse proxy needs to point to `servername/rt` otherwise you will end up with wrong paths in the cookies which will lead to file uploads not working correctly.
+We will also set the REMOTE_USER to a custom header sent from the upstream proxy.
+
+```
+{
+  admin off
+  auto_https off
+
+  servers {
+    trusted_proxies static 10.0.0.0/22
+    client_ip_headers X-Orig-Addr
+    trusted_proxies_strict
+  }
+}
+
+# healthchecks
+:1337 {
+  respond "OK" 200
+}
+
+# mailgate
+:8080 {
+  log
+  reverse_proxy rt:9000 {
+    transport fastcgi
+  }
+}
+
+# request tracker
+:443 {
+  @cert-auth {
+    expression {http.request.tls.client.subject} == "CN=Subject,OU=example,O=com,C=xxx"
+  }
+
+  log
+  tls /certs/pub.pem /certs/priv.pem {
+    protocols tls1.3
+    client_auth {
+      mode require_and_verify
+      trust_pool file /certs/root-ca.pem
+    }
+  }
+
+  # block everything that is not from a trusted ip range
+  @blocked_trusted not remote_ip 10.0.0.0/22
+  respond @blocked_trusted "Nope" 403
+
+  handle_path /rt/* {
+    # Block access to the unauth mail gateway endpoint
+    # we have a seperate mailgate server for that
+    @blocked path /REST/1.0/NoAuth/mail-gateway
+    respond @blocked "Nope" 403
+
+    reverse_proxy @cert-auth rt:9000 {
+      transport fastcgi {
+        env REMOTE_USER {http.request.header.X-Auth-Username}
+        env SERVER_NAME {http.request.header.X-Orig-HostHeader}
+        env REQUEST_URI {uri}
+      }
+    }
+  }
+}
+```
+
+</details>
+
+
 ## Init database
 
 This initializes a fresh database. This is needed on the first run.

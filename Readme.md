@@ -393,5 +393,5 @@ Restart docker setup after all steps to fully load RT-IR (just run `./restart_pr
 
 ## Deprecated features
 
-- NGINX: The old setup used nginx for the webserver. If you want to upgrade you need to migrate your nginx config to a Caddy config
+- NGINX: The old setup used nginx for the webserver. If you want to upgrade you need to migrate your nginx config to a Caddy config. See the example Caddy Configuration section for some ideas.
 - compose profiles: Previously there were compose profile to also include `dozzle` for viewing logs and `pgadmin` to interact with the database. Both tools are now removed and `pgadmin` is only available in dev mode. If you still need pgadmin you can easily spin it up using docker compose.

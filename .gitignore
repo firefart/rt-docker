@@ -27,3 +27,4 @@ shredder/*.sql
 .env
 *.pgpass
 *.json
+docker-compose.override.yml

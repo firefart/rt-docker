@@ -16,8 +16,8 @@ fix_file_perms
 
 awk '/^FROM / { print $2 }' Dockerfile | xargs -I % sh -c 'echo %; docker pull %'
 
-docker compose pull
-docker compose stop
-docker compose rm -f
-docker compose build --progress=plain
-docker compose up --remove-orphans
+docker compose -f docker-compose.yml -f docker-compose.dev.yml pull
+docker compose -f docker-compose.yml -f docker-compose.dev.yml stop
+docker compose -f docker-compose.yml -f docker-compose.dev.yml rm -f
+docker compose -f docker-compose.yml -f docker-compose.dev.yml build --progress=plain
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --remove-orphans

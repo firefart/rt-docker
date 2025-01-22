@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker compose -f docker-compose.yml logs -f --tail=100
+docker compose logs -f --tail=100

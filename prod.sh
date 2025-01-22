@@ -15,8 +15,8 @@ check_files
 
 fix_file_perms
 
-docker compose -f docker-compose.yml pull
-docker compose -f docker-compose.yml stop
-docker compose -f docker-compose.yml rm -f -v -s
-docker compose -f docker-compose.yml up -d --remove-orphans
+docker compose pull
+docker compose stop
+docker compose rm -f -v -s
+docker compose up -d --remove-orphans
 docker image prune -f

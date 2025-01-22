@@ -344,7 +344,7 @@ We will also set the REMOTE_USER to a custom header sent from the upstream proxy
 This initializes a fresh database. This is needed on the first run.
 
 ```bash
-docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'
+docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'
 ```
 
 You need to restart the rt service after this step as it crashes if the database is not initialized.
@@ -354,7 +354,7 @@ You need to restart the rt service after this step as it crashes if the database
 Hint: Add `--skip-create` in dev as the database is created by docker
 
 ```bash
-docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init --skip-create'
+docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init --skip-create'
 ```
 
 ## Upgrade steps
@@ -362,7 +362,7 @@ docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./
 ### Upgrade Database
 
 ```bash
-docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
+docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
 ```
 
 ### Fix data inconsistencies
@@ -370,7 +370,7 @@ docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./
 Run multiple times with the `--resolve` switch until no errors occur
 
 ```bash
-docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-validator --check --resolve'
+docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-validator --check --resolve'
 ```
 
 ## RT-IR
@@ -380,16 +380,20 @@ You can simply enable RT-IR in your `RT_SiteConfig.pm` by including `Plugin('RT:
 To initialize the database (ONLY ON THE FIRST RUN!!!! and only after rt is fully set up)
 
 ```bash
-docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action insert --skip-create --datafile /opt/rtir/initialdata'
+docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action insert --skip-create --datafile /opt/rtir/initialdata'
 ```
 
 To upgrade
 
 ```bash
-docker compose -f docker-compose.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir/upgrade --package RT::IR --ext-version 5.0.4'
+docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir/upgrade --package RT::IR --ext-version 5.0.4'
 ```
 
 Restart docker setup after all steps to fully load RT-IR (just run `./restart_prod.sh`).
+
+## Extending
+
+To include additional containers in this setup like pgadmin or change a default config, you can create a `docker-compose.override.yml` file in the projects root and it will automatically picked up and merged with the default config. Run `docker compose config` to view the merged config.
 
 ## Deprecated features
 

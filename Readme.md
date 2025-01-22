@@ -77,7 +77,7 @@ openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem
 }
 
 # request tracker
-:443 {
+rt.domain.com:443 {
   log
   tls user@email.com
 

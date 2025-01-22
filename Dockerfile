@@ -104,9 +104,9 @@ LABEL org.opencontainers.image.description="Request Tracker Docker Setup"
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
-  procps supervisor ca-certificates getmail6 wget curl gnupg graphviz libssl3 \
+  procps spawn-fcgi ca-certificates getmail6 wget curl gnupg graphviz libssl3 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
-  libfcgi-bin libgsasl18 libsecret-1-0 spawn-fcgi \
+  libfcgi-bin libgsasl18 libsecret-1-0 \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version
@@ -123,13 +123,6 @@ COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
 COPY --from=builder /opt/rt5 /opt/rt5
 # run a final dependency check if we copied all
 RUN perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
-
-# supervisord config
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-RUN mkdir -p /var/log/supervisor/ \
-  && chown rt:rt /var/log/supervisor/ \
-  && mkdir -p /var/run/supervisord \
-  && chown rt:rt /var/run/supervisord
 
 # msmtp config
 RUN mkdir /msmtp \
@@ -177,6 +170,34 @@ EXPOSE 9000
 USER rt
 WORKDIR /opt/rt5/
 
-CMD [ "/usr/bin/supervisord" ]
+# spawn-fcgi v1.6.4 (ipv6) - spawns FastCGI processes
+
+# Options:
+#  -f <path>      filename of the fcgi-application (deprecated; ignored if
+#                 <fcgiapp> is given; needs /bin/sh)
+#  -d <directory> chdir to directory before spawning
+#  -a <address>   bind to IPv4/IPv6 address (defaults to 0.0.0.0)
+#  -p <port>      bind to TCP-port
+#  -s <path>      bind to Unix domain socket
+#  -M <mode>      change Unix domain socket mode (octal integer, default: allow
+#                 read+write for user and group as far as umask allows it)
+#  -C <children>  (PHP only) numbers of childs to spawn (default: not setting
+#                 the PHP_FCGI_CHILDREN environment variable - PHP defaults to 0)
+#  -F <children>  number of children to fork (default 1)
+#  -b <backlog>   backlog to allow on the socket (default 1024)
+#  -P <path>      name of PID-file for spawned process (ignored in no-fork mode)
+#  -n             no fork (for daemontools)
+#  -v             show version
+#  -?, -h         show this help
+# (root only)
+#  -c <directory> chroot to directory
+#  -S             create socket before chroot() (default is to create the socket
+#                 in the chroot)
+#  -u <user>      change to user-id
+#  -g <group>     change to group-id (default: primary group of user if -u
+#                 is given)
+#  -U <user>      change Unix domain socket owner to user-id
+#  -G <group>     change Unix domain socket group to group-id
+CMD [ "/usr/bin/spawn-fcgi", "-d", "/opt/rt5/", "-p" ,"9000", "-a","0.0.0.0", "-u", "1000", "-n", "--", "/opt/rt5/sbin/rt-server.fcgi" ]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:9000 -bind || exit 1

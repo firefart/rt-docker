@@ -31,8 +31,6 @@ services:
     # the cron daemon needs to run as root
     user: root
     command: ["/root/cron_entrypoint.sh"]
-    # no need for tini here
-    entrypoint: ""
     # disable the healthcheck from the main dockerfile
     healthcheck:
       disable: true

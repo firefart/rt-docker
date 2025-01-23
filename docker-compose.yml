@@ -3,7 +3,7 @@ services:
     build:
       context: .
     image: firefart/requesttracker:latest
-    restart: always
+    restart: unless-stopped
     deploy:
       mode: replicated
       replicas: 5
@@ -27,10 +27,10 @@ services:
     build:
       context: .
     image: firefart/requesttracker:latest
-    restart: always
+    restart: unless-stopped
     # the cron daemon needs to run as root
     user: root
-    command: ["/root/cron_entrypoint.sh"]
+    command: [ "/root/cron_entrypoint.sh" ]
     # disable the healthcheck from the main dockerfile
     healthcheck:
       disable: true
@@ -61,7 +61,7 @@ services:
 
   caddy:
     image: caddy:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - "0.0.0.0:443:443"
       - "127.0.0.1:8080:8080" # expose mailgate vhost to host
@@ -72,7 +72,7 @@ services:
       - vol_caddy_data:/data
       - vol_caddy_config:/config
     healthcheck:
-      test: ["CMD", "wget", "-O", "-", "-q", "http://127.0.0.1:1337/"]
+      test: [ "CMD", "wget", "-O", "-", "-q", "http://127.0.0.1:1337/" ]
       interval: 10s
       timeout: 10s
       retries: 3
@@ -86,6 +86,7 @@ services:
 volumes:
   vol_caddy_data:
   vol_caddy_config:
+
 
 networks:
   net:

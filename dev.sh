@@ -19,5 +19,5 @@ awk '/^FROM / { print $2 }' Dockerfile | xargs -I % sh -c 'echo %; docker pull %
 docker compose -f docker-compose.yml -f docker-compose.dev.yml pull
 docker compose -f docker-compose.yml -f docker-compose.dev.yml stop
 docker compose -f docker-compose.yml -f docker-compose.dev.yml rm -f
-docker compose -f docker-compose.yml -f docker-compose.dev.yml build --progress=plain
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --progress=plain build
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up --remove-orphans

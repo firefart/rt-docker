@@ -1,33 +1,40 @@
+x-app: &default-app
+  build:
+    context: .
+  image: firefart/requesttracker:latest
+  restart: unless-stopped
+  configs:
+    - source: rt_site_config
+      target: /opt/rt5/etc/RT_SiteConfig.pm
+    - source: msmtp
+      target: /etc/msmtprc
+    - source: getmail
+      target: /getmail/getmailrc
+    - source: crontab
+      target: /crontab # needed as docker compose mounts the config as a bind mount and the uid parameter is not working here
+  volumes:
+    - ./msmtp/:/msmtp:ro
+    - ./gpg/:/opt/rt5/var/data/gpg
+    - ./smime/:/opt/rt5/var/data/smime:ro
+    - ./shredder/:/opt/rt5/var/data/RT-Shredder
+    - /etc/localtime:/etc/localtime:ro
+    - ./cron/:/cron
+  # make the host available inside the image
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  networks:
+    - net
+
 services:
   rt:
-    build:
-      context: .
-    image: firefart/requesttracker:latest
-    restart: unless-stopped
+    <<: *default-app
     deploy:
       mode: replicated
       replicas: 5
       endpoint_mode: vip
-    volumes:
-      - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
-      - ./msmtp/msmtp.conf:/etc/msmtprc:ro
-      - ./msmtp/:/msmtp:ro
-      - ./getmail/getmailrc:/getmail/getmailrc:ro
-      - ./gpg/:/opt/rt5/var/data/gpg
-      - ./smime/:/opt/rt5/var/data/smime
-      - ./shredder/:/opt/rt5/var/data/RT-Shredder
-      - /etc/localtime:/etc/localtime:ro
-    # make the host available inside the image
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - net
 
   cron:
-    build:
-      context: .
-    image: firefart/requesttracker:latest
-    restart: unless-stopped
+    <<: *default-app
     # the cron daemon needs to run as root
     user: root
     command: [ "/root/cron_entrypoint.sh" ]
@@ -35,6 +42,7 @@ services:
     healthcheck:
       disable: true
     depends_on:
+      # needs to be up so we can use mailgate from the cron container
       rt:
         condition: service_healthy
         restart: true
@@ -42,22 +50,6 @@ services:
       caddy:
         condition: service_healthy
         restart: true
-    volumes:
-      - ./RT_SiteConfig.pm:/opt/rt5/etc/RT_SiteConfig.pm:ro
-      - ./msmtp/msmtp.conf:/etc/msmtprc:ro
-      - ./msmtp/:/msmtp:ro
-      - ./getmail/getmailrc:/getmail/getmailrc:ro
-      - ./gpg/:/opt/rt5/var/data/gpg
-      - ./smime/:/opt/rt5/var/data/smime
-      - ./crontab:/root/crontab:ro # needed so we can add it ro. Permissions are changed in startup script
-      - ./cron/:/cron
-      - ./shredder/:/opt/rt5/var/data/RT-Shredder
-      - /etc/localtime:/etc/localtime:ro
-    # make the host available inside the image
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - net
 
   caddy:
     image: caddy:latest
@@ -65,8 +57,10 @@ services:
     ports:
       - "0.0.0.0:443:443"
       - "127.0.0.1:8080:8080" # expose mailgate vhost to host
+    configs:
+      - source: caddyfile
+        target: /etc/caddy/Caddyfile
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./certs/:/certs/:ro
       - /etc/localtime:/etc/localtime:ro
       - vol_caddy_data:/data
@@ -83,13 +77,24 @@ services:
     networks:
       - net
 
-volumes:
-  vol_caddy_data:
-  vol_caddy_config:
-
+configs:
+  caddyfile:
+    file: ./Caddyfile
+  rt_site_config:
+    file: ./RT_SiteConfig.pm
+  msmtp:
+    file: ./msmtp/msmtp.conf
+  getmail:
+    file: ./getmail/getmailrc
+  crontab:
+    file: ./crontab
 
 networks:
   net:
     driver: bridge
     driver_opts:
       com.docker.network.bridge.name: br_rt
+
+volumes:
+  vol_caddy_data:
+  vol_caddy_config:

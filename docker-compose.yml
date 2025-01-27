@@ -28,6 +28,7 @@ x-app: &default-app
 services:
   rt:
     <<: *default-app
+    hostname: rt
     deploy:
       mode: replicated
       replicas: 5
@@ -35,6 +36,7 @@ services:
 
   cron:
     <<: *default-app
+    hostname: cron
     # the cron daemon needs to run as root
     user: root
     command: [ "/root/cron_entrypoint.sh" ]
@@ -53,6 +55,7 @@ services:
 
   caddy:
     image: caddy:latest
+    hostname: caddy
     restart: unless-stopped
     ports:
       - "0.0.0.0:443:443"

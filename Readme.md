@@ -21,11 +21,11 @@ To start use either `./dev.sh` which builds the images locally or `./prod.sh` wh
 
 The following configuration files need to be present before starting:
 
-- `RT_SiteConfig.pm` : RTs main configuration file. This needs to be present in the root of the dir. See `RT_SiteConfig.pm.example` for an example configration and the needed paths and settings for this configuration.
-- `Caddyfile`: The webserver config. See `Caddyfile.example` for an example.
-- `./msmtp/msmtp.conf` : config for msmtp (outgoing email). See `msmtp.conf.example` for an example. The `./msmtp` folder is also mounted to `/msmtp/` in the container so you can load certificates from the config file.
-- `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent to the MAILTO address (it uses the msmtp config).
-- `./getmail/getmailrc`: This file configures your E-Mail fetching. See `getmailrc.example` for an example. `getmail` configuration docs are available under [https://getmail6.org/configuration.html](https://getmail6.org/configuration.html). The configuration options for `rt-mailgate` which is used to store the emails in request tracker can be viewed under [https://docs.bestpractical.com/rt/5.0.7/rt-mailgate.html](https://docs.bestpractical.com/rt/5.0.7/rt-mailgate.html).
+- `RT_SiteConfig.pm` : RTs main configuration file. This needs to be present in the root of the dir. See `RT_SiteConfig.pm.example` for an example configration and the needed paths and settings for this configuration. For a full config reference have a look at the [official documentation](https://docs.bestpractical.com/rt/latest/RT_Config.html).
+- `Caddyfile`: The webserver config. See `Caddyfile.example` for an example and the [official Caddy doc](https://caddyserver.com/docs/caddyfile) for a reference.
+- `./msmtp/msmtp.conf` : config for msmtp (outgoing email). See `msmtp.conf.example` for an example. The `./msmtp` folder is also mounted to `/msmtp/` in the container so you can load certificates from the config file. [MSMTP Configuration Guide](https://marlam.de/msmtp/msmtp.html)
+- `crontab` : Crontab file that will be run as the RT user. See contab.example for an example. Crontab output will be sent to the MAILTO address (it uses the msmtp config). You can use [crontab guru](https://crontab.guru/) for help with the format.
+- `./getmail/getmailrc`: This file configures your E-Mail fetching. See `getmailrc.example` for an example. `getmail` configuration docs are available under [https://getmail6.org/configuration.html](https://getmail6.org/configuration.html). The configuration options for `rt-mailgate` which is used to store the emails in request tracker can be viewed under [https://docs.bestpractical.com/rt/latest/rt-mailgate.html](https://docs.bestpractical.com/rt/latest/rt-mailgate.html).
 
 Additional configs:
 

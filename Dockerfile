@@ -82,11 +82,23 @@ RUN cpanm --no-man-pages -n install Server::Starter CSS::Inliner
 RUN make -C /src/rt fixdeps \
   && make -C /src/rt testdeps \
   && make -C /src/rt install \
-  && cpanm --install RT::Extension::MergeUsers \
-  && cpanm --install RT::Extension::TerminalTheme \
+  # https://metacpan.org/pod/RT::Extension::MergeUsers
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MergeUsers \
+  # https://metacpan.org/pod/RT::Extension::TerminalTheme
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TerminalTheme \
+  # https://metacpan.org/pod/RT::Extension::Announce
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
+  # https://metacpan.org/pod/RT::Extension::Assets::Import::CSV
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Assets::Import::CSV \
+  # https://metacpan.org/pod/RT::Extension::AutomaticAssignment
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment \
+  # https://metacpan.org/pod/RT::Extension::ExcelFeed
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
+  # https://metacpan.org/pod/RT::Extension::Import::CSV
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
-  && cpanm --install App::wsgetmail
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
 
 # Configure RTIR
 RUN cd /src/rtir \

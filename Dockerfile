@@ -90,8 +90,6 @@ RUN make -C /src/rt fixdeps \
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
   # https://metacpan.org/pod/RT::Extension::Assets::Import::CSV
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Assets::Import::CSV \
-  # https://metacpan.org/pod/RT::Extension::AutomaticAssignment
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/pod/RT::Extension::Import::CSV

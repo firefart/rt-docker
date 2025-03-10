@@ -116,7 +116,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   procps spawn-fcgi ca-certificates getmail6 wget curl gnupg graphviz libssl3 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
-  libfcgi-bin libgsasl18 libsecret-1-0 \
+  libfcgi-bin libgsasl18 libsecret-1-0 tzdata \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version

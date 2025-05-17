@@ -42,7 +42,10 @@ services:
     command: [ "/root/cron_entrypoint.sh" ]
     # disable the healthcheck from the main dockerfile
     healthcheck:
-      disable: true
+      test: [ "CMD", "pidof", "cron" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
     depends_on:
       # needs to be up so we can use mailgate from the cron container
       rt:

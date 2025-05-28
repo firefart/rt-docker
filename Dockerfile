@@ -27,7 +27,7 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 FROM perl:5.40.2 AS builder
 
 ENV RT="6.0.0"
-ENV RTIR="6.0.0"
+ENV RTIR="5.0.8"
 ENV RT_GPG_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 
 ARG ADDITIONAL_CPANM_ARGS=""

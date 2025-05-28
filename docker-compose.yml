@@ -5,7 +5,7 @@ x-app: &default-app
   restart: unless-stopped
   configs:
     - source: rt_site_config
-      target: /opt/rt/etc/RT_SiteConfig.pm
+      target: /opt/rt5/etc/RT_SiteConfig.pm
     - source: msmtp
       target: /etc/msmtprc
     - source: getmail
@@ -14,9 +14,9 @@ x-app: &default-app
       target: /crontab # needed as docker compose mounts the config as a bind mount and the uid parameter is not working here
   volumes:
     - ./msmtp/:/msmtp:ro
-    - ./gpg/:/opt/rt/var/data/gpg
-    - ./smime/:/opt/rt/var/data/smime:ro
-    - ./shredder/:/opt/rt/var/data/RT-Shredder
+    - ./gpg/:/opt/rt5/var/data/gpg
+    - ./smime/:/opt/rt5/var/data/smime:ro
+    - ./shredder/:/opt/rt5/var/data/RT-Shredder
     - /etc/localtime:/etc/localtime:ro
     - ./cron/:/cron
   # make the host available inside the image
@@ -39,10 +39,10 @@ services:
     hostname: cron
     # the cron daemon needs to run as root
     user: root
-    command: ["/root/cron_entrypoint.sh"]
+    command: [ "/root/cron_entrypoint.sh" ]
     # disable the healthcheck from the main dockerfile
     healthcheck:
-      test: ["CMD", "pidof", "cron"]
+      test: [ "CMD", "pidof", "cron" ]
       interval: 10s
       timeout: 10s
       retries: 3
@@ -72,7 +72,7 @@ services:
       - vol_caddy_data:/data
       - vol_caddy_config:/config
     healthcheck:
-      test: ["CMD", "wget", "-O", "-", "-q", "http://127.0.0.1:1337/"]
+      test: [ "CMD", "wget", "-O", "-", "-q", "http://127.0.0.1:1337/" ]
       interval: 10s
       timeout: 10s
       retries: 3

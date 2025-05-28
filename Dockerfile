@@ -38,7 +38,7 @@ ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 ENV PERL_MM_USE_DEFAULT=1
 
 # Create RT user
-RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt rt
+RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt5 rt
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -67,7 +67,7 @@ RUN mkdir -p /src \
 # Configure RT
 RUN cd /src/rt \
   # configure with all plugins and with the newly created user
-  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
+  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
 # install https support for cpanm
 RUN cpanm --no-man-pages install LWP::Protocol::https
@@ -122,7 +122,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # msmtp - disabled for now to use the newer version
 
 # Create RT user
-RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt rt
+RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt5 rt
 
 # copy msmtp
 COPY --from=msmtp-builder /usr/local/bin/msmtp /usr/bin/msmtp
@@ -130,9 +130,9 @@ COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
 
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
-COPY --from=builder /opt/rt /opt/rt
+COPY --from=builder /opt/rt5 /opt/rt5
 # run a final dependency check if we copied all
-RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
+RUN perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
 # msmtp config
 RUN mkdir /msmtp \
@@ -145,16 +145,16 @@ RUN mkdir -p /getmail \
   && chown rt:rt /getmail
 
 # gpg
-RUN mkdir -p /opt/rt/var/data/gpg \
-  && chown rt:rt /opt/rt/var/data/gpg
+RUN mkdir -p /opt/rt5/var/data/gpg \
+  && chown rt:rt /opt/rt5/var/data/gpg
 
 # smime
-RUN mkdir -p /opt/rt/var/data/smime \
-  && chown rt:rt /opt/rt/var/data/smime
+RUN mkdir -p /opt/rt5/var/data/smime \
+  && chown rt:rt /opt/rt5/var/data/smime
 
 # shredder dir
-RUN mkdir -p /opt/rt/var/data/RT-Shredder \
-  && chown rt:rt /opt/rt/var/data/RT-Shredder
+RUN mkdir -p /opt/rt5/var/data/RT-Shredder \
+  && chown rt:rt /opt/rt5/var/data/RT-Shredder
 
 # RTIR Database stuff for setup
 COPY --chown=rt:rt --from=builder /src/rtir/etc /opt/rtir
@@ -173,12 +173,12 @@ RUN rm -f /etc/cron.d/* \
 COPY --chown=root:root --chmod=0700 cron_entrypoint.sh /root/cron_entrypoint.sh
 
 # update PATH
-ENV PATH="${PATH}:/opt/rt/sbin:/opt/rt/bin"
+ENV PATH="${PATH}:/opt/rt5/sbin:/opt/rt5/bin"
 
 EXPOSE 9000
 
 USER rt
-WORKDIR /opt/rt/
+WORKDIR /opt/rt5/
 
 # spawn-fcgi v1.6.4 (ipv6) - spawns FastCGI processes
 
@@ -208,6 +208,6 @@ WORKDIR /opt/rt/
 #                 is given)
 #  -U <user>      change Unix domain socket owner to user-id
 #  -G <group>     change Unix domain socket group to group-id
-CMD [ "/usr/bin/spawn-fcgi", "-d", "/opt/rt/", "-p" ,"9000", "-a","0.0.0.0", "-u", "1000", "-n", "--", "/opt/rt/sbin/rt-server.fcgi" ]
+CMD [ "/usr/bin/spawn-fcgi", "-d", "/opt/rt5/", "-p" ,"9000", "-a","0.0.0.0", "-u", "1000", "-n", "--", "/opt/rt5/sbin/rt-server.fcgi" ]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:9000 -bind || exit 1

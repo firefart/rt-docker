@@ -49,6 +49,7 @@ Feel free to modify the config to your needs like auto https, certificate based 
 If you don't want to use the auto https feature (for example in dev) you can provide your own certificates.
 
 Create a self signed certificate:
+
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem -days 3650 -nodes
 ```
@@ -145,7 +146,6 @@ rt.domain.com:443 {
 
 </details>
 
-
 <details>
 <summary>Caddy behind a reverse proxy server with a self signed certificate and client certificate validation</summary>
 
@@ -202,7 +202,6 @@ rt.domain.com:443 {
 ```
 
 </details>
-
 
 <details>
 <summary>Caddy behind a reverse proxy server with a self signed certificate and client certificate validation with subject validation</summary>
@@ -337,7 +336,6 @@ We will also set the REMOTE_USER to a custom header sent from the upstream proxy
 ```
 
 </details>
-
 
 ## Init database
 

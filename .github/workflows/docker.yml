@@ -14,7 +14,7 @@ env:
 
 jobs:
   images:
-    timeout-minutes: 60
+    timeout-minutes: 80
     runs-on: ubuntu-latest
 
     steps:
@@ -30,18 +30,23 @@ jobs:
         with:
           install: true
 
-      - name: Docker rt meta
-        id: meta
+      - name: Docker rt5 meta
+        id: metart5
         uses: docker/metadata-action@v5
         with:
           images: firefart/requesttracker
           tags: |
-            # set latest tag for default branch
-            type=raw,value=latest,enable={{is_default_branch}}
-            # set rt version
-            type=raw,value=6.0.0,enable=true
-            # make a sha tag
-            type=sha,enable=true,priority=100,prefix=sha-,suffix=,format=short
+            type=raw,value=5,enable=true
+            type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-5-
+
+      - name: Docker rt6 meta
+        id: metart6
+        uses: docker/metadata-action@v5
+        with:
+          images: firefart/requesttracker
+          tags: |
+            type=raw,value=latest,enable=true
+            type=raw,value=6,enable=true
             type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-
 
       - name: Login to Docker Hub
@@ -51,10 +56,18 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push RT
+      - name: Build and push RT5
+        uses: docker/build-push-action@v6
+        with:
+          build-args: |
+            RT_VERSION=5.0.8
+          push: ${{ env.DO_PUSH }}
+          tags: ${{ steps.metart5.outputs.tags }}
+          labels: ${{ steps.metart5.outputs.labels }}
+
+      - name: Build and push RT6
         uses: docker/build-push-action@v6
         with:
           push: ${{ env.DO_PUSH }}
-          #platforms: linux/amd64,linux/arm/v7,linux/arm64
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.metart6.outputs.tags }}
+          labels: ${{ steps.metart6.outputs.labels }}

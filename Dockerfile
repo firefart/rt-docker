@@ -26,8 +26,11 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.40.2 AS builder
 
-ENV RT="6.0.0"
-ENV RTIR="5.0.8"
+ARG RT_VERSION="6.0.0"
+ARG RTIR_VERSION="5.0.8"
+
+ENV RT="${RT_VERSION}"
+ENV RTIR="${RTIR_VERSION}"
 ENV RT_GPG_PUBLIC_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 
 ARG ADDITIONAL_CPANM_ARGS=""
@@ -108,9 +111,9 @@ RUN true \
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
 
 # Configure RTIR
-# RUN cd /src/rtir \
-#   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-#   && make install
+RUN cd /src/rtir \
+  && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
+  && make install
 
 #############################################################################
 

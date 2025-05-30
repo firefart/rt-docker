@@ -3,7 +3,7 @@
 FROM debian:12-slim AS msmtp-builder
 
 ENV MSMTP_VERSION="1.8.29"
-ENV MSMTP_GPG_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
+ENV MSMTP_GPG_PUBLIC_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -14,7 +14,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 
 RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz \
   && wget -O /msmtp.tar.xz.sig -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz.sig \
-  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${MSMTP_GPG_KEY} \
+  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${MSMTP_GPG_PUBLIC_KEY} \
   && gpg --verify /msmtp.tar.xz.sig /msmtp.tar.xz \
   && tar -xf /msmtp.tar.xz \
   && cd /msmtp-${MSMTP_VERSION} \
@@ -28,7 +28,7 @@ FROM perl:5.40.2 AS builder
 
 ENV RT="6.0.0"
 ENV RTIR="5.0.8"
-ENV RT_GPG_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
+ENV RT_GPG_PUBLIC_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 
 ARG ADDITIONAL_CPANM_ARGS=""
 
@@ -50,7 +50,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # Download and extract RT
 RUN mkdir -p /src \
   # import RT signing key
-  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${RT_GPG_KEY} \
+  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${RT_GPG_PUBLIC_KEY} \
   # download and extract RT
   && wget -O /src/rt.tar.gz -nv https://download.bestpractical.com/pub/rt/release/rt-${RT}.tar.gz \
   && wget -O /src/rt.tar.gz.asc -nv https://download.bestpractical.com/pub/rt/release/rt-${RT}.tar.gz.asc \

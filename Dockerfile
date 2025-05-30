@@ -81,7 +81,12 @@ RUN cpanm --no-man-pages -n install Server::Starter CSS::Inliner
 # Install dependencies
 RUN make -C /src/rt fixdeps \
   && make -C /src/rt testdeps \
-  && make -C /src/rt install \
+  && make -C /src/rt install
+
+ENV PERL5LIB=/opt/rt/lib/
+
+# install extensions and additional tools
+RUN true \
   # https://metacpan.org/pod/RT::Extension::MergeUsers
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MergeUsers \
   # https://metacpan.org/pod/RT::Extension::TerminalTheme
@@ -94,14 +99,18 @@ RUN make -C /src/rt fixdeps \
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/pod/RT::Extension::Import::CSV
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
+  # https://metacpan.org/dist/RT-Extension-Announce
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
+  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
 
 # Configure RTIR
-RUN cd /src/rtir \
-  && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  && make install
+# RUN cd /src/rtir \
+#   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
+#   && make install
 
 #############################################################################
 

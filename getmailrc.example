@@ -7,7 +7,7 @@ mailboxes = ("INBOX",)
 
 [destination]
 type = MDA_external
-path = /opt/rt5/bin/rt-mailgate
+path = /opt/rt/bin/rt-mailgate
 user = rt
 group = rt
 # 8080 is the mailgate vhost

@@ -150,6 +150,10 @@ COPY --from=builder /opt/rt /opt/rt
 # run a final dependency check if we copied all
 RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
+# make backwards compatible as we changed the folder to not contain the version info any more
+# remove after some time
+RUN ln -s /opt/rt /opt/rt5
+
 # msmtp config
 RUN mkdir /msmtp \
   && chown rt:rt /msmtp \

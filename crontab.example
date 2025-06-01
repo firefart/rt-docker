@@ -16,13 +16,13 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # * * * * * root date >/proc/1/fd/1 2>/proc/1/fd/2
 
 # clean sessions
-0 0 * * * rt /opt/rt5/sbin/rt-clean-sessions
+0 0 * * * rt /opt/rt/sbin/rt-clean-sessions
 
 # refresh full text index
-0 * * * * rt /opt/rt5/sbin/rt-fulltext-indexer --quiet 2>&1 | grep -v "Words longer than 2047 characters are ignored" | grep -v "word is too long to be indexed"
+0 * * * * rt /opt/rt/sbin/rt-fulltext-indexer --quiet 2>&1 | grep -v "Words longer than 2047 characters are ignored" | grep -v "word is too long to be indexed"
 
 # get mails
 * * * * * rt /usr/bin/getmail --rcfile=getmailrc -g /getmail
 
 # email dashboards
-0 * * * * rt /opt/rt5/sbin/rt-email-dashboards
+0 * * * * rt /opt/rt/sbin/rt-email-dashboards

@@ -49,6 +49,7 @@ Feel free to modify the config to your needs like auto https, certificate based 
 If you don't want to use the auto https feature (for example in dev) you can provide your own certificates.
 
 Create a self signed certificate:
+
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem -days 3650 -nodes
 ```
@@ -145,7 +146,6 @@ rt.domain.com:443 {
 
 </details>
 
-
 <details>
 <summary>Caddy behind a reverse proxy server with a self signed certificate and client certificate validation</summary>
 
@@ -202,7 +202,6 @@ rt.domain.com:443 {
 ```
 
 </details>
-
 
 <details>
 <summary>Caddy behind a reverse proxy server with a self signed certificate and client certificate validation with subject validation</summary>
@@ -338,13 +337,12 @@ We will also set the REMOTE_USER to a custom header sent from the upstream proxy
 
 </details>
 
-
 ## Init database
 
 This initializes a fresh database. This is needed on the first run.
 
 ```bash
-docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init'
+docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action init'
 ```
 
 You need to restart the rt service after this step as it crashes if the database is not initialized.
@@ -354,7 +352,7 @@ You need to restart the rt service after this step as it crashes if the database
 Hint: Add `--skip-create` in dev as the database is created by docker
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action init --skip-create'
+docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action init --skip-create'
 ```
 
 ## Upgrade steps
@@ -362,7 +360,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm rt bash 
 ### Upgrade Database
 
 ```bash
-docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
+docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
 ```
 
 ### Fix data inconsistencies
@@ -370,7 +368,7 @@ docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database
 Run multiple times with the `--resolve` switch until no errors occur
 
 ```bash
-docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-validator --check --resolve'
+docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-validator --check --resolve'
 ```
 
 ## RT-IR
@@ -380,13 +378,13 @@ You can simply enable RT-IR in your `RT_SiteConfig.pm` by including `Plugin('RT:
 To initialize the database (ONLY ON THE FIRST RUN!!!! and only after rt is fully set up)
 
 ```bash
-docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action insert --skip-create --datafile /opt/rtir/initialdata'
+docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action insert --skip-create --datafile /opt/rtir/initialdata'
 ```
 
 To upgrade
 
 ```bash
-docker compose run --rm rt bash -c 'cd /opt/rt5 && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir/upgrade --package RT::IR --ext-version 5.0.4'
+docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action upgrade --skip-create --datadir /opt/rtir/upgrade --package RT::IR --ext-version 5.0.4'
 ```
 
 Restart docker setup after all steps to fully load RT-IR (just run `./restart_prod.sh`).

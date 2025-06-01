@@ -2,8 +2,8 @@
 
 FROM debian:12-slim AS msmtp-builder
 
-ENV MSMTP_VERSION="1.8.28"
-ENV MSMTP_GPG_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
+ENV MSMTP_VERSION="1.8.29"
+ENV MSMTP_GPG_PUBLIC_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -14,7 +14,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 
 RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz \
   && wget -O /msmtp.tar.xz.sig -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VERSION}.tar.xz.sig \
-  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${MSMTP_GPG_KEY} \
+  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${MSMTP_GPG_PUBLIC_KEY} \
   && gpg --verify /msmtp.tar.xz.sig /msmtp.tar.xz \
   && tar -xf /msmtp.tar.xz \
   && cd /msmtp-${MSMTP_VERSION} \
@@ -26,9 +26,12 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.40.2 AS builder
 
-ENV RT="5.0.8"
-ENV RTIR="5.0.8"
-ENV RT_GPG_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
+ARG RT_VERSION="6.0.0"
+ARG RTIR_VERSION="5.0.8"
+
+ENV RT="${RT_VERSION}"
+ENV RTIR="${RTIR_VERSION}"
+ENV RT_GPG_PUBLIC_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 
 ARG ADDITIONAL_CPANM_ARGS=""
 
@@ -38,7 +41,7 @@ ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 ENV PERL_MM_USE_DEFAULT=1
 
 # Create RT user
-RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt5 rt
+RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt rt
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -50,7 +53,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # Download and extract RT
 RUN mkdir -p /src \
   # import RT signing key
-  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${RT_GPG_KEY} \
+  && gpg --keyserver hkps://keyserver.ubuntu.com --keyserver-options timeout=10 --recv-keys ${RT_GPG_PUBLIC_KEY} \
   # download and extract RT
   && wget -O /src/rt.tar.gz -nv https://download.bestpractical.com/pub/rt/release/rt-${RT}.tar.gz \
   && wget -O /src/rt.tar.gz.asc -nv https://download.bestpractical.com/pub/rt/release/rt-${RT}.tar.gz.asc \
@@ -67,7 +70,7 @@ RUN mkdir -p /src \
 # Configure RT
 RUN cd /src/rt \
   # configure with all plugins and with the newly created user
-  && ./configure --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
+  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
 # install https support for cpanm
 RUN cpanm --no-man-pages install LWP::Protocol::https
@@ -81,7 +84,12 @@ RUN cpanm --no-man-pages -n install Server::Starter CSS::Inliner
 # Install dependencies
 RUN make -C /src/rt fixdeps \
   && make -C /src/rt testdeps \
-  && make -C /src/rt install \
+  && make -C /src/rt install
+
+ENV PERL5LIB=/opt/rt/lib/
+
+# install extensions and additional tools
+RUN true \
   # https://metacpan.org/pod/RT::Extension::MergeUsers
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MergeUsers \
   # https://metacpan.org/pod/RT::Extension::TerminalTheme
@@ -94,14 +102,24 @@ RUN make -C /src/rt fixdeps \
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/pod/RT::Extension::Import::CSV
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
+  # https://metacpan.org/dist/RT-Extension-Announce
+  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
 
-# Configure RTIR
-RUN cd /src/rtir \
+# extensions that only works with RT 6.0.x
+RUN case "${RT_VERSION}" in "6."*) \
+  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
+  cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition; \
+  esac
+
+# Configure RTIR (only compatible with RT 5.x at the moment)
+RUN case "${RT_VERSION}" in "5."*) \
+  cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  && make install
+  && make install; \
+  esac
 
 #############################################################################
 
@@ -122,7 +140,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # msmtp - disabled for now to use the newer version
 
 # Create RT user
-RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt5 rt
+RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt rt
 
 # copy msmtp
 COPY --from=msmtp-builder /usr/local/bin/msmtp /usr/bin/msmtp
@@ -130,9 +148,13 @@ COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
 
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
-COPY --from=builder /opt/rt5 /opt/rt5
+COPY --from=builder /opt/rt /opt/rt
 # run a final dependency check if we copied all
-RUN perl /opt/rt5/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
+RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
+
+# make backwards compatible as we changed the folder to not contain the version info any more
+# remove after some time
+RUN ln -s /opt/rt /opt/rt5
 
 # msmtp config
 RUN mkdir /msmtp \
@@ -145,16 +167,16 @@ RUN mkdir -p /getmail \
   && chown rt:rt /getmail
 
 # gpg
-RUN mkdir -p /opt/rt5/var/data/gpg \
-  && chown rt:rt /opt/rt5/var/data/gpg
+RUN mkdir -p /opt/rt/var/data/gpg \
+  && chown rt:rt /opt/rt/var/data/gpg
 
 # smime
-RUN mkdir -p /opt/rt5/var/data/smime \
-  && chown rt:rt /opt/rt5/var/data/smime
+RUN mkdir -p /opt/rt/var/data/smime \
+  && chown rt:rt /opt/rt/var/data/smime
 
 # shredder dir
-RUN mkdir -p /opt/rt5/var/data/RT-Shredder \
-  && chown rt:rt /opt/rt5/var/data/RT-Shredder
+RUN mkdir -p /opt/rt/var/data/RT-Shredder \
+  && chown rt:rt /opt/rt/var/data/RT-Shredder
 
 # RTIR Database stuff for setup
 COPY --chown=rt:rt --from=builder /src/rtir/etc /opt/rtir
@@ -173,12 +195,12 @@ RUN rm -f /etc/cron.d/* \
 COPY --chown=root:root --chmod=0700 cron_entrypoint.sh /root/cron_entrypoint.sh
 
 # update PATH
-ENV PATH="${PATH}:/opt/rt5/sbin:/opt/rt5/bin"
+ENV PATH="${PATH}:/opt/rt/sbin:/opt/rt/bin"
 
 EXPOSE 9000
 
 USER rt
-WORKDIR /opt/rt5/
+WORKDIR /opt/rt/
 
 # spawn-fcgi v1.6.4 (ipv6) - spawns FastCGI processes
 
@@ -208,6 +230,6 @@ WORKDIR /opt/rt5/
 #                 is given)
 #  -U <user>      change Unix domain socket owner to user-id
 #  -G <group>     change Unix domain socket group to group-id
-CMD [ "/usr/bin/spawn-fcgi", "-d", "/opt/rt5/", "-p" ,"9000", "-a","0.0.0.0", "-u", "1000", "-n", "--", "/opt/rt5/sbin/rt-server.fcgi" ]
+CMD [ "/usr/bin/spawn-fcgi", "-d", "/opt/rt/", "-p" ,"9000", "-a","0.0.0.0", "-u", "1000", "-n", "--", "/opt/rt/sbin/rt-server.fcgi" ]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:9000 -bind || exit 1

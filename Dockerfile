@@ -104,11 +104,15 @@ RUN true \
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
   # https://metacpan.org/dist/RT-Extension-Announce
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
-  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
+
+# extensions that only works with RT 6.0.x
+RUN case "${RT_VERSION}" in "6."*) \
+  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
+  cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition; \
+  esac
 
 # Configure RTIR
 RUN cd /src/rtir \

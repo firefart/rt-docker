@@ -36,7 +36,8 @@ jobs:
         with:
           images: firefart/requesttracker
           tags: |
-            type=raw,value=5,enable=true
+            type=raw,value=5
+            type=raw,value=5.0.8
             type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-5-
 
       - name: Docker rt6 meta
@@ -45,8 +46,9 @@ jobs:
         with:
           images: firefart/requesttracker
           tags: |
-            type=raw,value=latest,enable=true
-            type=raw,value=6,enable=true
+            type=raw,value=latest
+            type=raw,value=6
+            type=raw,value=6.0.0
             type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-
 
       - name: Login to Docker Hub

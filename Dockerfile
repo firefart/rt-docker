@@ -114,10 +114,12 @@ RUN case "${RT_VERSION}" in "6."*) \
   cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition; \
   esac
 
-# Configure RTIR
-RUN cd /src/rtir \
+# Configure RTIR (only compatible with RT 5.x at the moment)
+RUN case "${RT_VERSION}" in "5."*) \
+  cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  && make install
+  && make install; \
+  esac
 
 #############################################################################
 

@@ -57,7 +57,10 @@ services:
         restart: true
 
   caddy:
-    image: caddy:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.caddy
+    image: firefart/requesttracker:caddy
     hostname: caddy
     restart: unless-stopped
     ports:

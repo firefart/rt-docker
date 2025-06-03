@@ -30,3 +30,4 @@ docker-compose.override.yml
 docker-compose.dev.yml
 .dockerignore
 .gitignore
+*.patch

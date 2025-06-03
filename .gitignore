@@ -28,3 +28,4 @@ shredder/*.sql
 *.pgpass
 *.json
 docker-compose.override.yml
+*.patch

@@ -36,7 +36,7 @@ ENV RT_GPG_PUBLIC_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 ARG ADDITIONAL_CPANM_ARGS=""
 
 # use cpanm for dependencies
-ENV RT_FIX_DEPS_CMD="cpanm --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
+ENV RT_FIX_DEPS_CMD="cpanm -v --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 # cpan non interactive mode
 ENV PERL_MM_USE_DEFAULT=1
 
@@ -73,13 +73,13 @@ RUN cd /src/rt \
   && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
 # install https support for cpanm
-RUN cpanm --no-man-pages install LWP::Protocol::https
+RUN cpanm -v --no-man-pages install LWP::Protocol::https
 
 # Install Sever::Starter without tests
 # as they constanly fail with timeouts and thus break
 # the build
 # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
-RUN cpanm --no-man-pages -n install Server::Starter CSS::Inliner
+RUN cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \
@@ -91,27 +91,27 @@ ENV PERL5LIB=/opt/rt/lib/
 # install extensions and additional tools
 RUN true \
   # https://metacpan.org/pod/RT::Extension::MergeUsers
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MergeUsers \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MergeUsers \
   # https://metacpan.org/pod/RT::Extension::TerminalTheme
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TerminalTheme \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TerminalTheme \
   # https://metacpan.org/pod/RT::Extension::Announce
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
   # https://metacpan.org/pod/RT::Extension::Assets::Import::CSV
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Assets::Import::CSV \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Assets::Import::CSV \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/pod/RT::Extension::Import::CSV
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
   # https://metacpan.org/dist/RT-Extension-Announce
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
-  && cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
 
 # extensions that only works with RT 6.0.x
 RUN case "${RT_VERSION}" in "6."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
-  cpanm --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition; \
+  cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition; \
   esac
 
 # Configure RTIR (only compatible with RT 5.x at the moment)

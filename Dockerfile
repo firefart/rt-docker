@@ -141,6 +141,7 @@ RUN case "${RT_VERSION}" in "5."*) \
   cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
   && make install \
+  ;; \
   esac
 
 #############################################################################

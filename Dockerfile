@@ -73,13 +73,14 @@ RUN cd /src/rt \
   && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
 
 # install https support for cpanm
-RUN cpanm -v --no-man-pages install LWP::Protocol::https
-
-# Install Sever::Starter without tests
-# as they constanly fail with timeouts and thus break
-# the build
-# Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
-RUN cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner
+# also disable tests on net http as the live tests often fail
+RUN cpanm -v --no-man-pages -n install Net::HTTP \
+  && cpanm -v --no-man-pages install LWP::Protocol::https \
+  # Install Sever::Starter without tests
+  # as they constanly fail with timeouts and thus break
+  # the build
+  # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
+  && cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \

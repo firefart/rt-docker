@@ -123,7 +123,7 @@ RUN case "${RT_VERSION}" in "6."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
   cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition~">= 0.0000, < 1.0000"; \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed~">= 0.0000, < 1.0000" \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed~">= 0.0000, < 1.0000"; \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000"; \
   # https://metacpan.org/pod/RT::Extension::FormTools

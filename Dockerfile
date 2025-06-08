@@ -109,25 +109,28 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
 
 # extensions for RT 6.0.x
-RUN case "${RT_VERSION}" in "6."*) \
+RUN case \
+  "${RT_VERSION}" in "6."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
-  cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition; \
+  cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed; \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment; \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment \
   # https://metacpan.org/pod/RT::Extension::FormTools
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools; \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools \
+  ;; \
   # older versions for RT 5.0.x
-  case "${RT_VERSION}" in "5."*) \
+  "${RT_VERSION}" in "5."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
-  cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition~">= 0.0000, < 1.0000"; \
+  cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition~">= 0.0000, < 1.0000" \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed~">= 0.0000, < 1.0000"; \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000"; \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000" \
   # https://metacpan.org/pod/RT::Extension::FormTools
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools~">= 1.0000, < 2.0000"; \
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools~">= 1.0000, < 2.0000" \
+  ;; \
   esac
 
 # Configure RTIR (only compatible with RT 5.x at the moment)

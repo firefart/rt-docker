@@ -116,7 +116,8 @@ RUN case "${RT_VERSION}" in \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment \
+  # no tests here as it would require a database
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} -n RT::Extension::AutomaticAssignment \
   # https://metacpan.org/pod/RT::Extension::FormTools
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools \
   ;; \
@@ -127,7 +128,8 @@ RUN case "${RT_VERSION}" in \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000" \
+  # no tests here as it would require a database
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} -n RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000" \
   # https://metacpan.org/pod/RT::Extension::FormTools
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools~">= 1.0000, < 2.0000" \
   ;; \

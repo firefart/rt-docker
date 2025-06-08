@@ -109,8 +109,8 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
 
 # extensions for RT 6.0.x
-RUN case \
-  "${RT_VERSION}" in "6."*) \
+RUN case "${RT_VERSION}" in \
+  "6."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
   cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
@@ -121,7 +121,7 @@ RUN case \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools \
   ;; \
   # older versions for RT 5.0.x
-  "${RT_VERSION}" in "5."*) \
+  "5."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
   cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition~">= 0.0000, < 1.0000" \
   # https://metacpan.org/pod/RT::Extension::ExcelFeed
@@ -137,7 +137,7 @@ RUN case \
 RUN case "${RT_VERSION}" in "5."*) \
   cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  && make install; \
+  && make install \
   esac
 
 #############################################################################

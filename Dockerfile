@@ -91,20 +91,24 @@ ENV PERL5LIB=/opt/rt/lib/
 
 # install extensions and additional tools
 RUN true \
-  # https://metacpan.org/pod/RT::Extension::MergeUsers
+  # https://metacpan.org/dist/RT-Extension-MergeUsers
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MergeUsers \
-  # https://metacpan.org/pod/RT::Extension::TerminalTheme
+  # https://metacpan.org/dist/RT-Extension-TerminalTheme
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TerminalTheme \
-  # https://metacpan.org/pod/RT::Extension::Announce
+  # https://metacpan.org/dist/RT-Extension-Announce
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
-  # https://metacpan.org/pod/RT::Extension::Assets::Import::CSV
+  # https://metacpan.org/dist/RT-Extension-Assets-Import-CSV
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Assets::Import::CSV \
-  # https://metacpan.org/pod/RT::Extension::Import::CSV
+  # https://metacpan.org/dist/RT-Extension-Import-CSV
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
   # https://metacpan.org/dist/RT-Extension-Announce
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
   # https://metacpan.org/dist/RT-Extension-CommandByMail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::CommandByMail \
+  # https://metacpan.org/dist/RT-Extension-ExtractCustomFieldValues
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExtractCustomFieldValues \
+  # https://metacpan.org/dist/RT-Extension-JSGantt
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::JSGantt \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
@@ -114,24 +118,24 @@ RUN case "${RT_VERSION}" in \
   "6."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
   cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition \
-  # https://metacpan.org/pod/RT::Extension::ExcelFeed
+  # https://metacpan.org/dist/RT-Extension-ExcelFeed
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
   # no tests here as it would require a database
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} -n RT::Extension::AutomaticAssignment \
-  # https://metacpan.org/pod/RT::Extension::FormTools
+  # https://metacpan.org/dist/RT-Extension-FormTools
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
   # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
   cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition~">= 0.0000, < 1.0000" \
-  # https://metacpan.org/pod/RT::Extension::ExcelFeed
+  # https://metacpan.org/dist/RT-Extension-ExcelFeed
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
   # no tests here as it would require a database
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} -n RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000" \
-  # https://metacpan.org/pod/RT::Extension::FormTools
+  # https://metacpan.org/dist/RT-Extension-FormTools
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools~">= 1.0000, < 2.0000" \
   ;; \
   esac

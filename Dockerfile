@@ -101,8 +101,6 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Assets::Import::CSV \
   # https://metacpan.org/dist/RT-Extension-Import-CSV
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
-  # https://metacpan.org/dist/RT-Extension-Announce
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
   # https://metacpan.org/dist/RT-Extension-CommandByMail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::CommandByMail \
   # https://metacpan.org/dist/RT-Extension-ExtractCustomFieldValues

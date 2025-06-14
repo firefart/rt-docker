@@ -109,6 +109,10 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::JSGantt \
   # https://metacpan.org/dist/RT-Extension-NonWatcherRecipients
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::NonWatcherRecipients \
+  # https://metacpan.org/dist/RTx-TicketlistTransactions
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::TicketlistTransactions \
+  # https://metacpan.org/dist/RTx-RemoteLinks
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::RemoteLinks \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
@@ -127,6 +131,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools \
   # https://metacpan.org/dist/RT-Extension-RepeatTicket
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepeatTicket \
+  # https://metacpan.org/dist/RTx-Calendar
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -141,6 +147,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-RepeatTicket
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepeatTicket~">= 2.0000, < 3.0000" \
+  # https://metacpan.org/dist/RTx-Calendar
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar~">= 1.0000, < 2.0000" \
   ;; \
   esac
 

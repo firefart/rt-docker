@@ -133,6 +133,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepeatTicket \
   # https://metacpan.org/dist/RTx-Calendar
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar \
+  # https://metacpan.org/dist/RT-Extension-ActivityReports
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -149,6 +151,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepeatTicket~">= 2.0000, < 3.0000" \
   # https://metacpan.org/dist/RTx-Calendar
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar~">= 1.0000, < 2.0000" \
+  # https://metacpan.org/dist/RT-Extension-ActivityReports
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports~">= 1.0000, < 2.0000" \
   ;; \
   esac
 

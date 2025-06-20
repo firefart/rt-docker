@@ -9,6 +9,9 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+permissions:
+  contents: read
+
 env:
   DO_PUSH: ${{ github.ref == 'refs/heads/main' }} # do not push on PRs
 

@@ -135,6 +135,10 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar \
   # https://metacpan.org/dist/RT-Extension-ActivityReports
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports \
+  # https://metacpan.org/dist/RT-Extension-InlineHelp
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::InlineHelp \
+  # https://metacpan.org/dist/RT-Extension-Tags
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -153,6 +157,10 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-ActivityReports
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports~">= 1.0000, < 2.0000" \
+  # https://metacpan.org/dist/RT-Extension-InlineHelp
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::InlineHelp~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-Tags
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags~">= 0.0000, < 1.0000" \
   ;; \
   esac
 

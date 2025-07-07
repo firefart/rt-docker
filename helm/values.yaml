@@ -140,3 +140,94 @@ cronjobs:
 # used to store shredder backups
 pvc:
   size: 1Gi
+
+config:
+  rtSiteConfig: |
+    ### Base configuration ###
+    Set($rtname, 'rt');
+    Set($WebDomain, 'localhost');
+    Set($WebPort, 443);
+    Set($CanonicalizeRedirectURLs, 1);
+    Set($CanonicalizeURLsInFeeds, 1);
+
+    Plugin('RT::Extension::MergeUsers');
+    Plugin('RT::Extension::TerminalTheme');
+
+    ### Database connection ###
+    Set($DatabaseType, 'Pg' );
+    Set($DatabaseHost, 'db');
+    Set($DatabasePort, '5432');
+    Set($DatabaseUser, 'rt');
+    Set($DatabasePassword, 'password');
+    Set($DatabaseName, 'rt');
+    Set($DatabaseAdmin, "rt");
+
+    Set($SendmailPath, '/usr/bin/msmtp');
+
+    ### GnuPG configuration ###
+    Set(%GnuPG,
+      Enable                 => 1,
+      GnuPG                  => 'gpg',
+      Passphrase             => undef,
+      OutgoingMessagesFormat => 'RFC'
+    );
+
+    Set(%GnuPGOptions,
+      homedir             => '/opt/rt/var/data/gpg',
+      passphrase          => 'PASSPHRASE',
+      keyserver           => 'hkps://keys.openpgp.org',
+      'keyserver-options' => 'auto-key-retrieve timeout=20',
+      'auto-key-locate'   => 'keyserver',
+    );
+
+    ### SMIME configuration ###
+    Set(%SMIME,
+        Enable             => 1,
+        AcceptUntrustedCAs => 1,
+        OpenSSL            => '/usr/bin/openssl',
+        Keyring            => '/opt/rt/var/data/smime',
+        CAPath             => '/opt/rt/var/data/smime/signing-ca.pem',
+        Passphrase => {
+            'user@user.com' => 'PASSPHRASE',
+            ''              => 'fallback',
+        },
+    );
+
+    1;
+  msmtp: |
+    defaults
+
+    account smtp
+    host smtp.office365.com
+    port 587
+    tls on
+    tls_starttls on
+    from test@test.com
+    tls_trust_file /msmtp/ca-bundle.crt
+    tls_certcheck on
+    auth on
+    user user@domain.com
+    password pass
+    logfile -
+
+    account default : smtp
+  getmailrc: |
+    [retriever]
+    type = SimpleIMAPSSLRetriever
+    server = mail.host.com
+    username = user@domain.com
+    password = pass
+    mailboxes = ("INBOX",)
+
+    [destination]
+    type = MDA_external
+    path = /opt/rt/bin/rt-mailgate
+    user = rt
+    group = rt
+    # 8080 is the mailgate vhost
+    arguments = ("--url", "http://caddy:8080/", "--queue", "general", "--action", "correspond",)
+
+    [options]
+    read_all = false
+    delete = true
+    verbose = 0

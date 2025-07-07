@@ -201,28 +201,23 @@ COPY --from=builder /opt/rt /opt/rt
 # run a final dependency check if we copied all
 RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
-# make backwards compatible as we changed the folder to not contain the version info any more
-# remove after some time
-RUN ln -s /opt/rt /opt/rt5
-
-
-RUN \
+RUN true \
   # msmtp config
-  mkdir /msmtp \
+  && mkdir -p /msmtp \
   && chown rt:rt /msmtp \
   # also fake sendmail for cronjobs
   && ln -s /usr/bin/msmtp /usr/sbin/sendmail \
   # getmail
-  mkdir -p /getmail \
+  && mkdir -p /getmail \
   && chown rt:rt /getmail \
   # gpg
-  mkdir -p /opt/rt/var/data/gpg \
+  && mkdir -p /opt/rt/var/data/gpg \
   && chown rt:rt /opt/rt/var/data/gpg \
   # smime
-  mkdir -p /opt/rt/var/data/smime \
+  && mkdir -p /opt/rt/var/data/smime \
   && chown rt:rt /opt/rt/var/data/smime \
   # shredder dir
-  mkdir -p /opt/rt/var/data/RT-Shredder \
+  && mkdir -p /opt/rt/var/data/RT-Shredder \
   && chown rt:rt /opt/rt/var/data/RT-Shredder
 
 # RTIR Database stuff for setup

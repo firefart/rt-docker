@@ -2,7 +2,7 @@
 extends: default
 
 ignore:
-  - helm-chart/
+  - helm/
 
 rules:
   truthy: disable

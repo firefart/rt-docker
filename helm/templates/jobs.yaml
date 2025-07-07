@@ -20,8 +20,9 @@ spec:
             securityContext:
               {{- toYaml .securityContext | nindent 14 }}
             image: "{{ .image.repository }}:{{ .image.tag }}"
+            imagePullPolicy: {{ .image.pullPolicy | default "IfNotPresent" }}
             command:
-              - {{ .command }}
+              {{- toYaml .command | nindent 14 }}
             {{- with .resources }}
             resources:
               {{- toYaml . | nindent 14 }}

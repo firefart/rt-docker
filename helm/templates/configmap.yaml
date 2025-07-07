@@ -5,6 +5,9 @@ metadata:
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 data:
-  rtSiteConfig: {{ .Values.config.rtSiteConfig }}
-  msmtp: {{ .Values.config.msmtp }}
-  getmailrc: {{ .Values.config.getmailrc }}
+  rtSiteConfig: |-
+{{ .Values.config.rtSiteConfig | indent 4}}
+  msmtp: |-
+{{ .Values.config.msmtp | indent 4 }}
+  getmailrc: |-
+{{ .Values.config.getmailrc | indent 4 }}

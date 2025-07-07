@@ -74,6 +74,8 @@ jobs:
             RT_VERSION=5.0.8
           context: .
           file: Dockerfile
+          sbom: true
+          provenance: mode=max
           push: ${{ env.DO_PUSH }}
           tags: ${{ steps.metart5.outputs.tags }}
           labels: ${{ steps.metart5.outputs.labels }}
@@ -83,6 +85,8 @@ jobs:
         with:
           context: .
           file: Dockerfile
+          sbom: true
+          provenance: mode=max
           push: ${{ env.DO_PUSH }}
           tags: ${{ steps.metart6.outputs.tags }}
           labels: ${{ steps.metart6.outputs.labels }}

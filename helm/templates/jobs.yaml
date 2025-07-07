@@ -7,7 +7,8 @@ metadata:
     {{- include "request-tracker.labels" $ | nindent 4 }}
 spec:
   schedule: "{{ .schedule }}"
-  concurrencyPolicy: Forbid
+  concurrencyPolicy: {{ .concurrencyPolicy | default "Forbid" }}
+  timeZone: {{ .timeZone | default "UTC" }}
   jobTemplate:
     spec:
       template:

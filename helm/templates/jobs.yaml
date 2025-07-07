@@ -22,5 +22,9 @@ spec:
             image: "{{ .image.repository }}:{{ .image.tag }}"
             command:
               - {{ .command }}
+            {{- with .resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
           restartPolicy: Never
 {{- end }}

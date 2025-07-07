@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "request-tracker.fullname" . }}
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+data:
+  RTSiteConfig: |
+    ---

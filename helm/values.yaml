@@ -136,3 +136,7 @@ cronjobs:
         requests:
           cpu: 100m
           memory: 128Mi
+
+# used to store shredder backups
+pvc:
+  size: 1Gi

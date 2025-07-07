@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  # only build without pushing on PRs
   pull_request:
   workflow_dispatch:
   schedule:
@@ -11,6 +12,11 @@ on:
 
 permissions:
   contents: read
+
+# only allow one build at a time per branch
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   DO_PUSH: ${{ github.ref == 'refs/heads/main' }} # do not push on PRs

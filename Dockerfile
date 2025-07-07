@@ -205,26 +205,24 @@ RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg -
 # remove after some time
 RUN ln -s /opt/rt /opt/rt5
 
-# msmtp config
-RUN mkdir /msmtp \
+
+RUN \
+  # msmtp config
+  mkdir /msmtp \
   && chown rt:rt /msmtp \
   # also fake sendmail for cronjobs
-  && ln -s /usr/bin/msmtp /usr/sbin/sendmail
-
-# getmail
-RUN mkdir -p /getmail \
-  && chown rt:rt /getmail
-
-# gpg
-RUN mkdir -p /opt/rt/var/data/gpg \
-  && chown rt:rt /opt/rt/var/data/gpg
-
-# smime
-RUN mkdir -p /opt/rt/var/data/smime \
-  && chown rt:rt /opt/rt/var/data/smime
-
-# shredder dir
-RUN mkdir -p /opt/rt/var/data/RT-Shredder \
+  && ln -s /usr/bin/msmtp /usr/sbin/sendmail \
+  # getmail
+  mkdir -p /getmail \
+  && chown rt:rt /getmail \
+  # gpg
+  mkdir -p /opt/rt/var/data/gpg \
+  && chown rt:rt /opt/rt/var/data/gpg \
+  # smime
+  mkdir -p /opt/rt/var/data/smime \
+  && chown rt:rt /opt/rt/var/data/smime \
+  # shredder dir
+  mkdir -p /opt/rt/var/data/RT-Shredder \
   && chown rt:rt /opt/rt/var/data/RT-Shredder
 
 # RTIR Database stuff for setup

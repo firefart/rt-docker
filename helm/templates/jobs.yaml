@@ -1,12 +1,10 @@
-{{- if .Values.cronjobs.enabled }}
 {{- range .Values.cronjobs.definitions }}
----
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "{{ include "request-tracker.fullname" . }}-{{ .name | trunc 52 | replace "_" "-" }}"
+  name: "{{ include "request-tracker.fullname" $ }}-{{ .name | trunc 52 | replace "_" "-" }}"
   labels:
-    {{- include "request-tracker.labels" . | nindent 4 }}
+    {{- include "request-tracker.labels" $ | nindent 4 }}
 spec:
   schedule: "{{ .schedule }}"
   concurrencyPolicy: Forbid
@@ -14,16 +12,15 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: {{ $.Values.serviceAccountName }}
+          serviceAccountName: {{ $.serviceAccountName }}
           securityContext:
-            {{- toYaml $.Values.podSecurityContext | nindent 12 }}
+            {{- toYaml .podSecurityContext | nindent 12 }}
           containers:
-          - name: "{{ include "request-tracker.fullname" . }}-{{ .name | trunc 52 | replace "_" "-" }}"
+          - name: "{{ include "request-tracker.fullname" $ }}-{{ .name | trunc 52 | replace "_" "-" }}"
             securityContext:
-              {{- toYaml $.Values.securityContext | nindent 14 }}
-            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              {{- toYaml .securityContext | nindent 14 }}
+            image: "{{ .image.repository }}:{{ .image.tag }}"
             command:
               - {{ .command }}
           restartPolicy: Never
-{{- end }}
 {{- end }}

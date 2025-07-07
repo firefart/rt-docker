@@ -120,6 +120,7 @@ cronjobs:
   definitions:
     - name: "clean-sessions"
       schedule: "0 0 * * *"
+      restartPolicy: Never
       command:
         - /opt/rt/sbin/rt-clean-sessions
       image:
@@ -139,6 +140,7 @@ cronjobs:
 
     - name: "refresh-fulltext-index"
       schedule: "0 * * * *"
+      restartPolicy: Never
       command:
         - /opt/rt/sbin/rt-fulltext-indexer
         - --quiet
@@ -159,6 +161,7 @@ cronjobs:
 
     - name: "getmail"
       schedule: "* * * * *"
+      restartPolicy: Never
       command:
         - /usr/bin/getmail
         - --rcfile=getmailrc
@@ -181,6 +184,7 @@ cronjobs:
 
     - name: "email-dashboards"
       schedule: "0 * * * *"
+      restartPolicy: Never
       command:
         - /opt/rt/sbin/rt-email-dashboards
       image:

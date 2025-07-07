@@ -27,5 +27,5 @@ spec:
             resources:
               {{- toYaml . | nindent 14 }}
             {{- end }}
-          restartPolicy: Never
+          restartPolicy: {{ .restartPolicy | default "Never" }}
 {{- end }}

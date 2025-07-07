@@ -126,12 +126,14 @@ cronjobs:
       command:
         - /opt/rt/sbin/rt-clean-sessions
       image:
-        repository: firefart/requesttracker
-        tag: latest
-        pullPolicy: Always
+        {} # use the same image as the main pod
+        # repository: firefart/requesttracker
+        # pullPolicy: Always
+        # tag: "latest"
       securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
+        {} # use the same security context as the main pod
+        # readOnlyRootFilesystem: true
+        # runAsNonRoot: true
       resources:
         limits:
           cpu: 100m
@@ -149,12 +151,14 @@ cronjobs:
         - /opt/rt/sbin/rt-fulltext-indexer
         - --quiet
       image:
-        repository: firefart/requesttracker
-        tag: latest
-        pullPolicy: Always
+        {} # use the same image as the main pod
+        # repository: firefart/requesttracker
+        # pullPolicy: Always
+        # tag: "latest"
       securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
+        {} # use the same security context as the main pod
+        # readOnlyRootFilesystem: true
+        # runAsNonRoot: true
       resources:
         limits:
           cpu: 100m
@@ -174,12 +178,14 @@ cronjobs:
         - -g
         - /getmail
       image:
-        repository: firefart/requesttracker
-        tag: latest
-        pullPolicy: Always
+        {} # use the same image as the main pod
+        # repository: firefart/requesttracker
+        # pullPolicy: Always
+        # tag: "latest"
       securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
+        {} # use the same security context as the main pod
+        # readOnlyRootFilesystem: true
+        # runAsNonRoot: true
       resources:
         limits:
           cpu: 100m
@@ -196,12 +202,14 @@ cronjobs:
       command:
         - /opt/rt/sbin/rt-email-dashboards
       image:
-        repository: firefart/requesttracker
-        tag: latest
-        pullPolicy: Always
+        {} # use the same image as the main pod
+        # repository: firefart/requesttracker
+        # pullPolicy: Always
+        # tag: "latest"
       securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
+        {} # use the same security context as the main pod
+        # readOnlyRootFilesystem: true
+        # runAsNonRoot: true
       resources:
         limits:
           cpu: 100m

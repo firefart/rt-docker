@@ -4,8 +4,16 @@ on:
   push:
     branches:
       - main
+    paths:
+      - Dockerfile
+      - .github/workflows/docker.yml
+      - cron_entrypoint.sh
   # only build without pushing on PRs
   pull_request:
+    paths:
+      - Dockerfile
+      - .github/workflows/docker.yml
+      - cron_entrypoint.sh
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"

@@ -139,6 +139,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::InlineHelp \
   # https://metacpan.org/dist/RT-Extension-Tags
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags \
+  # https://metacpan.org/dist/RT-Extension-HelpDesk
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -159,6 +161,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Tags
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-HelpDesk
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk~">= 0.0000, < 1.0000" \
   ;; \
   esac
 

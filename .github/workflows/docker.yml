@@ -40,6 +40,7 @@ jobs:
           - rt: "5.0.8"
             rtir: "5.0.8"
           - rt: "6.0.0"
+            rtir: "5.0.8"
             tag: "latest"
 
     steps:

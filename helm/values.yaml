@@ -1,17 +1,64 @@
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
-replicaCount: 1
-
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
-image:
-  repository: firefart/requesttracker
-  pullPolicy: Always
-  tag: "latest"
-
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
 # This is to override the chart name.
 nameOverride: ""
 fullnameOverride: ""
+
+rt:
+  # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+  replicaCount: 1
+
+  # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+  image:
+    repository: firefart/requesttracker
+    pullPolicy: Always
+    tag: "latest"
+
+  # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  podSecurityContext:
+    {}
+    # fsGroup: 2000
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    httpGet:
+      path: /
+      port: http
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+
+  # Additional volumes on the output Deployment definition.
+  volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+
+  # Additional volumeMounts on the output Deployment definition.
+  volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
@@ -31,20 +78,6 @@ podAnnotations: {}
 # This is for setting Kubernetes Labels to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
-
-podSecurityContext:
-  {}
-  # fsGroup: 2000
-
-securityContext:
-  readOnlyRootFilesystem: true
-  runAsNonRoot: true
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
@@ -71,24 +104,6 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
-
-# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-livenessProbe:
-  httpGet:
-    path: /
-    port: http
-readinessProbe:
-  httpGet:
-    path: /
-    port: http
-
 # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
 autoscaling:
   enabled: false
@@ -96,19 +111,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
 
 nodeSelector: {}
 
@@ -312,3 +314,36 @@ config:
     read_all = false
     delete = true
     verbose = 0
+  caddyfile: |
+    {
+      # debug
+      admin off
+      auto_https off
+    }
+
+    # healthchecks
+    :1337 {
+      respond "OK" 200
+    }
+
+    # mailgate
+    :8080 {
+      log
+      reverse_proxy rt:9000 {
+        transport fastcgi
+      }
+    }
+
+    # request tracker
+    :80 {
+      # log
+
+      # Block access to the unauth mail gateway endpoint
+      # we have a seperate mailgate server for that
+      @blocked path /REST/1.0/NoAuth/mail-gateway
+      respond @blocked "Nope" 403
+
+      reverse_proxy rt:9000 {
+        transport fastcgi
+      }
+    }

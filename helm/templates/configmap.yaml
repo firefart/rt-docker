@@ -11,3 +11,5 @@ data:
 {{ .Values.config.msmtp | indent 4 }}
   getmailrc: |-
 {{ .Values.config.getmailrc | indent 4 }}
+  caddyfile: |-
+{{ .Values.config.caddyfile | indent 4 }}

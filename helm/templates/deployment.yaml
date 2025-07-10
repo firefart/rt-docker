@@ -6,7 +6,7 @@ metadata:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.rt.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -23,44 +23,44 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with .Values.rt.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "request-tracker.serviceAccountName" . }}
-      {{- with .Values.podSecurityContext }}
+      {{- with .Values.rt.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          {{- with .Values.securityContext }}
+          {{- with .Values.rt.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.rt.image.repository }}:{{ .Values.rt.image.tag }}"
+          imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          {{- with .Values.livenessProbe }}
+          {{- with .Values.rt.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.readinessProbe }}
+          {{- with .Values.rt.readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.resources }}
+          {{- with .Values.rt.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
+          {{- with .Values.rt.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
+      {{- with .Values.rt.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}

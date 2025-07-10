@@ -15,13 +15,13 @@ spec:
         spec:
           serviceAccountName: {{ $.serviceAccountName }}
           securityContext:
-            {{- toYaml .podSecurityContext | default $.Values.podSecurityContext | nindent 12 }}
+            {{- toYaml .podSecurityContext | default $.Values.rt.podSecurityContext | nindent 12 }}
           containers:
           - name: "{{ include "request-tracker.fullname" $ }}-{{ .name | trunc 52 | replace "_" "-" }}"
             securityContext:
-              {{- toYaml (.securityContext | default $.Values.securityContext) | nindent 14 }}
-            image: "{{ .image.repository | default $.Values.image.repository }}:{{ .image.tag | default $.Values.image.tag }}"
-            imagePullPolicy: {{ .image.pullPolicy | default $.Values.image.pullPolicy }}
+              {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 14 }}
+            image: "{{ .image.repository | default $.Values.rt.image.repository }}:{{ .image.tag | default $.Values.rt.image.tag }}"
+            imagePullPolicy: {{ .image.pullPolicy | default $.Values.rt.image.pullPolicy }}
             command:
               {{- toYaml .command | nindent 14 }}
             {{- with .resources }}

@@ -34,6 +34,14 @@ jobs:
     timeout-minutes: 80
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        versions:
+          - rt: "5.0.8"
+            rtir: "5.0.8"
+          - rt: "6.0.0"
+            tag: "latest"
+
     steps:
       - name: checkout sources
         uses: actions/checkout@v4
@@ -47,26 +55,22 @@ jobs:
         with:
           install: true
 
-      - name: Docker rt5 meta
-        id: metart5
+      - name: Docker meta
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: firefart/requesttracker
+          flavor: |
+            # disable setting the latest tag by default
+            latest=false
           tags: |
-            type=raw,value=5
-            type=raw,value=5.0.8
-            type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-5-
-
-      - name: Docker rt6 meta
-        id: metart6
-        uses: docker/metadata-action@v5
-        with:
-          images: firefart/requesttracker
-          tags: |
-            type=raw,value=latest
-            type=raw,value=6
-            type=raw,value=6.0.0
-            type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-
+            # Enable latest tag if set
+            type=raw,value=latest,enable=${{ matrix.versions.tag == 'latest' }}
+            # Create a tag for the major version
+            type=semver,pattern={{major}},value=${{ matrix.versions.rt }}
+            # Create a tag for the full version
+            type=raw,value=${{ matrix.versions.rt }}
+            type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-${{ matrix.versions.major }}-
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3.4.0
@@ -75,26 +79,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push RT5
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           build-args: |
-            RT_VERSION=5.0.8
+            RT_VERSION=${{ matrix.versions.rt }}
+            RTIR_VERSION=${{ matrix.versions.rtir }}
           context: .
           file: Dockerfile
           sbom: true
           provenance: mode=max
           push: ${{ env.DO_PUSH }}
-          tags: ${{ steps.metart5.outputs.tags }}
-          labels: ${{ steps.metart5.outputs.labels }}
-
-      - name: Build and push RT6
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: Dockerfile
-          sbom: true
-          provenance: mode=max
-          push: ${{ env.DO_PUSH }}
-          tags: ${{ steps.metart6.outputs.tags }}
-          labels: ${{ steps.metart6.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

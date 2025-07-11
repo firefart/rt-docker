@@ -139,6 +139,10 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::InlineHelp \
   # https://metacpan.org/dist/RT-Extension-Tags
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags \
+  # https://metacpan.org/dist/RT-Extension-HelpDesk
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk \
+  # https://metacpan.org/dist/RT-Extension-AI (only for RT 6.0.x)
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AI \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -159,6 +163,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Tags
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-HelpDesk
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk~">= 0.0000, < 1.0000" \
   ;; \
   esac
 
@@ -201,30 +207,23 @@ COPY --from=builder /opt/rt /opt/rt
 # run a final dependency check if we copied all
 RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
-# make backwards compatible as we changed the folder to not contain the version info any more
-# remove after some time
-RUN ln -s /opt/rt /opt/rt5
-
-# msmtp config
-RUN mkdir /msmtp \
+RUN true \
+  # msmtp config
+  && mkdir -p /msmtp \
   && chown rt:rt /msmtp \
   # also fake sendmail for cronjobs
-  && ln -s /usr/bin/msmtp /usr/sbin/sendmail
-
-# getmail
-RUN mkdir -p /getmail \
-  && chown rt:rt /getmail
-
-# gpg
-RUN mkdir -p /opt/rt/var/data/gpg \
-  && chown rt:rt /opt/rt/var/data/gpg
-
-# smime
-RUN mkdir -p /opt/rt/var/data/smime \
-  && chown rt:rt /opt/rt/var/data/smime
-
-# shredder dir
-RUN mkdir -p /opt/rt/var/data/RT-Shredder \
+  && ln -s /usr/bin/msmtp /usr/sbin/sendmail \
+  # getmail
+  && mkdir -p /getmail \
+  && chown rt:rt /getmail \
+  # gpg
+  && mkdir -p /opt/rt/var/data/gpg \
+  && chown rt:rt /opt/rt/var/data/gpg \
+  # smime
+  && mkdir -p /opt/rt/var/data/smime \
+  && chown rt:rt /opt/rt/var/data/smime \
+  # shredder dir
+  && mkdir -p /opt/rt/var/data/RT-Shredder \
   && chown rt:rt /opt/rt/var/data/RT-Shredder
 
 # RTIR Database stuff for setup

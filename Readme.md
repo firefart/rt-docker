@@ -4,7 +4,7 @@ This is a complete setup for [Request Tracker](https://bestpractical.com/request
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image is rebuilt on a daily basis.
 
-The [Request Tracker for Incident Response (RT-IR)](https://bestpractical.com/rtir) Extension is also installed.
+The [Request Tracker for Incident Response (RT-IR)](https://bestpractical.com/rtir) extension is also installed among various others. Look at the [Dockerfile](Dockerfile) to see the available extensions.
 
 ## Prerequisites
 

@@ -141,6 +141,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags \
   # https://metacpan.org/dist/RT-Extension-HelpDesk
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk \
+  # https://metacpan.org/dist/RT-Extension-AI (only for RT 6.0.x)
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AI \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \

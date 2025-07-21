@@ -1,0 +1,32 @@
+{{- if .Values.caddy.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "request-tracker.caddy.fullname" . }}
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "request-tracker.caddy.fullname" . }}
+  minReplicas: {{ .Values.caddy.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.caddy.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.caddy.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.caddy.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.caddy.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.caddy.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "{{ include "request-tracker.fullname" $ }}-{{ .name | trunc 52 | replace "_" "-" }}"
+  name: "{{ printf "%s-%s" (include "request-tracker.fullname" $) .name | trunc -63 | replace "_" "-" }}"
   labels:
     {{- include "request-tracker.labels" $ | nindent 4 }}
 spec:
@@ -17,7 +17,7 @@ spec:
           securityContext:
             {{- toYaml .podSecurityContext | default $.Values.rt.podSecurityContext | nindent 12 }}
           containers:
-          - name: "{{ include "request-tracker.fullname" $ }}-{{ .name | trunc 52 | replace "_" "-" }}"
+          - name: "{{ printf "%s-%s" (include "request-tracker.fullname" $) .name | trunc -63 | replace "_" "-" }}"
             securityContext:
               {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 14 }}
             image: "{{ .image.repository | default $.Values.rt.image.repository }}:{{ .image.tag | default $.Values.rt.image.tag }}"

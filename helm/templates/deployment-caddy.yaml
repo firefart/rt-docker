@@ -1,16 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "request-tracker.fullname" . }}
+  name: {{ include "request-tracker.caddy.fullname" . }}
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: caddy
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.rt.replicaCount }}
+  {{- if not .Values.caddy.autoscaling.enabled }}
+  replicas: {{ .Values.caddy.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "request-tracker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: caddy
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,48 +21,55 @@ spec:
       {{- end }}
       labels:
         {{- include "request-tracker.labels" . | nindent 8 }}
+        app.kubernetes.io/component: caddy
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.rt.imagePullSecrets }}
+      {{- with .Values.caddy.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "request-tracker.serviceAccountName" . }}
-      {{- with .Values.rt.podSecurityContext }}
+      {{- with .Values.caddy.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          {{- with .Values.rt.securityContext }}
+          {{- with .Values.caddy.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.rt.image.repository }}:{{ .Values.rt.image.tag }}"
-          imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
+          image: "{{ .Values.caddy.image.repository }}:{{ .Values.caddy.image.tag }}"
+          imagePullPolicy: {{ .Values.caddy.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 80
               protocol: TCP
-          {{- with .Values.rt.livenessProbe }}
+            - name: mailgate
+              containerPort: 8080
+              protocol: TCP
+            - name: health
+              containerPort: 1337
+              protocol: TCP
+          {{- with .Values.caddy.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.rt.readinessProbe }}
+          {{- with .Values.caddy.readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.rt.resources }}
+          {{- with .Values.caddy.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.rt.volumeMounts }}
+          {{- with .Values.caddy.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.rt.volumes }}
+      {{- with .Values.caddy.volumes }}
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}

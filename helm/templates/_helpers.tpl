@@ -23,6 +23,32 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
+{{- define "request-tracker.rt.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- printf "%s-rt" .Values.fullnameOverride | trunc -63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- printf "%s-rt" .Release.Name | trunc -63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s-rt" .Release.Name $name | trunc -63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "request-tracker.caddy.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- printf "%s-caddy" .Values.fullnameOverride | trunc -63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- printf "%s-caddy" .Release.Name | trunc -63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s-caddy" .Release.Name $name | trunc -63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{/*
 Create chart name and version as used by the chart label.
 */}}

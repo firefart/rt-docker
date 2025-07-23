@@ -6,44 +6,44 @@ function check_files() {
   # check for needed config files
   # these are mounted using docker-compose and are
   # required by the setup
-  if [ ! -f ./RT_SiteConfig.pm ]; then
+  if [[ ! -f ./RT_SiteConfig.pm ]]; then
     echo "RT_SiteConfig.pm does not exist. Please see RT_SiteConfig.pm.example for an example configuration."
     exit 1
   fi
 
-    if [ ! -f ./Caddyfile ]; then
+    if [[ ! -f ./Caddyfile ]]; then
     echo "Caddyfile does not exist. Please see Caddyfile.example for an example configuration."
     exit 1
   fi
 
-  if [ ! -f ./msmtp/msmtp.conf ]; then
+  if [[ ! -f ./msmtp/msmtp.conf ]]; then
     echo "./msmtp/msmtp.conf does not exist. Please see msmtp.conf.example for an example configuration."
     exit 1;
   fi
 
-  if [ ! -f ./crontab ]; then
+  if [[ ! -f ./crontab ]]; then
     echo "./crontab does not exist. Please see crontab.example for an example configuration."
     exit 1
   fi
 
-  if [ ! -f ./getmail/getmailrc ]; then
+  if [[ ! -f ./getmail/getmailrc ]]; then
     echo "./getmail/getmailrc does not exist. Please see getmailrc.example for an example configuration."
     exit 1
   fi
 }
 
 function check_dev_files() {
-  if [ ! -f ./pgadmin_password.secret ]; then
+  if [[ ! -f ./pgadmin_password.secret ]]; then
     echo "./pgadmin_password.secret does not exist. Please set a password."
     exit 1
   fi
 
-  if [ ! -f ./certs/pub.pem ]; then
+  if [[ ! -f ./certs/pub.pem ]]; then
     echo "./certs/pub.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
     exit 1
   fi
 
-  if [ ! -f ./certs/priv.pem ]; then
+  if [[ ! -f ./certs/priv.pem ]]; then
     echo "./certs/priv.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
     exit 1
   fi

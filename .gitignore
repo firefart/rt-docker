@@ -29,3 +29,5 @@ shredder/*.sql
 *.json
 docker-compose.override.yml
 *.patch
+# Added by goreleaser init:
+dist/

@@ -6,9 +6,9 @@ metadata:
     {{- include "request-tracker.labels" . | nindent 4 }}
     app.kubernetes.io/component: rt
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.rt.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.rt.service.port }}
       targetPort: rt-fcgi
       protocol: TCP
       name: rt-fcgi

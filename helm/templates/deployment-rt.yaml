@@ -44,8 +44,8 @@ spec:
           image: "{{ .Values.rt.image.repository }}:{{ .Values.rt.image.tag }}"
           imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
           ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
+            - name: rt-fcgi
+              containerPort: {{ .Values.rt.port }}
               protocol: TCP
           {{- with .Values.rt.livenessProbe }}
           livenessProbe:

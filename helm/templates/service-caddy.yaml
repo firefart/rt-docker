@@ -6,14 +6,14 @@ metadata:
     {{- include "request-tracker.labels" . | nindent 4 }}
     app.kubernetes.io/component: caddy
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.caddy.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: rt
+    - port: {{ .Values.caddy.service.port }}
+      targetPort: rt-fcgi
       protocol: TCP
       name: rt
-    - port: {{ .Values.service.mailgatePort }}
-      targetPort: mailgate
+    - port: {{ .Values.caddy.service.mailgatePort }}
+      targetPort: rt-fcgi
       protocol: TCP
       name: mailgate
   selector:

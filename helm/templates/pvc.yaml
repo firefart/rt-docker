@@ -16,7 +16,7 @@ spec:
   {{- end }}
 {{- end }}
 
-{{- if .Values.pvc.smime.enabled -}}
+{{ if .Values.pvc.smime.enabled -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -35,7 +35,7 @@ spec:
   {{- end }}
 {{- end }}
 
-{{- if .Values.pvc.shredder.enabled -}}
+{{ if .Values.pvc.shredder.enabled -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -54,7 +54,7 @@ spec:
   {{- end }}
 {{- end }}
 
-{{- if .Values.pvc.cron.enabled -}}
+{{ if .Values.pvc.cron.enabled -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -73,7 +73,7 @@ spec:
   {{- end }}
 {{- end }}
 
-{{- if .Values.pvc.caddyData.enabled -}}
+{{ if .Values.pvc.caddyData.enabled -}}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

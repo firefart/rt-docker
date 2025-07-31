@@ -143,17 +143,16 @@ postgres:
   imagePullSecrets: []
 
   securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-
-  podSecurityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 999 # postgres user in the postgres image
     runAsGroup: 999 # postgres group in the postgres image
+    # capabilities:
+    #   drop:
+    #   - ALL
+
+  podSecurityContext:
     fsGroup: 999 # postgres group in the postgres image
 
   # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/

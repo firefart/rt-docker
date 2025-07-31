@@ -50,14 +50,20 @@ spec:
               protocol: TCP
           livenessProbe:
             exec:
-              command: ["pg_isready"]
+              command:
+                - pg_isready
+                - -U ${POSTGRES_USER}
+                - -d ${POSTGRES_DB}
             initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 5
           readinessProbe:
             exec:
-              command: ["pg_isready"]
+              command:
+                - pg_isready
+                - -U ${POSTGRES_USER}
+                - -d ${POSTGRES_DB}
             initialDelaySeconds: 60
             periodSeconds: 30
             timeoutSeconds: 10
@@ -70,9 +76,12 @@ spec:
             - configMapRef:
                 name: "{{ printf "%s-postgres-secret" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
           volumeMounts:
-             - mountPath: /var/lib/postgresql/data
-               name: postgres-data
-               readOnly: false
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+              readOnly: false
+            - mountPath: /var/run/postgresql
+              name: postgres-run
+              readOnly: false
           {{- with .Values.postgres.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -80,6 +89,9 @@ spec:
         - name: postgres-data
           persistentVolumeClaim:
             claimName: {{ include "request-tracker.fullname" . }}-postgres-data
+        - name: postgres-run
+          emptyDir:
+            sizeLimit: 100Mi
       {{- with .Values.postgres.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

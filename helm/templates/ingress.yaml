@@ -37,7 +37,7 @@ spec:
               service:
                 name: {{ include "request-tracker.caddy.fullname" $ }}
                 port:
-                  number: {{ $.Values.service.port }}
+                  number: {{ $.Values.caddy.service.port }}
           {{- end }}
     {{- end }}
 {{- end }}

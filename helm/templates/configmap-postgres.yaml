@@ -1,0 +1,12 @@
+{{- if .Values.postgres.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ printf "%s-postgres-secret" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+data:
+  POSTGRES_DB: rt
+  POSTGRES_USER: rt
+  POSTGRES_PASSWORD: SecurePassword
+{{- end }}

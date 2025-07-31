@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "request-tracker.rt.fullname" . }}
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rt
+spec:
+  {{- if not .Values.rt.autoscaling.enabled }}
+  replicas: {{ .Values.rt.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "request-tracker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: rt
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "request-tracker.labels" . | nindent 8 }}
+        app.kubernetes.io/component: rt
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.rt.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "request-tracker.serviceAccountName" . }}
+      {{- with .Values.rt.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.rt.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.rt.image.repository }}:{{ .Values.rt.image.tag }}"
+          imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
+          ports:
+            - name: rt-fcgi
+              containerPort: {{ .Values.rt.port }}
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
+          {{- with .Values.rt.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: rt-config
+              mountPath: /opt/rt/etc/RT_SiteConfig.pm
+              subPath: RT_SiteConfig.pm
+              readOnly: true
+            - name: msmtp-config
+              mountPath: /msmtp/msmtp.conf
+              subPath: msmtp.conf
+              readOnly: true
+            - name: getmailrc-config
+              mountPath: /getmail/getmailrc
+              subPath: getmailrc
+              readOnly: true
+            - name: rt-gpg
+              mountPath: /opt/rt/var/data/gpg
+              readOnly: false
+            - name: rt-smime
+              mountPath: /opt/rt/var/data/smime
+              readOnly: true
+            - name: rt-shredder
+              mountPath: /opt/rt/var/data/RT-Shredder
+              readOnly: false
+            - name: rt-cron
+              mountPath: /cron
+              readOnly: false
+          {{- with .Values.rt.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: rt-config
+          configMap:
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: rtSiteConfig
+                path: RT_SiteConfig.pm
+        - name: msmtp-config
+          configMap:
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: msmtp
+                path: msmtp.conf
+        - name: getmailrc-config
+          configMap:
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: getmailrc
+                path: getmailrc
+        - name: rt-gpg
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-gpg
+        - name: rt-smime
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-smime
+        - name: rt-shredder
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-shredder
+        - name: rt-cron
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-cron
+      {{- with .Values.rt.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

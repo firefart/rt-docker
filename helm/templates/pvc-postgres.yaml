@@ -1,0 +1,17 @@
+{{- if .Values.postgres.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "request-tracker.fullname" . }}-postgres-data
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.postgresData.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.postgresData.size }}
+  {{- if .Values.pvc.postgresData.storageClass }}
+  storageClassName: {{ .Values.pvc.postgresData.storageClass }}
+  {{- end }}
+{{- end }}

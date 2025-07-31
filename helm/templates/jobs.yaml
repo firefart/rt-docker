@@ -1,0 +1,33 @@
+{{- range .Values.cronjobs }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "{{ printf "%s-%s" (include "request-tracker.fullname" $) .name | trunc -63 | replace "_" "-" }}"
+  labels:
+    {{- include "request-tracker.labels" $ | nindent 4 }}
+spec:
+  schedule: "{{ .schedule }}"
+  concurrencyPolicy: {{ .concurrencyPolicy | default "Forbid" }}
+  timeZone: {{ .timeZone | default "UTC" }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ $.serviceAccountName }}
+          securityContext:
+            {{- toYaml .podSecurityContext | default $.Values.rt.podSecurityContext | nindent 12 }}
+          containers:
+          - name: "{{ printf "%s-%s" (include "request-tracker.fullname" $) .name | trunc -63 | replace "_" "-" }}"
+            securityContext:
+              {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 14 }}
+            image: "{{ .image.repository | default $.Values.rt.image.repository }}:{{ .image.tag | default $.Values.rt.image.tag }}"
+            imagePullPolicy: {{ .image.pullPolicy | default $.Values.rt.image.pullPolicy }}
+            command:
+              {{- toYaml .command | nindent 14 }}
+            {{- with .resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+          restartPolicy: {{ .restartPolicy | default "Never" }}
+{{- end }}

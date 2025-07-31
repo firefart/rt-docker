@@ -1,0 +1,2 @@
+jobs: volumes
+deployment: remove getmailrc and stuff, only needed on cronjobs

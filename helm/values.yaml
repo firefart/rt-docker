@@ -45,18 +45,17 @@ rt:
       cpu: 100m
       memory: 128Mi
 
-  # Additional volumes on the output Deployment definition.
-  volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
+  volumes:
+    - name: rt-config
+      configMap:
+        name: rt-config
+        items:
+          - key: rtSiteConfig
 
-  # Additional volumeMounts on the output Deployment definition.
-  volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
+  volumeMounts:
+    - name: rt-config
+      mountPath: /opt/rt/etc/RT_SiteConfig.pm
+      readOnly: true
 
   # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
   service:
@@ -129,18 +128,17 @@ caddy:
     timeoutSeconds: 10
     failureThreshold: 3
 
-  # Additional volumes on the output Deployment definition.
-  volumes: []
-  # - name: foo
-  #   secret:
-  #     secretName: mysecret
-  #     optional: false
+  volumes:
+    - name: caddy-config
+      configMap:
+        name: caddy-config
+        items:
+          - key: caddyfile
 
-  # Additional volumeMounts on the output Deployment definition.
-  volumeMounts: []
-  # - name: foo
-  #   mountPath: "/etc/foo"
-  #   readOnly: true
+  volumeMounts:
+    - name: caddy-config
+      mountPath: /etc/caddy/Caddyfile
+      readOnly: true
 
   # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
   service:

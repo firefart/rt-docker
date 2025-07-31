@@ -5,7 +5,6 @@
 RT_SiteConfig.pm
 *.pem
 *.key
-TODO
 !dev.sh
 !prod.sh
 !logs_prod.sh

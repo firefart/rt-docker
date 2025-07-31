@@ -143,17 +143,18 @@ postgres:
   imagePullSecrets: []
 
   securityContext:
+    {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+
+  podSecurityContext:
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 999 # postgres user in the postgres image
     runAsGroup: 999 # postgres group in the postgres image
     fsGroup: 999 # postgres group in the postgres image
-    # capabilities:
-    #   drop:
-    #   - ALL
-
-  podSecurityContext: {}
 
   # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
   autoscaling:
@@ -170,24 +171,6 @@ postgres:
     requests:
       cpu: 100m
       memory: 128Mi
-
-  # This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
-  livenessProbe:
-    httpGet:
-      path: /
-      port: health
-    initialDelaySeconds: 10
-    periodSeconds: 10
-    timeoutSeconds: 10
-    failureThreshold: 3
-  readinessProbe:
-    httpGet:
-      path: /
-      port: health
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    timeoutSeconds: 10
-    failureThreshold: 3
 
   volumes: []
 

@@ -1,4 +1,5 @@
-{{- range .Values.cronjobs.definitions }}
+{{- range .Values.cronjobs }}
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:

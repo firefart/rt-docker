@@ -19,6 +19,8 @@ rt:
     readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 1000 # the user id of the rt user in the container
+    runAsGroup: 1000 # the group id of the rt user in the container
+    allowPrivilegeEscalation: false
     # capabilities:
     #   drop:
     #   - ALL
@@ -227,102 +229,113 @@ tolerations: []
 affinity: {}
 
 cronjobs:
-  definitions:
-    - name: "clean-sessions"
-      schedule: "0 0 * * *"
-      restartPolicy: Never
-      timeZone: "UTC"
-      concurrencyPolicy: "Forbid"
-      command:
-        - /opt/rt/sbin/rt-clean-sessions
-      image:
-        {} # use the same image as the main pod
-        # repository: firefart/requesttracker
-        # pullPolicy: Always
-        # tag: "latest"
-      securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-      resources:
-        limits:
-          cpu: 100m
-          memory: 128Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
+  - name: "clean-sessions"
+    schedule: "0 0 * * *"
+    restartPolicy: Never
+    timeZone: "UTC"
+    concurrencyPolicy: "Forbid"
+    command:
+      - /opt/rt/sbin/rt-clean-sessions
+    image:
+      {} # use the same image as the main pod
+      # repository: firefart/requesttracker
+      # pullPolicy: Always
+      # tag: "latest"
+    securityContext:
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000 # the user id of the rt user in the container
+      runAsGroup: 1000 # the group id of the rt user in the container
+      allowPrivilegeEscalation: false
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
-    - name: "refresh-fulltext-index"
-      schedule: "0 * * * *"
-      restartPolicy: Never
-      timeZone: "UTC"
-      concurrencyPolicy: "Forbid"
-      command:
-        - /opt/rt/sbin/rt-fulltext-indexer
-        - --quiet
-      image:
-        {} # use the same image as the main pod
-        # repository: firefart/requesttracker
-        # pullPolicy: Always
-        # tag: "latest"
-      securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-      resources:
-        limits:
-          cpu: 100m
-          memory: 128Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
+  - name: "refresh-fulltext-index"
+    schedule: "0 * * * *"
+    restartPolicy: Never
+    timeZone: "UTC"
+    concurrencyPolicy: "Forbid"
+    command:
+      - /opt/rt/sbin/rt-fulltext-indexer
+      - --quiet
+    image:
+      {} # use the same image as the main pod
+      # repository: firefart/requesttracker
+      # pullPolicy: Always
+      # tag: "latest"
+    securityContext:
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000 # the user id of the rt user in the container
+      runAsGroup: 1000 # the group id of the rt user in the container
+      allowPrivilegeEscalation: false
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
-    - name: "getmail"
-      schedule: "* * * * *"
-      restartPolicy: Never
-      timeZone: "UTC"
-      concurrencyPolicy: "Forbid"
-      command:
-        - /usr/bin/getmail
-        - --rcfile=getmailrc
-        - -g
-        - /getmail
-      image:
-        {} # use the same image as the main pod
-        # repository: firefart/requesttracker
-        # pullPolicy: Always
-        # tag: "latest"
-      securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-      resources:
-        limits:
-          cpu: 100m
-          memory: 128Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
+  - name: "getmail"
+    schedule: "* * * * *"
+    restartPolicy: Never
+    timeZone: "UTC"
+    concurrencyPolicy: "Forbid"
+    command:
+      - /usr/bin/getmail
+      - --rcfile=getmailrc
+      - -g
+      - /getmail
+    image:
+      {} # use the same image as the main pod
+      # repository: firefart/requesttracker
+      # pullPolicy: Always
+      # tag: "latest"
+    securityContext:
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000 # the user id of the rt user in the container
+      runAsGroup: 1000 # the group id of the rt user in the container
+      allowPrivilegeEscalation: false
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
-    - name: "email-dashboards"
-      schedule: "0 * * * *"
-      restartPolicy: Never
-      timeZone: "UTC"
-      concurrencyPolicy: "Forbid"
-      command:
-        - /opt/rt/sbin/rt-email-dashboards
-      image:
-        {} # use the same image as the main pod
-        # repository: firefart/requesttracker
-        # pullPolicy: Always
-        # tag: "latest"
-      securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
-      resources:
-        limits:
-          cpu: 100m
-          memory: 128Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
+  - name: "email-dashboards"
+    schedule: "0 * * * *"
+    restartPolicy: Never
+    timeZone: "UTC"
+    concurrencyPolicy: "Forbid"
+    command:
+      - /opt/rt/sbin/rt-email-dashboards
+    image:
+      {} # use the same image as the main pod
+      # repository: firefart/requesttracker
+      # pullPolicy: Always
+      # tag: "latest"
+    securityContext:
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 1000 # the user id of the rt user in the container
+      runAsGroup: 1000 # the group id of the rt user in the container
+      allowPrivilegeEscalation: false
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
 
 # used to store shredder backups
 pvc:

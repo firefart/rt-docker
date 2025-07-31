@@ -68,6 +68,7 @@ spec:
           volumeMounts:
             - name: caddy-configfile
               mountPath: /etc/caddy/Caddyfile
+              subPath: Caddyfile
               readOnly: true
             - name: caddy-data
               mountPath: /data

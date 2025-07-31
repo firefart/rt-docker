@@ -18,12 +18,10 @@ rt:
   securityContext:
     readOnlyRootFilesystem: true
     runAsNonRoot: true
+    runAsUser: 1000 # the user id of the rt user in the container
     # capabilities:
     #   drop:
     #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
 
   podSecurityContext:
     {}
@@ -276,32 +274,38 @@ cronjobs:
 pvc:
   gpg:
     enabled: true
-    accessMode: ReadWriteMany
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     storageClass: ""
     size: 1Gi
   smime:
     enabled: true
-    accessMode: ReadWriteMany
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     storageClass: ""
     size: 1Gi
   shredder:
     enabled: true
-    accessMode: ReadWriteMany
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     storageClass: ""
     size: 1Gi
   cron:
     enabled: true
-    accessMode: ReadWriteMany
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     storageClass: ""
     size: 1Gi
   caddyData:
     enabled: true
-    accessMode: ReadWriteMany
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     storageClass: ""
     size: 1Gi
   caddyConfig:
     enabled: true
-    accessMode: ReadWriteMany
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     storageClass: ""
     size: 1Gi
 

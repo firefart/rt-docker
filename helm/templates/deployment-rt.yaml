@@ -66,12 +66,15 @@ spec:
           volumeMounts:
             - name: rt-config
               mountPath: /opt/rt/etc/RT_SiteConfig.pm
+              subPath: RT_SiteConfig.pm
               readOnly: true
             - name: msmtp-config
               mountPath: /msmtp/msmtp.conf
+              subPath: msmtp.conf
               readOnly: true
             - name: getmailrc-config
               mountPath: /getmail/getmailrc
+              subPath: getmailrc
               readOnly: true
             - name: rt-gpg
               mountPath: /opt/rt/var/data/gpg

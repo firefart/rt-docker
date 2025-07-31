@@ -9,11 +9,11 @@ spec:
   type: {{ .Values.caddy.service.type }}
   ports:
     - port: {{ .Values.caddy.service.port }}
-      targetPort: rt-fcgi
+      targetPort: http
       protocol: TCP
       name: rt
     - port: {{ .Values.caddy.service.mailgatePort }}
-      targetPort: rt-fcgi
+      targetPort: mailgate
       protocol: TCP
       name: mailgate
   selector:

@@ -39,8 +39,8 @@ rt:
 
   resources:
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 500m
+      memory: 512Mi
     requests:
       cpu: 100m
       memory: 128Mi
@@ -442,6 +442,7 @@ config:
       @blocked path /REST/1.0/NoAuth/mail-gateway
       respond @blocked "Nope" 403
 
+      # TODO: rt should be the kubernetes service name
       reverse_proxy rt:9000 {
         transport fastcgi
       }

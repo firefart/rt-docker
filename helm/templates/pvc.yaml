@@ -91,3 +91,21 @@ spec:
   storageClassName: {{ .Values.pvc.caddyData.storageClass }}
   {{- end }}
 {{- end }}
+{{ if .Values.pvc.caddyConfig.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "request-tracker.fullname" . }}-caddy-config
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.caddyConfig.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.caddyConfig.size }}
+  {{- if .Values.pvc.caddyConfig.storageClass }}
+  storageClassName: {{ .Values.pvc.caddyConfig.storageClass }}
+  {{- end }}
+{{- end }}

@@ -1,5 +1,6 @@
 *.sh
 !dev.sh
+!dev-helm.sh
 !prod.sh
 RT_SiteConfig.pm
 *.pem

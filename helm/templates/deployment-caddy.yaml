@@ -65,12 +65,33 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.caddy.volumeMounts }}
           volumeMounts:
+            - name: caddy-configfile
+              mountPath: /etc/caddy/Caddyfile
+              readOnly: true
+            - name: caddy-data
+              mountPath: /data
+              readOnly: false
+            - name: caddy-config
+              mountPath: /config
+              readOnly: false
+          {{- with .Values.caddy.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.caddy.volumes }}
       volumes:
+        - name: caddy-configfile
+          configMap:
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: caddyfile
+                path: Caddyfile
+        - name: caddy-data
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-caddy-data
+        - name: caddy-config
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-caddy-config
+      {{- with .Values.caddy.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}

@@ -45,17 +45,9 @@ rt:
       cpu: 100m
       memory: 128Mi
 
-  volumes:
-    - name: rt-config
-      configMap:
-        name: rt-config
-        items:
-          - key: rtSiteConfig
+  volumes: []
 
-  volumeMounts:
-    - name: rt-config
-      mountPath: /opt/rt/etc/RT_SiteConfig.pm
-      readOnly: true
+  volumeMounts: []
 
   # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
   service:
@@ -83,12 +75,11 @@ caddy:
   securityContext:
     readOnlyRootFilesystem: true
     runAsNonRoot: true
+    runAsUser: 65534 # nobody user in the caddy image\
+    runAsGroup: 65534 # nobody group in the caddy image
     # capabilities:
     #   drop:
     #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
 
   podSecurityContext:
     {}
@@ -128,17 +119,9 @@ caddy:
     timeoutSeconds: 10
     failureThreshold: 3
 
-  volumes:
-    - name: caddy-config
-      configMap:
-        name: caddy-config
-        items:
-          - key: caddyfile
+  volumes: []
 
-  volumeMounts:
-    - name: caddy-config
-      mountPath: /etc/caddy/Caddyfile
-      readOnly: true
+  volumeMounts: []
 
   # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
   service:
@@ -206,9 +189,8 @@ cronjobs:
         # pullPolicy: Always
         # tag: "latest"
       securityContext:
-        {} # use the same security context as the main pod
-        # readOnlyRootFilesystem: true
-        # runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
       resources:
         limits:
           cpu: 100m
@@ -231,9 +213,8 @@ cronjobs:
         # pullPolicy: Always
         # tag: "latest"
       securityContext:
-        {} # use the same security context as the main pod
-        # readOnlyRootFilesystem: true
-        # runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
       resources:
         limits:
           cpu: 100m
@@ -258,9 +239,8 @@ cronjobs:
         # pullPolicy: Always
         # tag: "latest"
       securityContext:
-        {} # use the same security context as the main pod
-        # readOnlyRootFilesystem: true
-        # runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
       resources:
         limits:
           cpu: 100m
@@ -282,9 +262,8 @@ cronjobs:
         # pullPolicy: Always
         # tag: "latest"
       securityContext:
-        {} # use the same security context as the main pod
-        # readOnlyRootFilesystem: true
-        # runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
       resources:
         limits:
           cpu: 100m
@@ -316,6 +295,11 @@ pvc:
     storageClass: ""
     size: 1Gi
   caddyData:
+    enabled: true
+    accessMode: ReadWriteMany
+    storageClass: ""
+    size: 1Gi
+  caddyConfig:
     enabled: true
     accessMode: ReadWriteMany
     storageClass: ""

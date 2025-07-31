@@ -63,12 +63,63 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.rt.volumeMounts }}
           volumeMounts:
+            - name: rt-config
+              mountPath: /opt/rt/etc/RT_SiteConfig.pm
+              readOnly: true
+            - name: msmtp-config
+              mountPath: /msmtp/msmtp.conf
+              readOnly: true
+            - name: getmailrc-config
+              mountPath: /getmail/getmailrc
+              readOnly: true
+            - name: rt-gpg
+              mountPath: /opt/rt/var/data/gpg
+              readOnly: false
+            - name: rt-smime
+              mountPath: /opt/rt/var/data/smime
+              readOnly: true
+            - name: rt-shredder
+              mountPath: /opt/rt/var/data/RT-Shredder
+              readOnly: false
+            - name: rt-cron
+              mountPath: /cron
+              readOnly: false
+          {{- with .Values.rt.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.rt.volumes }}
       volumes:
+        - name: rt-config
+          configMap:
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: rtSiteConfig
+                path: RT_SiteConfig.pm
+        - name: msmtp-config
+          configMap:
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: msmtp
+                path: msmtp.conf
+        - name: getmailrc-config
+          configMap:
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: getmailrc
+                path: getmailrc
+        - name: rt-gpg
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-gpg
+        - name: rt-smime
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-smime
+        - name: rt-shredder
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-shredder
+        - name: rt-cron
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-cron
+      {{- with .Values.rt.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}

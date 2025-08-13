@@ -113,6 +113,8 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::TicketlistTransactions \
   # https://metacpan.org/dist/RTx-RemoteLinks
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::RemoteLinks \
+  # https://metacpan.org/dist/RT-Extension-TicketLocking
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TicketLocking \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
@@ -143,6 +145,14 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk \
   # https://metacpan.org/dist/RT-Extension-AI (only for RT 6.0.x)
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AI \
+  # https://metacpan.org/dist/RT-Extension-ChangeManagement
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ChangeManagement \
+  # https://metacpan.org/dist/RT-Extension-SwitchUsers
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::SwitchUsers \
+  # https://metacpan.org/dist/RT-Extension-ResetPassword
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword \
+  # https://metacpan.org/dist/RT-Extension-Captcha
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -165,6 +175,14 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-HelpDesk
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-ChangeManagement
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ChangeManagement~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-SwitchUsers
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::SwitchUsers~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-ResetPassword
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
+  # https://metacpan.org/dist/RT-Extension-Captcha
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha~">= 1.0000, < 2.0000" \
   ;; \
   esac
 

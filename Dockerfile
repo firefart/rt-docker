@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:12-slim AS msmtp-builder
+FROM debian:13-slim AS msmtp-builder
 
 ENV MSMTP_VERSION="1.8.30"
 ENV MSMTP_GPG_PUBLIC_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"

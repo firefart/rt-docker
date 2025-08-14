@@ -41,7 +41,7 @@ jobs:
             rtir: "5.0.8"
           - rt: "6.0.1"
             rtir: "6.0.1"
-            tag: "latest"
+            latest: "true"
 
     steps:
       - name: checkout sources
@@ -66,7 +66,7 @@ jobs:
             latest=false
           tags: |
             # Enable latest tag if set
-            type=raw,value=latest,enable=${{ matrix.versions.tag == 'latest' }}
+            type=raw,value=latest,enable=${{ matrix.versions.latest == 'true' }}
             # Create a tag for the major version
             type=semver,pattern={{major}},value=${{ matrix.versions.rt }}
             # Create a tag for the full version

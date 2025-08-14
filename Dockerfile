@@ -26,8 +26,8 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.42.0 AS builder
 
-ARG RT_VERSION="6.0.0"
-ARG RTIR_VERSION="5.0.8"
+ARG RT_VERSION="6.0.1"
+ARG RTIR_VERSION="6.0.1"
 
 ENV RT="${RT_VERSION}"
 ENV RTIR="${RTIR_VERSION}"
@@ -186,13 +186,11 @@ RUN case "${RT_VERSION}" in \
   ;; \
   esac
 
-# Configure RTIR (only compatible with RT 5.x at the moment)
-RUN case "${RT_VERSION}" in "5."*) \
+# Configure RTIR
+RUN true \
   cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  && make install \
-  ;; \
-  esac
+  && make install
 
 #############################################################################
 

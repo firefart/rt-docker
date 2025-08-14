@@ -188,7 +188,7 @@ RUN case "${RT_VERSION}" in \
 
 # Configure RTIR
 RUN true \
-  cd /src/rtir \
+  && cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
   && make install
 

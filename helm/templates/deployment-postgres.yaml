@@ -74,7 +74,7 @@ spec:
           {{- end }}
           envFrom:
             - configMapRef:
-                name: "{{ printf "%s-postgres-secret" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+                name: "{{ printf "%s-postgres" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data

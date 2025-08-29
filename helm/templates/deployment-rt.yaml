@@ -45,7 +45,7 @@ spec:
           imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
           ports:
             - name: rt-fcgi
-              containerPort: {{ .Values.rt.port }}
+              containerPort: "{{ .Values.rt.port }}"
               protocol: TCP
           livenessProbe:
             exec:
@@ -100,13 +100,13 @@ spec:
           imagePullPolicy: {{ .Values.caddy.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: "{{ .Values.caddy.ports.http }}"
               protocol: TCP
             - name: mailgate
-              containerPort: 8080
+              containerPort:  "{{ .Values.caddy.ports.mailgate }}"
               protocol: TCP
             - name: health
-              containerPort: 1337
+              containerPort:  "{{ .Values.caddy.ports.health }}"
               protocol: TCP
           {{- with .Values.caddy.livenessProbe }}
           livenessProbe:

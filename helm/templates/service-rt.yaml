@@ -4,14 +4,16 @@ metadata:
   name: {{ include "request-tracker.rt.fullname" . }}
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
-    app.kubernetes.io/component: rt
 spec:
-  type: {{ .Values.rt.service.type }}
+  type: {{ .Values.caddy.service.type }}
   ports:
-    - port: {{ .Values.rt.service.port }}
-      targetPort: rt-fcgi
+    - port: {{ .Values.caddy.service.port }}
+      targetPort: http
       protocol: TCP
-      name: rt-fcgi
+      name: rt
+    - port: {{ .Values.caddy.service.mailgatePort }}
+      targetPort: mailgate
+      protocol: TCP
+      name: mailgate
   selector:
     {{- include "request-tracker.selectorLabels" . | nindent 4 }}
-    app.kubernetes.io/component: rt

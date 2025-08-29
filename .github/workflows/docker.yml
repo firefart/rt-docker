@@ -39,6 +39,8 @@ jobs:
         versions:
           - rt: "5.0.8"
             rtir: "5.0.8"
+          - rt: "6.0.0"
+            rtir: "6.0.1"
           - rt: "6.0.1"
             rtir: "6.0.1"
             latest: "true"

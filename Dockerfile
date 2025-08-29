@@ -68,9 +68,17 @@ RUN mkdir -p /src \
   && tar --strip-components=1 -C /src/rtir -xzf /src/rtir.tar.gz
 
 # Configure RT
-RUN cd /src/rt \
-  # configure with all plugins and with the newly created user
-  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-dashboard-chart-emails --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
+RUN case "${RT_VERSION}" in \
+  "6."*) \
+    cd /src/rt \
+    && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-dashboard-chart-emails --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+    ;; \
+  # older versions for RT 5.0.x
+  "5."*) \
+    cd /src/rt \
+    && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+    ;; \
+  esac
 
 # install https support for cpanm
 # also disable tests on net http as the live tests often fail

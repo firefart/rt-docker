@@ -91,6 +91,49 @@ spec:
           {{- with .Values.rt.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        - name: {{ .Chart.Name }}-caddy
+          {{- with .Values.caddy.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.caddy.image.repository }}:{{ .Values.caddy.image.tag }}"
+          imagePullPolicy: {{ .Values.caddy.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: mailgate
+              containerPort: 8080
+              protocol: TCP
+            - name: health
+              containerPort: 1337
+              protocol: TCP
+          {{- with .Values.caddy.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.caddy.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.caddy.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: caddy-configfile
+              mountPath: /etc/caddy/Caddyfile
+              subPath: Caddyfile
+              readOnly: true
+            - name: caddy-data
+              mountPath: /data
+              readOnly: false
+            - name: caddy-config
+              mountPath: /config
+              readOnly: false
+          {{- with .Values.caddy.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
         - name: rt-config
           configMap:
@@ -122,6 +165,18 @@ spec:
         - name: rt-cron
           persistentVolumeClaim:
             claimName: {{ include "request-tracker.fullname" . }}-cron
+        - name: caddy-configfile
+          configMap:
+            name: "{{ printf "%s-caddy-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            items:
+              - key: caddyfile
+                path: Caddyfile
+        - name: caddy-data
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-caddy-data
+        - name: caddy-config
+          persistentVolumeClaim:
+            claimName: {{ include "request-tracker.fullname" . }}-caddy-config
       {{- with .Values.rt.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

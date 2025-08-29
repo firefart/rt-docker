@@ -80,7 +80,13 @@ RUN cpanm -v --no-man-pages -n install Net::HTTP \
   # as they constanly fail with timeouts and thus break
   # the build
   # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
-  && cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner
+  && cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner \
+  # https://github.com/Corion/WWW-Mechanize-Chrome/issues/85
+  && cpanm -v --no-man-pages -n install Filter::signatures \
+  # tests fail on build
+  && cpanm -v --no-man-pages -n install Cache::Cache \
+  # tests fail on build
+  && cpanm -v --no-man-pages -n install Time::ParseDate
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \

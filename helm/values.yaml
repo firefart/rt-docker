@@ -49,13 +49,6 @@ rt:
 
   volumeMounts: []
 
-  # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-  service:
-    # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-    type: ClusterIP
-    # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-    port: 80
-
   # the port the RT-FCGI server listens on
   port: 9000
 
@@ -69,9 +62,6 @@ caddy:
     pullPolicy: Always
     tag: "latest"
 
-  # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-  imagePullSecrets: []
-
   securityContext:
     readOnlyRootFilesystem: true
     runAsNonRoot: true
@@ -80,18 +70,6 @@ caddy:
     # capabilities:
     #   drop:
     #   - ALL
-
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-
-  # This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
 
   resources:
     limits:

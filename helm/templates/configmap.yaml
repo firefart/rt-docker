@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+  name: rt-config
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 data:

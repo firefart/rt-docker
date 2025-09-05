@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "request-tracker.fullname" . }}
+  name: rt
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -35,7 +35,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "request-tracker.caddy.fullname" $ }}
+                name: rt
                 port:
                   number: {{ $.Values.caddy.service.port }}
           {{- end }}

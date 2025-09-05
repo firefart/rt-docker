@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "request-tracker.fullname" . }}-postgres-data
+  name: rt-postgres-data
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:

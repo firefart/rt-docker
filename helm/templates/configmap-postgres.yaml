@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ printf "%s-postgres" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+  name: rt-postgres
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 data:

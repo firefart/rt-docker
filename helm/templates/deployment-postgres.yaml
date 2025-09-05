@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "request-tracker.postgres.fullname" . }}
+  name: rt-db
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres
@@ -74,7 +74,7 @@ spec:
           {{- end }}
           envFrom:
             - configMapRef:
-                name: "{{ printf "%s-postgres" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+                name: rt-postgres
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data
@@ -88,7 +88,7 @@ spec:
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: {{ include "request-tracker.fullname" . }}-postgres-data
+            claimName: rt-postgres-data
         - name: postgres-run
           emptyDir:
             sizeLimit: 100Mi

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "request-tracker.rt.fullname" . }}
+  name: rt
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
     app.kubernetes.io/component: rt
@@ -34,6 +34,12 @@ spec:
       {{- with .Values.rt.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.postgres.enabled }}
+      initContainers:
+        - name: init-db
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup rt-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for rt-db; sleep 2; done"]
       {{- end }}
       containers:
         - name: rt
@@ -145,49 +151,49 @@ spec:
       volumes:
         - name: rt-config
           configMap:
-            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            name: rt-config
             items:
               - key: rtSiteConfig
                 path: RT_SiteConfig.pm
         - name: msmtp-config
           configMap:
-            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            name: rt-config
             items:
               - key: msmtp
                 path: msmtp.conf
         - name: getmailrc-config
           configMap:
-            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            name: rt-config
             items:
               - key: getmailrc
                 path: getmailrc
         - name: rt-gpg
           persistentVolumeClaim:
-            claimName: {{ include "request-tracker.fullname" . }}-gpg
+            claimName: rt-gpg
         - name: rt-smime
           persistentVolumeClaim:
-            claimName: {{ include "request-tracker.fullname" . }}-smime
+            claimName: rt-smime
         - name: rt-shredder
           persistentVolumeClaim:
-            claimName: {{ include "request-tracker.fullname" . }}-shredder
+            claimName: rt-shredder
         - name: rt-cron
           persistentVolumeClaim:
-            claimName: {{ include "request-tracker.fullname" . }}-cron
+            claimName: rt-cron
       {{- with .Values.rt.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
         - name: caddy-configfile
           configMap:
-            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            name: rt-config
             items:
               - key: caddyfile
                 path: Caddyfile
         - name: caddy-data
           persistentVolumeClaim:
-            claimName: {{ include "request-tracker.fullname" . }}-caddy-data
+            claimName: rt-caddy-data
         - name: caddy-config
           persistentVolumeClaim:
-            claimName: {{ include "request-tracker.fullname" . }}-caddy-config
+            claimName: rt-caddy-config
       {{- with .Values.caddy.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

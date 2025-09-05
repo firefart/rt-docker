@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "request-tracker.rt.fullname" . }}
+  name: rt
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "request-tracker.rt.fullname" . }}
+    name: rt
   minReplicas: {{ .Values.rt.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.rt.autoscaling.maxReplicas }}
   metrics:

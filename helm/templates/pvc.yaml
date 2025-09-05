@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "request-tracker.fullname" . }}-gpg
+  name: rt-gpg
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -21,7 +21,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "request-tracker.fullname" . }}-smime
+  name: rt-smime
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -40,7 +40,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "request-tracker.fullname" . }}-shredder
+  name: rt-shredder
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -59,7 +59,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "request-tracker.fullname" . }}-cron
+  name: rt-cron
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -78,7 +78,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "request-tracker.fullname" . }}-caddy-data
+  name: rt-caddy-data
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -96,7 +96,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "request-tracker.fullname" . }}-caddy-config
+  name: rt-caddy-config
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:

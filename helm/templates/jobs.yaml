@@ -14,7 +14,7 @@ spec:
     spec:
       template:
         spec:
-          serviceAccountName: {{ include "request-tracker.serviceAccountName" $ }}
+          serviceAccountName: rt
           securityContext:
             {{- toYaml .podSecurityContext | default $.Values.rt.podSecurityContext | nindent 12 }}
           containers:

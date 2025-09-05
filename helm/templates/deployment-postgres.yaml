@@ -31,7 +31,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "request-tracker.serviceAccountName" . }}
+      serviceAccountName: rt
       {{- with .Values.postgres.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}

@@ -39,6 +39,10 @@ spec:
       initContainers:
         - name: init-db
           image: busybox:1.28
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
           command: ['sh', '-c', "until nslookup rt-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for rt-db; sleep 2; done"]
       {{- end }}
       containers:

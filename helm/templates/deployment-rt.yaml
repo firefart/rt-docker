@@ -36,7 +36,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: rt
           {{- with .Values.rt.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -45,7 +45,7 @@ spec:
           imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
           ports:
             - name: rt-fcgi
-              containerPort: "{{ .Values.rt.port }}"
+              containerPort: {{ .Values.rt.port }}
               protocol: TCP
           livenessProbe:
             exec:
@@ -99,7 +99,7 @@ spec:
           {{- with .Values.rt.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-        - name: {{ .Chart.Name }}-caddy
+        - name: caddy
           {{- with .Values.caddy.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -108,13 +108,13 @@ spec:
           imagePullPolicy: {{ .Values.caddy.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: "{{ .Values.caddy.ports.http }}"
+              containerPort: {{ .Values.caddy.ports.http }}
               protocol: TCP
             - name: mailgate
-              containerPort:  "{{ .Values.caddy.ports.mailgate }}"
+              containerPort:  {{ .Values.caddy.ports.mailgate }}
               protocol: TCP
             - name: health
-              containerPort:  "{{ .Values.caddy.ports.health }}"
+              containerPort:  {{ .Values.caddy.ports.health }}
               protocol: TCP
           {{- with .Values.caddy.livenessProbe }}
           livenessProbe:
@@ -178,7 +178,7 @@ spec:
       {{- end }}
         - name: caddy-configfile
           configMap:
-            name: "{{ printf "%s-caddy-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
+            name: "{{ printf "%s-config" (include "request-tracker.fullname" .) | trunc -63 | replace "_" "-" }}"
             items:
               - key: caddyfile
                 path: Caddyfile

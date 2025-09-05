@@ -51,20 +51,20 @@ spec:
           livenessProbe:
             exec:
               command:
-                - pg_isready
-                - -U ${POSTGRES_USER}
-                - -d ${POSTGRES_DB}
-            initialDelaySeconds: 60
+                - bash
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 5
           readinessProbe:
             exec:
               command:
-                - pg_isready
-                - -U ${POSTGRES_USER}
-                - -d ${POSTGRES_DB}
-            initialDelaySeconds: 60
+                - bash
+                - -c
+                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 5

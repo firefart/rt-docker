@@ -53,12 +53,20 @@ spec:
                 - /bin/sh
                 - -c
                 - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             exec:
               command:
                 - /bin/sh
                 - -c
                 - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 3
           {{- with .Values.rt.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

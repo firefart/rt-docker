@@ -8,6 +8,6 @@ metadata:
 data:
   POSTGRES_DB: rt
   POSTGRES_USER: rt
-  POSTGRES_PASSWORD: SecurePassword
+  POSTGRES_PASSWORD: password
   PGDATA: /var/lib/postgresql/data/pgdata # subdirectory needed as initdb tries to chown the root of the volume
 {{- end }}

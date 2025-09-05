@@ -165,8 +165,7 @@ postgres:
     # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
     type: ClusterIP
     # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-    port: 80
-    mailgatePort: 8080
+    port: 5432
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
@@ -379,7 +378,7 @@ config:
 
     ### Database connection ###
     Set($DatabaseType, 'Pg' );
-    Set($DatabaseHost, 'db');
+    Set($DatabaseHost, 'request-tracker-postgres');
     Set($DatabasePort, '5432');
     Set($DatabaseUser, 'rt');
     Set($DatabasePassword, 'password');
@@ -449,7 +448,7 @@ config:
     user = rt
     group = rt
     # 8080 is the mailgate vhost
-    arguments = ("--url", "http://caddy:8080/", "--queue", "general", "--action", "correspond",)
+    arguments = ("--url", "http://request-tracker-rt:8080/", "--queue", "general", "--action", "correspond",)
 
     [options]
     read_all = false
@@ -470,7 +469,7 @@ config:
     # mailgate
     :8080 {
       log
-      reverse_proxy rt:9000 {
+      reverse_proxy request-tracker-rt:9000 {
         transport fastcgi
       }
     }
@@ -485,7 +484,7 @@ config:
       respond @blocked "Nope" 403
 
       # TODO: rt should be the kubernetes service name
-      reverse_proxy rt:9000 {
+      reverse_proxy request-tracker-rt:9000 {
         transport fastcgi
       }
     }

@@ -2,7 +2,7 @@
 
 FROM debian:13-slim AS msmtp-builder
 
-ENV MSMTP_VERSION="1.8.30"
+ENV MSMTP_VERSION="1.8.31"
 ENV MSMTP_GPG_PUBLIC_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
 
 # Install required packages
@@ -41,7 +41,7 @@ ENV RT_FIX_DEPS_CMD="cpanm -v --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 ENV PERL_MM_USE_DEFAULT=1
 
 # Create RT user
-RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt rt
+RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -m -s /bin/bash -d /home/rt rt
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -70,14 +70,14 @@ RUN mkdir -p /src \
 # Configure RT
 RUN case "${RT_VERSION}" in \
   "6."*) \
-    cd /src/rt \
-    && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-dashboard-chart-emails --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
-    ;; \
+  cd /src/rt \
+  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-dashboard-chart-emails --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+  ;; \
   # older versions for RT 5.0.x
   "5."*) \
-    cd /src/rt \
-    && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
-    ;; \
+  cd /src/rt \
+  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+  ;; \
   esac
 
 # install https support for cpanm
@@ -221,7 +221,7 @@ LABEL org.opencontainers.image.description="Request Tracker Docker Setup"
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
-  procps spawn-fcgi ca-certificates getmail6 wget curl gnupg graphviz libssl3 \
+  procps spawn-fcgi ca-certificates wget curl gnupg graphviz libssl3 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
   libfcgi-bin libgsasl18 libsecret-1-0 tzdata \
   && apt-get clean \
@@ -229,7 +229,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # msmtp - disabled for now to use the newer version
 
 # Create RT user
-RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt rt
+RUN useradd -u 1000 -s /bin/bash -d /home/rt -m rt
 
 # copy msmtp
 COPY --from=msmtp-builder /usr/local/bin/msmtp /usr/bin/msmtp
@@ -237,9 +237,12 @@ COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
 
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
-COPY --from=builder /opt/rt /opt/rt
+COPY --chown=rt:rt --from=builder /opt/rt /opt/rt
 # run a final dependency check if we copied all
 RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
+
+# uv and uvx (needed for getmail6)
+COPY --from=docker.io/astral/uv:latest /uv /uvx /bin/
 
 RUN true \
   # msmtp config
@@ -276,12 +279,20 @@ RUN rm -f /etc/cron.d/* \
 
 COPY --chown=root:root --chmod=0700 cron_entrypoint.sh /root/cron_entrypoint.sh
 
-# update PATH
-ENV PATH="${PATH}:/opt/rt/sbin:/opt/rt/bin"
-
 EXPOSE 9000
 
+# intsall getmail as the rt user
 USER rt
+RUN uv tool install getmail6
+
+USER root
+# link getmail to /usr/bin for backwards compatibility
+RUN ln -s /opt/rt/.local/bin/getmail /usr/bin/getmail
+
+USER rt
+# update PATH
+ENV PATH="${PATH}:/opt/rt/sbin:/opt/rt/bin:/home/rt/.local/bin"
+
 WORKDIR /opt/rt/
 
 # spawn-fcgi v1.6.4 (ipv6) - spawns FastCGI processes

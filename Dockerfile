@@ -281,7 +281,7 @@ COPY --chown=root:root --chmod=0700 cron_entrypoint.sh /root/cron_entrypoint.sh
 
 EXPOSE 9000
 
-# intsall getmail as the rt user
+# install getmail as the rt user
 USER rt
 RUN uv tool install getmail6
 

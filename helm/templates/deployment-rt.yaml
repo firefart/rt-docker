@@ -44,6 +44,10 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
           command: ['sh', '-c', "until nslookup rt-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for rt-db; sleep 2; done"]
+          {{- with .Values.rt.resourcesInitContainer }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- end }}
       containers:
         - name: rt

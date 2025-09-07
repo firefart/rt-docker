@@ -36,6 +36,14 @@ rt:
       cpu: 100m
       memory: 128Mi
 
+  resourcesInitContainer:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
   volumes: []
 
   volumeMounts: []

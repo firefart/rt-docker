@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-init-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-init
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000 # the user id of the rt user in the container
+            runAsGroup: 1000 # the group id of the rt user in the container
+            allowPrivilegeEscalation: false
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          image: "firefart/requesttracker:latest"
+          imagePullPolicy: "Always"
+          command: ["/opt/rt/sbin/rt-setup-database"]
+          args: ["--action upgrade", "--upgrade-from=4.4.2"] # adjust the version as needed
+          workingDir: /opt/rt
+          volumeMounts:
+            - name: rt-config
+              mountPath: /opt/rt/etc/RT_SiteConfig.pm
+              subPath: RT_SiteConfig.pm
+              readOnly: true
+            - name: rt-gpg
+              mountPath: /opt/rt/var/data/gpg
+              readOnly: false
+            - name: rt-smime
+              mountPath: /opt/rt/var/data/smime
+              readOnly: true
+      volumes:
+        - name: rt-config
+          configMap:
+            name: rt-config
+            items:
+              - key: rtSiteConfig
+                path: RT_SiteConfig.pm
+        - name: rt-gpg
+          persistentVolumeClaim:
+            claimName: rt-gpg
+        - name: rt-smime
+          persistentVolumeClaim:
+            claimName: rt-smime

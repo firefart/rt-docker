@@ -1,14 +1,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: db-init-job
+  name: db-update-job
 spec:
   template:
     spec:
       restartPolicy: Never
       ttlSecondsAfterFinished: 3600 # Clean up the job after 1 hour
       containers:
-        - name: db-init
+        - name: db-update
           securityContext:
             readOnlyRootFilesystem: true
             runAsNonRoot: true

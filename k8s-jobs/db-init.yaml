@@ -3,10 +3,10 @@ kind: Job
 metadata:
   name: db-init-job
 spec:
+  ttlSecondsAfterFinished: 3600 # Clean up the job after 1 hour
   template:
     spec:
       restartPolicy: Never
-      ttlSecondsAfterFinished: 3600 # Clean up the job after 1 hour
       containers:
         - name: db-init
           securityContext:
@@ -25,7 +25,7 @@ spec:
           image: "firefart/requesttracker:latest"
           imagePullPolicy: "Always"
           command: ["/opt/rt/sbin/rt-setup-database"]
-          args: ["--action init", "--skip-create"]
+          args: ["--action", "init", "--skip-create"]
           workingDir: /opt/rt
           volumeMounts:
             - name: rt-config
@@ -38,6 +38,9 @@ spec:
             - name: rt-smime
               mountPath: /opt/rt/var/data/smime
               readOnly: true
+            - name: tmp
+              mountPath: /tmp
+              readOnly: false
       volumes:
         - name: rt-config
           configMap:
@@ -51,3 +54,5 @@ spec:
         - name: rt-smime
           persistentVolumeClaim:
             claimName: rt-smime
+        - name: tmp
+          emptyDir: {}

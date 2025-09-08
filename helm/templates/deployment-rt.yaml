@@ -110,6 +110,9 @@ spec:
             - name: rt-cron
               mountPath: /cron
               readOnly: false
+            - name: tmp
+              mountPath: /tmp
+              readOnly: false
           {{- with .Values.rt.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -187,6 +190,8 @@ spec:
         - name: rt-cron
           persistentVolumeClaim:
             claimName: rt-cron
+        - name: tmp
+          emptyDir: {}
       {{- with .Values.rt.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

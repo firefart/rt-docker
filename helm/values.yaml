@@ -348,7 +348,7 @@ config:
 
     ### Database connection ###
     Set($DatabaseType, 'Pg' );
-    Set($DatabaseHost, 'request-tracker-postgres');
+    Set($DatabaseHost, 'rt-db');
     Set($DatabasePort, '5432');
     Set($DatabaseUser, 'rt');
     Set($DatabasePassword, 'password');

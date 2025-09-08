@@ -45,7 +45,7 @@ spec:
           image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
           imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
           ports:
-            - name: psql
+            - name: postgres
               containerPort: 5432
               protocol: TCP
           livenessProbe:

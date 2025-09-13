@@ -171,6 +171,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword \
   # https://metacpan.org/dist/RT-Extension-Captcha
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha \
+  # https://metacpan.org/dist/RT-Extension-QuickCalls
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::QuickCalls \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -201,6 +203,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Captcha
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha~">= 1.0000, < 2.0000" \
+  # https://metacpan.org/dist/RT-Extension-QuickCalls
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::QuickCalls~">= 1.0000, < 2.0000" \
   ;; \
   esac
 

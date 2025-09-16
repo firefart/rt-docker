@@ -22,7 +22,7 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
-          image: "firefart/requesttracker:latest"
+          image: "firefart/requesttracker:latest" # adjest the tag as needed
           imagePullPolicy: "Always"
           command: ["/opt/rt/sbin/rt-setup-database"]
           args: ["--action", "init", "--skip-create"]

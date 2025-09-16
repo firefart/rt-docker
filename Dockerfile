@@ -228,6 +228,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   procps spawn-fcgi ca-certificates wget curl gnupg graphviz libssl3 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
   libfcgi-bin libgsasl18 libsecret-1-0 tzdata \
+  # needed for envsubst in k8s init containers
+  gettext-base \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version

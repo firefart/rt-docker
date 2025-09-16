@@ -36,13 +36,15 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- if .Values.postgres.enabled }}
-      initContainers:
+      initContainers: # ensure that the database is ready before starting RT
         - name: init-db
           image: busybox:1.37
           securityContext:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             allowPrivilegeEscalation: false
+            runAsUser: 65534 # nobody user in the busybox image
+            runAsGroup: 65534 # nobody user in the busybox image
           command: ['sh', '-c', "until nslookup rt-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for rt-db; sleep 2; done"]
           {{- with .Values.rt.resourcesInitContainer }}
           resources:
@@ -54,10 +56,12 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
             allowPrivilegeEscalation: false
+            runAsUser: 999 # postgres user in the postgres image
+            runAsGroup: 999 # postgres group in the postgres image
           command:
             - bash
             - -c
-            - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+            - until pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h rt-db; do echo waiting for database; sleep 2; done;
           {{- with .Values.rt.resourcesInitContainer }}
           resources:
             {{- toYaml . | nindent 12 }}

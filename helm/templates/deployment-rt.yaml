@@ -1,0 +1,250 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rt
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rt
+spec:
+  {{- if not .Values.rt.autoscaling.enabled }}
+  replicas: {{ .Values.rt.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "request-tracker.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: rt
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "request-tracker.labels" . | nindent 8 }}
+        app.kubernetes.io/component: rt
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.rt.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: rt
+      {{- with .Values.rt.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.postgres.enabled }}
+      initContainers: # ensure that the database is ready before starting RT
+        - name: init-db
+          image: busybox:1.37
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            runAsUser: 65534 # nobody user in the busybox image
+            runAsGroup: 65534 # nobody user in the busybox image
+          command: ['sh', '-c', "until nslookup rt-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for rt-db; sleep 2; done"]
+          {{- with .Values.rt.resourcesInitContainer }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        - name: wait-db
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            runAsUser: 999 # postgres user in the postgres image
+            runAsGroup: 999 # postgres group in the postgres image
+          command:
+            - bash
+            - -c
+            - until pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h rt-db; do echo waiting for database; sleep 2; done;
+          {{- with .Values.rt.resourcesInitContainer }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: rt-postgres
+      {{- end }}
+      containers:
+        - name: rt
+          {{- with .Values.rt.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.rt.image.repository }}:{{ .Values.rt.image.tag }}"
+          imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
+          ports:
+            - name: rt-fcgi
+              containerPort: {{ .Values.rt.port }}
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 3
+          {{- with .Values.rt.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: rt-config
+              mountPath: /opt/rt/etc/RT_SiteConfig.pm
+              subPath: RT_SiteConfig.pm
+              readOnly: true
+            - name: msmtp-config
+              mountPath: /msmtp/msmtp.conf
+              subPath: msmtp.conf
+              readOnly: true
+            - name: getmailrc-config
+              mountPath: /getmail/getmailrc
+              subPath: getmailrc
+              readOnly: true
+            - name: rt-gpg
+              mountPath: /opt/rt/var/data/gpg
+              readOnly: false
+            - name: rt-smime
+              mountPath: /opt/rt/var/data/smime
+              readOnly: true
+            - name: rt-shredder
+              mountPath: /opt/rt/var/data/RT-Shredder
+              readOnly: false
+            - name: rt-cron
+              mountPath: /cron
+              readOnly: false
+            - name: tmp
+              mountPath: /tmp
+              readOnly: false
+            - name: mason-data
+              mountPath: /opt/rt/var/mason_data/
+              readOnly: false
+          {{- with .Values.rt.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        - name: caddy
+          {{- with .Values.caddy.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.caddy.image.repository }}:{{ .Values.caddy.image.tag }}"
+          imagePullPolicy: {{ .Values.caddy.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.caddy.ports.http }}
+              protocol: TCP
+            - name: mailgate
+              containerPort:  {{ .Values.caddy.ports.mailgate }}
+              protocol: TCP
+            - name: health
+              containerPort:  {{ .Values.caddy.ports.health }}
+              protocol: TCP
+          {{- with .Values.caddy.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.caddy.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.caddy.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: caddy-configfile
+              mountPath: /etc/caddy/Caddyfile
+              subPath: Caddyfile
+              readOnly: true
+            - name: caddy-data
+              mountPath: /data
+              readOnly: false
+            - name: caddy-config
+              mountPath: /config
+              readOnly: false
+          {{- with .Values.caddy.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: rt-config
+          configMap:
+            name: rt-config
+            items:
+              - key: rtSiteConfig
+                path: RT_SiteConfig.pm
+        - name: msmtp-config
+          configMap:
+            name: rt-config
+            items:
+              - key: msmtp
+                path: msmtp.conf
+        - name: getmailrc-config
+          configMap:
+            name: rt-config
+            items:
+              - key: getmailrc
+                path: getmailrc
+        - name: rt-gpg
+          persistentVolumeClaim:
+            claimName: rt-gpg
+        - name: rt-smime
+          persistentVolumeClaim:
+            claimName: rt-smime
+        - name: rt-shredder
+          persistentVolumeClaim:
+            claimName: rt-shredder
+        - name: rt-cron
+          persistentVolumeClaim:
+            claimName: rt-cron
+        - name: tmp
+          emptyDir: {}
+        - name: mason-data
+          emptyDir: {}
+      {{- with .Values.rt.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+        - name: caddy-configfile
+          configMap:
+            name: rt-config
+            items:
+              - key: caddyfile
+                path: Caddyfile
+        - name: caddy-data
+          persistentVolumeClaim:
+            claimName: rt-caddy-data
+        - name: caddy-config
+          persistentVolumeClaim:
+            claimName: rt-caddy-config
+      {{- with .Values.caddy.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

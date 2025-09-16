@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM debian:12-slim AS msmtp-builder
+FROM debian:13-slim AS msmtp-builder
 
-ENV MSMTP_VERSION="1.8.30"
+ENV MSMTP_VERSION="1.8.31"
 ENV MSMTP_GPG_PUBLIC_KEY="2F61B4828BBA779AECB3F32703A2A4AB1E32FD34"
 
 # Install required packages
@@ -26,8 +26,8 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.42.0 AS builder
 
-ARG RT_VERSION="6.0.0"
-ARG RTIR_VERSION="5.0.8"
+ARG RT_VERSION="6.0.1"
+ARG RTIR_VERSION="6.0.1"
 
 ENV RT="${RT_VERSION}"
 ENV RTIR="${RTIR_VERSION}"
@@ -41,7 +41,7 @@ ENV RT_FIX_DEPS_CMD="cpanm -v --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 ENV PERL_MM_USE_DEFAULT=1
 
 # Create RT user
-RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -Ms /bin/bash -d /opt/rt rt
+RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -m -s /bin/bash -d /home/rt rt
 
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
@@ -68,9 +68,17 @@ RUN mkdir -p /src \
   && tar --strip-components=1 -C /src/rtir -xzf /src/rtir.tar.gz
 
 # Configure RT
-RUN cd /src/rt \
-  # configure with all plugins and with the newly created user
-  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt
+RUN case "${RT_VERSION}" in \
+  "6."*) \
+  cd /src/rt \
+  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-dashboard-chart-emails --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+  ;; \
+  # older versions for RT 5.0.x
+  "5."*) \
+  cd /src/rt \
+  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+  ;; \
+  esac
 
 # install https support for cpanm
 # also disable tests on net http as the live tests often fail
@@ -80,7 +88,13 @@ RUN cpanm -v --no-man-pages -n install Net::HTTP \
   # as they constanly fail with timeouts and thus break
   # the build
   # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
-  && cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner
+  && cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner \
+  # https://github.com/Corion/WWW-Mechanize-Chrome/issues/85
+  && cpanm -v --no-man-pages -n install Filter::signatures \
+  # tests fail on build
+  && cpanm -v --no-man-pages -n install Cache::Cache \
+  # tests fail on build
+  && cpanm -v --no-man-pages -n install Time::ParseDate
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \
@@ -113,6 +127,12 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::TicketlistTransactions \
   # https://metacpan.org/dist/RTx-RemoteLinks
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::RemoteLinks \
+  # https://metacpan.org/dist/RT-Extension-TicketLocking
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TicketLocking \
+  # https://metacpan.org/dist/RT-Extension-DynamicWebPath
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::DynamicWebPath \
+  # https://metacpan.org/dist/RT-Authen-OAuth2
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Authen::OAuth2 \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
@@ -139,6 +159,20 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::InlineHelp \
   # https://metacpan.org/dist/RT-Extension-Tags
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags \
+  # https://metacpan.org/dist/RT-Extension-HelpDesk
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk \
+  # https://metacpan.org/dist/RT-Extension-AI (only for RT 6.0.x)
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AI \
+  # https://metacpan.org/dist/RT-Extension-ChangeManagement
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ChangeManagement \
+  # https://metacpan.org/dist/RT-Extension-SwitchUsers
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::SwitchUsers \
+  # https://metacpan.org/dist/RT-Extension-ResetPassword
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword \
+  # https://metacpan.org/dist/RT-Extension-Captcha
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha \
+  # https://metacpan.org/dist/RT-Extension-QuickCalls
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::QuickCalls \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -159,16 +193,26 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Tags
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-HelpDesk
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-ChangeManagement
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ChangeManagement~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-SwitchUsers
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::SwitchUsers~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-ResetPassword
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
+  # https://metacpan.org/dist/RT-Extension-Captcha
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha~">= 1.0000, < 2.0000" \
+  # https://metacpan.org/dist/RT-Extension-QuickCalls
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::QuickCalls~">= 1.0000, < 2.0000" \
   ;; \
   esac
 
-# Configure RTIR (only compatible with RT 5.x at the moment)
-RUN case "${RT_VERSION}" in "5."*) \
-  cd /src/rtir \
+# Configure RTIR
+RUN true \
+  && cd /src/rtir \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  && make install \
-  ;; \
-  esac
+  && make install
 
 #############################################################################
 
@@ -181,7 +225,7 @@ LABEL org.opencontainers.image.description="Request Tracker Docker Setup"
 # Install required packages
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
-  procps spawn-fcgi ca-certificates getmail6 wget curl gnupg graphviz libssl3 \
+  procps spawn-fcgi ca-certificates wget curl gnupg graphviz libssl3 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
   libfcgi-bin libgsasl18 libsecret-1-0 tzdata \
   && apt-get clean \
@@ -189,7 +233,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # msmtp - disabled for now to use the newer version
 
 # Create RT user
-RUN useradd -u 1000 -Ms /bin/bash -d /opt/rt rt
+RUN useradd -u 1000 -s /bin/bash -d /home/rt -m rt
 
 # copy msmtp
 COPY --from=msmtp-builder /usr/local/bin/msmtp /usr/bin/msmtp
@@ -197,34 +241,30 @@ COPY --from=msmtp-builder  /usr/local/share/locale /usr/local/share/locale
 
 # copy all needed stuff from the builder image
 COPY --from=builder /usr/local/lib/perl5 /usr/local/lib/perl5
-COPY --from=builder /opt/rt /opt/rt
+COPY --chown=rt:rt --from=builder /opt/rt /opt/rt
 # run a final dependency check if we copied all
 RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
-# make backwards compatible as we changed the folder to not contain the version info any more
-# remove after some time
-RUN ln -s /opt/rt /opt/rt5
+# uv and uvx (needed for getmail6)
+COPY --from=docker.io/astral/uv:latest /uv /uvx /bin/
 
-# msmtp config
-RUN mkdir /msmtp \
+RUN true \
+  # msmtp config
+  && mkdir -p /msmtp \
   && chown rt:rt /msmtp \
   # also fake sendmail for cronjobs
-  && ln -s /usr/bin/msmtp /usr/sbin/sendmail
-
-# getmail
-RUN mkdir -p /getmail \
-  && chown rt:rt /getmail
-
-# gpg
-RUN mkdir -p /opt/rt/var/data/gpg \
-  && chown rt:rt /opt/rt/var/data/gpg
-
-# smime
-RUN mkdir -p /opt/rt/var/data/smime \
-  && chown rt:rt /opt/rt/var/data/smime
-
-# shredder dir
-RUN mkdir -p /opt/rt/var/data/RT-Shredder \
+  && ln -s /usr/bin/msmtp /usr/sbin/sendmail \
+  # getmail
+  && mkdir -p /getmail \
+  && chown rt:rt /getmail \
+  # gpg
+  && mkdir -p /opt/rt/var/data/gpg \
+  && chown rt:rt /opt/rt/var/data/gpg \
+  # smime
+  && mkdir -p /opt/rt/var/data/smime \
+  && chown rt:rt /opt/rt/var/data/smime \
+  # shredder dir
+  && mkdir -p /opt/rt/var/data/RT-Shredder \
   && chown rt:rt /opt/rt/var/data/RT-Shredder
 
 # RTIR Database stuff for setup
@@ -243,12 +283,20 @@ RUN rm -f /etc/cron.d/* \
 
 COPY --chown=root:root --chmod=0700 cron_entrypoint.sh /root/cron_entrypoint.sh
 
-# update PATH
-ENV PATH="${PATH}:/opt/rt/sbin:/opt/rt/bin"
-
 EXPOSE 9000
 
+# install getmail as the rt user
 USER rt
+RUN uv tool install getmail6
+
+USER root
+# link getmail to /usr/bin for backwards compatibility
+RUN ln -s /opt/rt/.local/bin/getmail /usr/bin/getmail
+
+USER rt
+# update PATH
+ENV PATH="${PATH}:/opt/rt/sbin:/opt/rt/bin:/home/rt/.local/bin"
+
 WORKDIR /opt/rt/
 
 # spawn-fcgi v1.6.4 (ipv6) - spawns FastCGI processes

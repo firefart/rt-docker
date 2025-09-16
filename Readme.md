@@ -4,20 +4,22 @@ This is a complete setup for [Request Tracker](https://bestpractical.com/request
 
 The prebuilt image is available from [https://hub.docker.com/r/firefart/requesttracker](https://hub.docker.com/r/firefart/requesttracker). The image is rebuilt on a daily basis.
 
-The [Request Tracker for Incident Response (RT-IR)](https://bestpractical.com/rtir) Extension is also installed.
+The [Request Tracker for Incident Response (RT-IR)](https://bestpractical.com/rtir) extension is also installed among various others. Look at the [Dockerfile](Dockerfile) to see the available extensions.
 
-## Prerequisites
+## docker based installation
+
+### Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) with the `compose` plugin
 - an external SMTP server to send emails
 - an external IMAP server to receive emails from
 - an external Postgres database
 
-## Instruction
+### Instruction
 
 To start use either `./dev.sh` which builds the images locally or `./prod.sh` which uses the prebuilt ones from docker hub. Before running this you also need to add the required configuration files (see Configuration).
 
-## Configuration
+### Configuration
 
 The following configuration files need to be present before starting:
 
@@ -38,13 +40,13 @@ For output of your crontabs you can use the `/cron` directory so the output will
 
 In the default configuration all output from RT, caddy, getmail and msmtp is available via `docker logs` (or `docker compose -f ... logs`).
 
-## Webserver
+### Webserver
 
 The setup uses Caddy as a webserver. You can find an example configuration in [Caddyfile.example](Caddyfile.example). Caddy provides features like auto https with lets encrypt and more stuff that makes it easy to set up. You can find the Caddy documentation here [https://caddyserver.com/docs/caddyfile](https://caddyserver.com/docs/caddyfile).
 
 Feel free to modify the config to your needs like auto https, certificate based authentication, basic authentication and so on. Just be sure the mailgateway host under port `:8080` is untouched and the main host contains a block for the unauth API path, otherwise everyone with access to your RT instance can create emails without the need to log in first.
 
-### Create Certificate
+#### Create Certificate
 
 If you don't want to use the auto https feature (for example in dev) you can provide your own certificates.
 
@@ -54,7 +56,7 @@ Create a self signed certificate:
 openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem -days 3650 -nodes
 ```
 
-### Example Caddy Configurations
+#### Example Caddy Configurations
 
 <details>
 <summary>Caddy on a domain with lets encrypt certificates</summary>
@@ -337,7 +339,7 @@ We will also set the REMOTE_USER to a custom header sent from the upstream proxy
 
 </details>
 
-## Init database
+### Init database
 
 This initializes a fresh database. This is needed on the first run.
 
@@ -347,7 +349,7 @@ docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database 
 
 You need to restart the rt service after this step as it crashes if the database is not initialized.
 
-### DEV
+#### DEV
 
 Hint: Add `--skip-create` in dev as the database is created by docker
 
@@ -355,15 +357,15 @@ Hint: Add `--skip-create` in dev as the database is created by docker
 docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action init --skip-create'
 ```
 
-## Upgrade steps
+### Upgrade steps
 
-### Upgrade Database
+#### Upgrade Database
 
 ```bash
 docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
 ```
 
-### Fix data inconsistencies
+#### Fix data inconsistencies
 
 Run multiple times with the `--resolve` switch until no errors occur
 
@@ -371,7 +373,7 @@ Run multiple times with the `--resolve` switch until no errors occur
 docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-validator --check --resolve'
 ```
 
-## RT-IR
+### RT-IR
 
 You can simply enable RT-IR in your `RT_SiteConfig.pm` by including `Plugin('RT::IR');`. Please refer to the [docs](https://docs.bestpractical.com/rtir/latest/index.html) for additional install or upgrade steps.
 
@@ -389,11 +391,29 @@ docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database 
 
 Restart docker setup after all steps to fully load RT-IR (just run `./restart_prod.sh`).
 
-## Extending
+### Extending
 
 To include additional containers in this setup like pgadmin or change a default config, you can create a `docker-compose.override.yml` file in the projects root and it will automatically picked up and merged with the default config. Run `docker compose config` to view the merged config.
 
-## Deprecated features
+### Deprecated features
 
 - NGINX: The old setup used nginx for the webserver. If you want to upgrade you need to migrate your nginx config to a Caddy config. See the example Caddy Configuration section for some ideas.
 - compose profiles: Previously there were compose profile to also include `dozzle` for viewing logs and `pgadmin` to interact with the database. Both tools are now removed and `pgadmin` is only available in dev mode. If you still need pgadmin you can easily spin it up using docker compose.
+
+## Kubernetes setup
+
+```bash
+helm install rt helm/
+```
+
+### Setup database
+
+```bash
+kubectl apply -f k8s-jobs/db-init.yaml
+```
+
+### Upgrade database
+
+```bash
+kubectl apply -f k8s-jobs/db-update.yaml
+```

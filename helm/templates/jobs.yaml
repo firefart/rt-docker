@@ -1,0 +1,100 @@
+{{- range .Values.cronjobs }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "{{ printf "rt-%s" .name | trunc -63 | replace "_" "-" }}"
+  labels:
+    {{- include "request-tracker.labels" $ | nindent 4 }}
+spec:
+  schedule: "{{ .schedule }}"
+  concurrencyPolicy: {{ .concurrencyPolicy | default "Forbid" }}
+  timeZone: {{ .timeZone | default "UTC" }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: rt
+          securityContext:
+            {{- toYaml .podSecurityContext | default $.Values.rt.podSecurityContext | nindent 12 }}
+          containers:
+          - name: "{{ printf "rt-%s" .name | trunc -63 | replace "_" "-" }}"
+            securityContext:
+              {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 14 }}
+            image: "{{ .image.repository | default $.Values.rt.image.repository }}:{{ .image.tag | default $.Values.rt.image.tag }}"
+            imagePullPolicy: {{ .image.pullPolicy | default $.Values.rt.image.pullPolicy }}
+            command:
+              {{- toYaml .command | nindent 14 }}
+            {{- with .resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            volumeMounts:
+            - name: rt-config
+              mountPath: /opt/rt/etc/RT_SiteConfig.pm
+              subPath: RT_SiteConfig.pm
+              readOnly: true
+            - name: msmtp-config
+              mountPath: /msmtp/msmtp.conf
+              subPath: msmtp.conf
+              readOnly: true
+            - name: getmailrc-config
+              mountPath: /getmailrc
+              subPath: getmailrc
+              readOnly: true
+            - name: getmail-dir
+              mountPath: /getmail
+              readOnly: false
+            - name: rt-gpg
+              mountPath: /opt/rt/var/data/gpg
+              readOnly: false
+            - name: rt-smime
+              mountPath: /opt/rt/var/data/smime
+              readOnly: true
+            - name: rt-shredder
+              mountPath: /opt/rt/var/data/RT-Shredder
+              readOnly: false
+            - name: rt-cron
+              mountPath: /cron
+              readOnly: false
+          {{- with $.Values.rt.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumes:
+            - name: rt-config
+              configMap:
+                name: rt-config
+                items:
+                  - key: rtSiteConfig
+                    path: RT_SiteConfig.pm
+            - name: msmtp-config
+              configMap:
+                name: rt-config
+                items:
+                  - key: msmtp
+                    path: msmtp.conf
+            - name: getmailrc-config
+              configMap:
+                name: rt-config
+                items:
+                  - key: getmailrc
+                    path: getmailrc
+            - name: getmail-dir
+              emptyDir: {}
+            - name: rt-gpg
+              persistentVolumeClaim:
+                claimName: rt-gpg
+            - name: rt-smime
+              persistentVolumeClaim:
+                claimName: rt-smime
+            - name: rt-shredder
+              persistentVolumeClaim:
+                claimName: rt-shredder
+            - name: rt-cron
+              persistentVolumeClaim:
+                claimName: rt-cron
+          {{- with $.Values.rt.volumes }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          restartPolicy: {{ .restartPolicy | default "Never" }}
+{{- end }}

@@ -1,0 +1,32 @@
+{{- if .Values.postgres.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rt-db
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rt-db
+  minReplicas: {{ .Values.postgres.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.postgres.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.postgres.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.postgres.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.postgres.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.postgres.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

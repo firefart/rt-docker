@@ -1,0 +1,457 @@
+rt:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+
+  image:
+    repository: firefart/requesttracker
+    pullPolicy: Always
+    tag: "6.0.0"
+
+  imagePullSecrets: []
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000 # the user id of the rt user in the container
+    runAsGroup: 1000 # the group id of the rt user in the container
+    allowPrivilegeEscalation: false
+    # capabilities:
+    #   drop:
+    #   - ALL
+
+  podSecurityContext:
+    {}
+    # fsGroup: 2000
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  resourcesInitContainer:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+  volumes: []
+
+  volumeMounts: []
+
+  # the port the RT-FCGI server listens on
+  port: 9000
+
+caddy:
+  image:
+    repository: caddy
+    pullPolicy: Always
+    tag: "latest"
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 65534 # nobody user in the caddy image
+    runAsGroup: 65534 # nobody group in the caddy image
+    # capabilities:
+    #   drop:
+    #   - ALL
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readinessProbe:
+    httpGet:
+      path: /
+      port: health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 10
+    failureThreshold: 3
+
+  volumes: []
+
+  volumeMounts: []
+
+  ports:
+    http: 80
+    mailgate: 8080
+    health: 1337
+
+  service:
+    type: ClusterIP
+    port: 80
+    mailgatePort: 8080
+
+postgres:
+  enabled: true
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
+  image:
+    repository: postgres
+    pullPolicy: Always
+    tag: "17.6"
+  imagePullSecrets: []
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 999 # postgres user in the postgres image
+    runAsGroup: 999 # postgres group in the postgres image
+    # capabilities:
+    #   drop:
+    #   - ALL
+
+  podSecurityContext:
+    fsGroup: 999 # postgres group in the postgres image
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  volumes: []
+
+  volumeMounts: []
+
+  service:
+    type: ClusterIP
+    port: 5432
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+
+podAnnotations: {}
+podLabels: {}
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+cronjobs:
+  # - name: "clean-sessions"
+  #   schedule: "0 0 * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /opt/rt/sbin/rt-clean-sessions
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
+  # - name: "refresh-fulltext-index"
+  #   schedule: "0 * * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /opt/rt/sbin/rt-fulltext-indexer
+  #     - --quiet
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
+  # - name: "getmail"
+  #   schedule: "* * * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /usr/bin/getmail
+  #     - --rcfile=/getmailrc
+  #     - -g
+  #     - /getmail
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
+  # - name: "email-dashboards"
+  #   schedule: "0 * * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /opt/rt/sbin/rt-email-dashboards
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
+
+# used to store shredder backups
+pvc:
+  gpg:
+    enabled: true
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    size: 1Gi
+  smime:
+    enabled: true
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    size: 1Gi
+  shredder:
+    enabled: true
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    size: 1Gi
+  cron:
+    enabled: true
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    size: 1Gi
+  caddyData:
+    enabled: true
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    size: 1Gi
+  caddyConfig:
+    enabled: true
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    size: 1Gi
+  postgresData:
+    enabled: true
+    # accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
+    storageClass: ""
+    size: 1Gi
+
+config:
+  rtSiteConfig: |
+    ### Base configuration ###
+    Set($rtname, 'rt');
+    Set($WebDomain, 'localhost');
+    Set($WebPort, 443);
+    Set($CanonicalizeRedirectURLs, 1);
+    Set($CanonicalizeURLsInFeeds, 1);
+
+    Plugin('RT::Extension::MergeUsers');
+    Plugin('RT::Extension::TerminalTheme');
+
+    ### Database connection ###
+    Set($DatabaseType, 'Pg' );
+    Set($DatabaseHost, 'rt-db');
+    Set($DatabasePort, '5432');
+    Set($DatabaseUser, 'rt');
+    Set($DatabasePassword, 'password');
+    Set($DatabaseName, 'rt');
+    Set($DatabaseAdmin, "rt");
+
+    Set($SendmailPath, '/usr/bin/msmtp');
+
+    ### GnuPG configuration ###
+    Set(%GnuPG,
+      Enable                 => 1,
+      GnuPG                  => 'gpg',
+      Passphrase             => undef,
+      OutgoingMessagesFormat => 'RFC'
+    );
+
+    Set(%GnuPGOptions,
+      homedir             => '/opt/rt/var/data/gpg',
+      passphrase          => 'PASSPHRASE',
+      keyserver           => 'hkps://keys.openpgp.org',
+      'keyserver-options' => 'auto-key-retrieve timeout=20',
+      'auto-key-locate'   => 'keyserver',
+    );
+
+    ### SMIME configuration ###
+    Set(%SMIME,
+        Enable             => 1,
+        AcceptUntrustedCAs => 1,
+        OpenSSL            => '/usr/bin/openssl',
+        Keyring            => '/opt/rt/var/data/smime',
+        CAPath             => '/opt/rt/var/data/smime/signing-ca.pem',
+        Passphrase => {
+            'user@user.com' => 'PASSPHRASE',
+            ''              => 'fallback',
+        },
+    );
+
+    1;
+  msmtp: |
+    defaults
+
+    account smtp
+    host smtp.office365.com
+    port 587
+    tls on
+    tls_starttls on
+    from test@test.com
+    tls_trust_file /msmtp/ca-bundle.crt
+    tls_certcheck on
+    auth on
+    user user@domain.com
+    password pass
+    logfile -
+
+    account default : smtp
+  getmailrc: |
+    [retriever]
+    type = SimpleIMAPSSLRetriever
+    server = mail.host.com
+    username = user@domain.com
+    password = pass
+    mailboxes = ("INBOX",)
+
+    [destination]
+    type = MDA_external
+    path = /opt/rt/bin/rt-mailgate
+    user = rt
+    group = rt
+    # 8080 is the mailgate vhost
+    arguments = ("--url", "http://rt-caddy:8080/", "--queue", "general", "--action", "correspond",)
+
+    [options]
+    read_all = false
+    delete = true
+    verbose = 0
+  caddyfile: |
+    {
+      debug
+      admin off
+      auto_https off
+    }
+
+    # healthchecks
+    :1337 {
+      respond "OK" 200
+    }
+
+    # mailgate
+    :8080 {
+      log
+      reverse_proxy localhost:9000 {
+        transport fastcgi
+      }
+    }
+
+    # request tracker
+    :80 {
+      log
+
+      # Block access to the unauth mail gateway endpoint
+      # we have a seperate mailgate server for that
+      @blocked path /REST/1.0/NoAuth/mail-gateway
+      respond @blocked "Nope" 403
+
+      reverse_proxy localhost:9000 {
+        transport fastcgi
+      }
+    }

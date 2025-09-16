@@ -1,10 +1,11 @@
 *.sh
 !dev.sh
+!dev-helm.sh
 !prod.sh
+!k8s-jobs/install-ingress.sh
 RT_SiteConfig.pm
 *.pem
 *.key
-TODO
 !dev.sh
 !prod.sh
 !logs_prod.sh
@@ -29,3 +30,5 @@ shredder/*.sql
 *.json
 docker-compose.override.yml
 *.patch
+# Added by goreleaser init:
+dist/

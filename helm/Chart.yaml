@@ -1,0 +1,9 @@
+apiVersion: v2
+name: request-tracker
+description: A Helm chart for installing request tracker on Kubernetes/OpenShift clusters.
+type: application
+version: 0.1.0
+sources:
+  - https://github.com/firefart/rt-docker
+maintainers:
+  - name: "Christian Mehlmauer"

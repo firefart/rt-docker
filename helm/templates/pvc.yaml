@@ -1,0 +1,111 @@
+{{- if .Values.pvc.gpg.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rt-gpg
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.gpg.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.gpg.size }}
+  {{- if .Values.pvc.gpg.storageClass }}
+  storageClassName: {{ .Values.pvc.gpg.storageClass }}
+  {{- end }}
+{{- end }}
+
+{{ if .Values.pvc.smime.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rt-smime
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.smime.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.smime.size }}
+  {{- if .Values.pvc.smime.storageClass }}
+  storageClassName: {{ .Values.pvc.smime.storageClass }}
+  {{- end }}
+{{- end }}
+
+{{ if .Values.pvc.shredder.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rt-shredder
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.shredder.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.shredder.size }}
+  {{- if .Values.pvc.shredder.storageClass }}
+  storageClassName: {{ .Values.pvc.shredder.storageClass }}
+  {{- end }}
+{{- end }}
+
+{{ if .Values.pvc.cron.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rt-cron
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.cron.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.cron.size }}
+  {{- if .Values.pvc.cron.storageClass }}
+  storageClassName: {{ .Values.pvc.cron.storageClass }}
+  {{- end }}
+{{- end }}
+
+{{ if .Values.pvc.caddyData.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rt-caddy-data
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.caddyData.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.caddyData.size }}
+  {{- if .Values.pvc.caddyData.storageClass }}
+  storageClassName: {{ .Values.pvc.caddyData.storageClass }}
+  {{- end }}
+{{- end }}
+{{ if .Values.pvc.caddyConfig.enabled -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rt-caddy-config
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.pvc.caddyConfig.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.caddyConfig.size }}
+  {{- if .Values.pvc.caddyConfig.storageClass }}
+  storageClassName: {{ .Values.pvc.caddyConfig.storageClass }}
+  {{- end }}
+{{- end }}

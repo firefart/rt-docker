@@ -38,7 +38,7 @@ spec:
       {{- if .Values.postgres.enabled }}
       initContainers:
         - name: init-db
-          image: busybox:1.28
+          image: busybox:1.37
           securityContext:
             readOnlyRootFilesystem: true
             runAsNonRoot: true

@@ -10,7 +10,7 @@ rt:
   image:
     repository: firefart/requesttracker
     pullPolicy: Always
-    tag: "latest"
+    tag: "6.0.0"
 
   imagePullSecrets: []
 
@@ -117,7 +117,7 @@ postgres:
   image:
     repository: postgres
     pullPolicy: Always
-    tag: "17"
+    tag: "17.6"
   imagePullSecrets: []
 
   securityContext:
@@ -158,7 +158,7 @@ podAnnotations: {}
 podLabels: {}
 
 ingress:
-  enabled: false
+  enabled: true
   className: ""
   annotations:
     {}
@@ -241,7 +241,7 @@ cronjobs:
     concurrencyPolicy: "Forbid"
     command:
       - /usr/bin/getmail
-      - --rcfile=getmailrc
+      - --rcfile=/getmailrc
       - -g
       - /getmail
     image:

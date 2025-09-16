@@ -39,9 +39,12 @@ spec:
               subPath: msmtp.conf
               readOnly: true
             - name: getmailrc-config
-              mountPath: /getmail/getmailrc
+              mountPath: /getmailrc
               subPath: getmailrc
               readOnly: true
+            - name: getmail-dir
+              mountPath: /getmail
+              readOnly: false
             - name: rt-gpg
               mountPath: /opt/rt/var/data/gpg
               readOnly: false
@@ -76,6 +79,8 @@ spec:
                 items:
                   - key: getmailrc
                     path: getmailrc
+            - name: getmail-dir
+              emptyDir: {}
             - name: rt-gpg
               persistentVolumeClaim:
                 claimName: rt-gpg

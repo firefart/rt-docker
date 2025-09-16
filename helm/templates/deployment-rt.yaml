@@ -134,6 +134,9 @@ spec:
             - name: tmp
               mountPath: /tmp
               readOnly: false
+            - name: mason-data
+              mountPath: /opt/rt/var/mason_data/
+              readOnly: false
           {{- with .Values.rt.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -212,6 +215,8 @@ spec:
           persistentVolumeClaim:
             claimName: rt-cron
         - name: tmp
+          emptyDir: {}
+        - name: mason-data
           emptyDir: {}
       {{- with .Values.rt.volumes }}
         {{- toYaml . | nindent 8 }}

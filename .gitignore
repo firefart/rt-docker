@@ -2,6 +2,7 @@
 !dev.sh
 !dev-helm.sh
 !prod.sh
+!k8s-jobs/install-ingress.sh
 RT_SiteConfig.pm
 *.pem
 *.key

@@ -159,16 +159,14 @@ podLabels: {}
 
 ingress:
   enabled: true
-  className: ""
+  className: "nginx"
   annotations:
-    {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: nginx
   hosts:
     - host: chart-example.local
       paths:
         - path: /
-          pathType: ImplementationSpecific
+          pathType: Prefix
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -181,113 +179,113 @@ tolerations: []
 affinity: {}
 
 cronjobs:
-  - name: "clean-sessions"
-    schedule: "0 0 * * *"
-    restartPolicy: Never
-    timeZone: "UTC"
-    concurrencyPolicy: "Forbid"
-    command:
-      - /opt/rt/sbin/rt-clean-sessions
-    image:
-      {} # use the same image as the main pod
-      # repository: firefart/requesttracker
-      # pullPolicy: Always
-      # tag: "latest"
-    securityContext:
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-      runAsUser: 1000 # the user id of the rt user in the container
-      runAsGroup: 1000 # the group id of the rt user in the container
-      allowPrivilegeEscalation: false
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+  # - name: "clean-sessions"
+  #   schedule: "0 0 * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /opt/rt/sbin/rt-clean-sessions
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
 
-  - name: "refresh-fulltext-index"
-    schedule: "0 * * * *"
-    restartPolicy: Never
-    timeZone: "UTC"
-    concurrencyPolicy: "Forbid"
-    command:
-      - /opt/rt/sbin/rt-fulltext-indexer
-      - --quiet
-    image:
-      {} # use the same image as the main pod
-      # repository: firefart/requesttracker
-      # pullPolicy: Always
-      # tag: "latest"
-    securityContext:
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-      runAsUser: 1000 # the user id of the rt user in the container
-      runAsGroup: 1000 # the group id of the rt user in the container
-      allowPrivilegeEscalation: false
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+  # - name: "refresh-fulltext-index"
+  #   schedule: "0 * * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /opt/rt/sbin/rt-fulltext-indexer
+  #     - --quiet
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
 
-  - name: "getmail"
-    schedule: "* * * * *"
-    restartPolicy: Never
-    timeZone: "UTC"
-    concurrencyPolicy: "Forbid"
-    command:
-      - /usr/bin/getmail
-      - --rcfile=/getmailrc
-      - -g
-      - /getmail
-    image:
-      {} # use the same image as the main pod
-      # repository: firefart/requesttracker
-      # pullPolicy: Always
-      # tag: "latest"
-    securityContext:
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-      runAsUser: 1000 # the user id of the rt user in the container
-      runAsGroup: 1000 # the group id of the rt user in the container
-      allowPrivilegeEscalation: false
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+  # - name: "getmail"
+  #   schedule: "* * * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /usr/bin/getmail
+  #     - --rcfile=/getmailrc
+  #     - -g
+  #     - /getmail
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
 
-  - name: "email-dashboards"
-    schedule: "0 * * * *"
-    restartPolicy: Never
-    timeZone: "UTC"
-    concurrencyPolicy: "Forbid"
-    command:
-      - /opt/rt/sbin/rt-email-dashboards
-    image:
-      {} # use the same image as the main pod
-      # repository: firefart/requesttracker
-      # pullPolicy: Always
-      # tag: "latest"
-    securityContext:
-      readOnlyRootFilesystem: true
-      runAsNonRoot: true
-      runAsUser: 1000 # the user id of the rt user in the container
-      runAsGroup: 1000 # the group id of the rt user in the container
-      allowPrivilegeEscalation: false
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+  # - name: "email-dashboards"
+  #   schedule: "0 * * * *"
+  #   restartPolicy: Never
+  #   timeZone: "UTC"
+  #   concurrencyPolicy: "Forbid"
+  #   command:
+  #     - /opt/rt/sbin/rt-email-dashboards
+  #   image:
+  #     {} # use the same image as the main pod
+  #     # repository: firefart/requesttracker
+  #     # pullPolicy: Always
+  #     # tag: "latest"
+  #   securityContext:
+  #     readOnlyRootFilesystem: true
+  #     runAsNonRoot: true
+  #     runAsUser: 1000 # the user id of the rt user in the container
+  #     runAsGroup: 1000 # the group id of the rt user in the container
+  #     allowPrivilegeEscalation: false
+  #   resources:
+  #     limits:
+  #       cpu: 100m
+  #       memory: 128Mi
+  #     requests:
+  #       cpu: 100m
+  #       memory: 128Mi
 
 # used to store shredder backups
 pvc:
@@ -418,7 +416,7 @@ config:
     user = rt
     group = rt
     # 8080 is the mailgate vhost
-    arguments = ("--url", "http://request-tracker-rt:8080/", "--queue", "general", "--action", "correspond",)
+    arguments = ("--url", "http://rt-caddy:8080/", "--queue", "general", "--action", "correspond",)
 
     [options]
     read_all = false
@@ -426,7 +424,7 @@ config:
     verbose = 0
   caddyfile: |
     {
-      # debug
+      debug
       admin off
       auto_https off
     }
@@ -439,22 +437,21 @@ config:
     # mailgate
     :8080 {
       log
-      reverse_proxy request-tracker-rt:9000 {
+      reverse_proxy localhost:9000 {
         transport fastcgi
       }
     }
 
     # request tracker
     :80 {
-      # log
+      log
 
       # Block access to the unauth mail gateway endpoint
       # we have a seperate mailgate server for that
       @blocked path /REST/1.0/NoAuth/mail-gateway
       respond @blocked "Nope" 403
 
-      # TODO: rt should be the kubernetes service name
-      reverse_proxy request-tracker-rt:9000 {
+      reverse_proxy localhost:9000 {
         transport fastcgi
       }
     }

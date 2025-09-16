@@ -39,11 +39,13 @@ jobs:
         versions:
           - rt: "5.0.8"
             rtir: "5.0.8"
+            create_major: "true" # only enable on the latest version of a major
           - rt: "6.0.0"
             rtir: "5.0.8"
           - rt: "6.0.1"
             rtir: "6.0.1"
-            latest: "true"
+            latest_tag: "true" # point the latest tag to this version
+            create_major: "true" # only enable on the latest version of a major
 
     steps:
       - name: checkout sources
@@ -68,12 +70,12 @@ jobs:
             latest=false
           tags: |
             # Enable latest tag if set
-            type=raw,value=latest,enable=${{ matrix.versions.latest == 'true' }}
+            type=raw,value=latest,enable=${{ matrix.versions.latest_tag == 'true' }}
             # Create a tag for the major version
-            type=semver,pattern={{major}},value=${{ matrix.versions.rt }}
+            type=semver,pattern={{major}},value=${{ matrix.versions.rt }},enable=${{ matrix.versions.create_major == 'true' }}
             # Create a tag for the full version
             type=raw,value=${{ matrix.versions.rt }}
-            type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-${{ matrix.versions.major }}-
+            type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-${{ matrix.versions.rt }}-
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3.5.0

@@ -172,6 +172,12 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
+# Use an openshift route to expose the service.
+route:
+  enabled: false
+  hostName: chart-example.local
+  annotations: {}
+
 nodeSelector: {}
 
 tolerations: []

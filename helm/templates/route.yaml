@@ -1,0 +1,22 @@
+{{- if .Values.route.enabled -}}
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: rt-route
+  labels:
+    {{- include "request-tracker.labels" . | nindent 4 }}
+  {{- with .Values.route.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.route.hostName }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: None
+  port:
+    targetPort: http
+  to:
+    kind: Service
+    name: rt-caddy
+{{- end }}

@@ -291,7 +291,7 @@ RUN uv tool install getmail6
 
 USER root
 # link getmail to /usr/bin for backwards compatibility
-RUN ln -s /opt/rt/.local/bin/getmail /usr/bin/getmail
+RUN ln -s /home/rt/.local/bin/getmail /usr/bin/getmail
 
 USER rt
 # update PATH

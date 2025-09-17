@@ -354,10 +354,10 @@ config:
     Set($DatabaseType, 'Pg' );
     Set($DatabaseHost, 'rt-db');
     Set($DatabasePort, '5432');
-    Set($DatabaseUser, 'rt');
-    Set($DatabasePassword, 'password');
-    Set($DatabaseName, 'rt');
-    Set($DatabaseAdmin, "rt");
+    Set($DatabaseUser, '{{ .Env.RT_DB_USER }}');
+    Set($DatabasePassword, '{{ .Env.RT_DB_PASS }}');
+    Set($DatabaseName, '{{ .Env.RT_DB_NAME }}');
+    Set($DatabaseAdmin, '{{ .Env.RT_DB_USER }}');
 
     Set($SendmailPath, '/usr/bin/msmtp');
 

@@ -72,9 +72,15 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          envFrom:
-            - configMapRef:
-                name: rt-postgres
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata # subdirectory needed as initdb tries to chown the root of the volume
+            - name: POSTGRES_DB_FILE
+              value: /etc/secrets/dbname
+            - name: POSTGRES_USER_FILE
+              value: /etc/secrets/username
+            - name: POSTGRES_PASSWORD_FILE
+              value: /etc/secrets/password
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data
@@ -82,6 +88,9 @@ spec:
             - mountPath: /var/run/postgresql
               name: postgres-run
               readOnly: false
+            - name: secret-volume
+              mountPath: /etc/secrets
+              readOnly: true
           {{- with .Values.postgres.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -92,6 +101,9 @@ spec:
         - name: postgres-run
           emptyDir:
             sizeLimit: 100Mi
+        - name: secret-volume
+          secret:
+            secretName: rt-db-creds
       {{- with .Values.postgres.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

@@ -10,7 +10,7 @@ rt:
   image:
     repository: firefart/requesttracker
     pullPolicy: Always
-    tag: "6.0.0"
+    tag: "6.0.1"
 
   imagePullSecrets: []
 

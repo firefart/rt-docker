@@ -35,8 +35,9 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if .Values.postgres.enabled }}
-      initContainers: # ensure that the database is ready before starting RT
+      initContainers:
+        {{- if .Values.postgres.enabled }}
+        # ensure that the database is ready before starting RT
         - name: init-db
           image: busybox:1.37
           securityContext:
@@ -69,7 +70,34 @@ spec:
           envFrom:
             - configMapRef:
                 name: rt-postgres
-      {{- end }}
+        {{- end }}
+        - name: generate-config
+          image: "hairyhenderson/gomplate:stable-alpine"
+          pullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            runAsUser: 65534 # nobody user
+            runAsUser: 65534 # nobody user
+          command:
+            - gomplate
+            - -f
+            - /templates/RT_SiteConfig.pm
+            - -o
+            - /output/RT_SiteConfig.pm
+          {{- with .Values.rt.resourcesInitContainer }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: rt-config-template
+              mountPath: /templates/RT_SiteConfig.pm
+              subPath: RT_SiteConfig.pm
+              readOnly: true
+            - name: rt-config
+              mountPath: /output
+              readOnly: false
       containers:
         - name: rt
           {{- with .Values.rt.securityContext }}
@@ -78,10 +106,6 @@ spec:
           {{- end }}
           image: "{{ .Values.rt.image.repository }}:{{ .Values.rt.image.tag }}"
           imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
-          ports:
-            - name: rt-fcgi
-              containerPort: {{ .Values.rt.port }}
-              protocol: TCP
           livenessProbe:
             exec:
               command:
@@ -184,12 +208,14 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: rt-config
+        - name: rt-config-template
           configMap:
             name: rt-config
             items:
               - key: rtSiteConfig
                 path: RT_SiteConfig.pm
+        - name: rt-config
+          emptyDir: {}
         - name: msmtp-config
           configMap:
             name: rt-config

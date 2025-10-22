@@ -216,6 +216,16 @@ RUN true \
   && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
   && make install
 
+# Dumb fix for HTMX Bug which rt team refuses to fix
+# the main page does not honor WebPath and breaks if RT is not installed
+# in the webserver root
+RUN true && \
+  case "${RT_VERSION}" in \
+  "6."*) \
+  sed -i 's/hx-get="<% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/hx-get="<%RT->Config->Get('"'"'WebPath'"'"')%><% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/' /opt/rt/share/html/Elements/Header \
+  ;; \
+  esac
+
 #############################################################################
 
 FROM perl:5.42.0-slim

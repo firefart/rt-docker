@@ -39,10 +39,14 @@ jobs:
         versions:
           - rt: "5.0.8"
             rtir: "5.0.8"
+          - rt: "5.0.9"
+            rtir: "5.0.9"
             create_major: "true" # only enable on the latest version of a major
           - rt: "6.0.0"
             rtir: "5.0.8"
           - rt: "6.0.1"
+            rtir: "6.0.1"
+          - rt: "6.0.2"
             rtir: "6.0.1"
             latest_tag: "true" # point the latest tag to this version
             create_major: "true" # only enable on the latest version of a major

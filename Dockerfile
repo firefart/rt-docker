@@ -26,7 +26,7 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.42.0 AS builder
 
-ARG RT_VERSION="6.0.1"
+ARG RT_VERSION="6.0.2"
 ARG RTIR_VERSION="6.0.1"
 
 ENV RT="${RT_VERSION}"

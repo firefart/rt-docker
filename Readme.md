@@ -32,7 +32,7 @@ The following configuration files need to be present before starting:
 Additional configs:
 
 - `./certs/`: This folder should contain all optional certificates needed for caddy
-- `./gpg/` : This folder should contain the gpg keyring if used in rt. Be sure to chmod the files to user 1000 with 0600 so RT will not complain.
+- `./gpg/` : This folder should contain the gpg keyring if used in rt. Be sure to chmod the files to user 1000 with 0600 so RT will not complain. You can also put a `dirmngr.conf` here to configure dirmngr. For available options see [here](https://www.gnupg.org/documentation/manuals/gnupg/Dirmngr-Configuration.html) and [here](https://www.gnupg.org/documentation/manuals/gnupg/Dirmngr-Options.html).
 - `./smime/` : This folder should contain the SMIME certificate if configured in RT
 - `./shredder/` : This directory will be used by the shredder functionality [https://docs.bestpractical.com/rt/latest/RT/Shredder.html](https://docs.bestpractical.com/rt/latest/RT/Shredder.html) so the backups are stored on the host
 

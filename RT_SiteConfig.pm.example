@@ -31,7 +31,8 @@ Set(%GnuPGOptions,
   homedir             => '/opt/rt/var/data/gpg',
   passphrase          => 'PASSPHRASE',
   keyserver           => 'hkps://keys.openpgp.org',
-  'keyserver-options' => 'auto-key-retrieve timeout=20',
+  'auto-key-retrieve' => undef,
+  'keyserver-options' => 'timeout=20',
   'auto-key-locate'   => 'keyserver',
 );
 

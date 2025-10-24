@@ -277,7 +277,12 @@ RUN true \
   && chown rt:rt /opt/rt/var/data/smime \
   # shredder dir
   && mkdir -p /opt/rt/var/data/RT-Shredder \
-  && chown rt:rt /opt/rt/var/data/RT-Shredder
+  && chown rt:rt /opt/rt/var/data/RT-Shredder \
+  # gpg dirmngr dirs
+  && mkdir -p /home/rt/.gnupg \
+  && mkdir -p /home/rt/.gnupg/crls.d \
+  && chown -R rt:rt /home/rt/.gnupg \
+  && chmod 700 /home/rt/.gnupg
 
 # RTIR Database stuff for setup
 COPY --chown=rt:rt --from=builder /src/rtir/etc /opt/rtir

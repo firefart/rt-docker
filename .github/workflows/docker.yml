@@ -96,6 +96,7 @@ jobs:
             RTIR_VERSION=${{ matrix.versions.rtir }}
           context: .
           file: Dockerfile
+          platforms: linux/amd64,linux/arm64
           sbom: true
           provenance: mode=max
           push: ${{ env.DO_PUSH }}

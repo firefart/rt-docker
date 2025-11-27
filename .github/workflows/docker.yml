@@ -31,7 +31,7 @@ env:
 
 jobs:
   images:
-    timeout-minutes: 150
+    timeout-minutes: 240
     runs-on: ubuntu-latest
 
     strategy:

@@ -135,6 +135,8 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Authen::OAuth2 \
   # https://metacpan.org/dist/RT-Extension-RepliesToResolved
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepliesToResolved \
+  # https://metacpan.org/dist/RT-Extension-ShowTransactionSquelching
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ShowTransactionSquelching \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail

@@ -137,6 +137,8 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepliesToResolved \
   # https://metacpan.org/dist/RT-Extension-ShowTransactionSquelching
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ShowTransactionSquelching \
+  # https://metacpan.org/dist/RT-Extension-AWS-Assets
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AWS::Assets \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail

@@ -137,8 +137,6 @@ RUN true \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepliesToResolved \
   # https://metacpan.org/dist/RT-Extension-ShowTransactionSquelching
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ShowTransactionSquelching \
-  # https://metacpan.org/dist/RT-Extension-AWS-Assets
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AWS::Assets \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
@@ -179,6 +177,8 @@ RUN case "${RT_VERSION}" in \
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha \
   # https://metacpan.org/dist/RT-Extension-QuickCalls
   && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::QuickCalls \
+  # https://metacpan.org/dist/RT-Extension-AWS-Assets (only for RT 6.0.x)
+  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AWS::Assets \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \

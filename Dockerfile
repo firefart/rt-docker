@@ -35,8 +35,9 @@ ENV RT_GPG_PUBLIC_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 
 ARG ADDITIONAL_CPANM_ARGS=""
 
+ENV PERL_CPANM_OPT="--no-interactive -v --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 # use cpanm for dependencies
-ENV RT_FIX_DEPS_CMD="cpanm -v --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
+ENV RT_FIX_DEPS_CMD="cpanm ${PERL_CPANM_OPT}"
 # cpan non interactive mode
 ENV PERL_MM_USE_DEFAULT=1
 
@@ -82,19 +83,13 @@ RUN case "${RT_VERSION}" in \
 
 # install https support for cpanm
 # also disable tests on net http as the live tests often fail
-RUN cpanm -v --no-man-pages -n install Net::HTTP \
-  && cpanm -v --no-man-pages install LWP::Protocol::https \
+RUN cpanm -n install Net::HTTP LWP::Protocol::https \
   # Install Sever::Starter without tests
   # as they constanly fail with timeouts and thus break
   # the build
   # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
-  && cpanm -v --no-man-pages -n install Server::Starter CSS::Inliner \
-  # https://github.com/Corion/WWW-Mechanize-Chrome/issues/85
-  && cpanm -v --no-man-pages -n install Filter::signatures \
-  # tests fail on build
-  && cpanm -v --no-man-pages -n install Cache::Cache \
-  # tests fail on build
-  && cpanm -v --no-man-pages -n install Time::ParseDate
+  # The other packages are packages with failing tests
+  && cpanm -n install Server::Starter CSS::Inliner Cache::Cache Time::ParseDate
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \
@@ -104,111 +99,115 @@ RUN make -C /src/rt fixdeps \
 ENV PERL5LIB=/opt/rt/lib/
 
 # install extensions and additional tools
-RUN true \
+RUN cpanm \
   # https://metacpan.org/dist/RT-Extension-MergeUsers
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MergeUsers \
+  RT::Extension::MergeUsers \
   # https://metacpan.org/dist/RT-Extension-TerminalTheme
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TerminalTheme \
+  RT::Extension::TerminalTheme \
   # https://metacpan.org/dist/RT-Extension-Announce
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Announce \
+  RT::Extension::Announce \
   # https://metacpan.org/dist/RT-Extension-Assets-Import-CSV
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Assets::Import::CSV \
+  RT::Extension::Assets::Import::CSV \
   # https://metacpan.org/dist/RT-Extension-Import-CSV
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Import::CSV \
+  RT::Extension::Import::CSV \
   # https://metacpan.org/dist/RT-Extension-CommandByMail
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::CommandByMail \
+  RT::Extension::CommandByMail \
   # https://metacpan.org/dist/RT-Extension-ExtractCustomFieldValues
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExtractCustomFieldValues \
+  RT::Extension::ExtractCustomFieldValues \
   # https://metacpan.org/dist/RT-Extension-JSGantt
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::JSGantt \
+  RT::Extension::JSGantt \
   # https://metacpan.org/dist/RT-Extension-NonWatcherRecipients
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::NonWatcherRecipients \
+  RT::Extension::NonWatcherRecipients \
   # https://metacpan.org/dist/RTx-TicketlistTransactions
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::TicketlistTransactions \
+  RTx::TicketlistTransactions \
   # https://metacpan.org/dist/RTx-RemoteLinks
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::RemoteLinks \
+  RTx::RemoteLinks \
   # https://metacpan.org/dist/RT-Extension-TicketLocking
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::TicketLocking \
+  RT::Extension::TicketLocking \
   # https://metacpan.org/dist/RT-Extension-DynamicWebPath
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::DynamicWebPath \
+  RT::Extension::DynamicWebPath \
   # https://metacpan.org/dist/RT-Authen-OAuth2
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Authen::OAuth2 \
+  RT::Authen::OAuth2 \
   # https://metacpan.org/dist/RT-Extension-RepliesToResolved
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepliesToResolved \
+  RT::Extension::RepliesToResolved \
   # https://metacpan.org/dist/RT-Extension-ShowTransactionSquelching
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ShowTransactionSquelching \
+  RT::Extension::ShowTransactionSquelching \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} App::wsgetmail
+  App::wsgetmail
 
 # extensions for RT 6.0.x
 RUN case "${RT_VERSION}" in \
   "6."*) \
-  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
-  cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition \
-  # https://metacpan.org/dist/RT-Extension-ExcelFeed
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
   # no tests here as it would require a database
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} -n RT::Extension::AutomaticAssignment \
+  cpanm -n RT::Extension::AutomaticAssignment \
+  && cpanm \
+  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
+  RT::Extension::MandatoryOnTransition \
+  # https://metacpan.org/dist/RT-Extension-ExcelFeed
+  RT::Extension::ExcelFeed \
   # https://metacpan.org/dist/RT-Extension-FormTools
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools \
+  RT::Extension::FormTools \
   # https://metacpan.org/dist/RT-Extension-RepeatTicket
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepeatTicket \
+  RT::Extension::RepeatTicket \
   # https://metacpan.org/dist/RTx-Calendar
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar \
+  RTx::Calendar \
   # https://metacpan.org/dist/RT-Extension-ActivityReports
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports \
+  RT::Extension::ActivityReports \
   # https://metacpan.org/dist/RT-Extension-InlineHelp (only for RT 6.0.x)
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::InlineHelp \
+  RT::Extension::InlineHelp \
   # https://metacpan.org/dist/RT-Extension-Tags
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags \
+  RT::Extension::Tags \
   # https://metacpan.org/dist/RT-Extension-HelpDesk
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk \
+  RT::Extension::HelpDesk \
   # https://metacpan.org/dist/RT-Extension-AI (only for RT 6.0.x)
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::AI \
+  RT::Extension::AI \
   # https://metacpan.org/dist/RT-Extension-ChangeManagement
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ChangeManagement \
+  RT::Extension::ChangeManagement \
   # https://metacpan.org/dist/RT-Extension-SwitchUsers
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::SwitchUsers \
+  RT::Extension::SwitchUsers \
   # https://metacpan.org/dist/RT-Extension-ResetPassword
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword \
+  RT::Extension::ResetPassword \
   # https://metacpan.org/dist/RT-Extension-Captcha
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha \
+  RT::Extension::Captcha \
   # https://metacpan.org/dist/RT-Extension-QuickCalls
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::QuickCalls \
+  RT::Extension::QuickCalls \
+  # https://metacpan.org/dist/RT-Extension-PreviewInSearch (only for RT 6.0.x)
+  RT::Extension::PreviewInSearch \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
-  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
-  cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::MandatoryOnTransition~">= 0.0000, < 1.0000" \
-  # https://metacpan.org/dist/RT-Extension-ExcelFeed
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ExcelFeed~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-AutomaticAssignment
   # no tests here as it would require a database
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} -n RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000" \
+  cpanm -n RT::Extension::AutomaticAssignment~">= 1.0000, < 2.0000" \
+  && cpanm \
+  # https://metacpan.org/dist/RT-Extension-MandatoryOnTransition
+  RT::Extension::MandatoryOnTransition~">= 0.0000, < 1.0000" \
+  # https://metacpan.org/dist/RT-Extension-ExcelFeed
+  RT::Extension::ExcelFeed~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-FormTools
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::FormTools~">= 1.0000, < 2.0000" \
+  RT::Extension::FormTools~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-RepeatTicket
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::RepeatTicket~">= 2.0000, < 3.0000" \
+  RT::Extension::RepeatTicket~">= 2.0000, < 3.0000" \
   # https://metacpan.org/dist/RTx-Calendar
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RTx::Calendar~">= 1.0000, < 2.0000" \
+  RTx::Calendar~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-ActivityReports
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ActivityReports~">= 1.0000, < 2.0000" \
+  RT::Extension::ActivityReports~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Tags
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Tags~">= 0.0000, < 1.0000" \
+  RT::Extension::Tags~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-HelpDesk
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::HelpDesk~">= 0.0000, < 1.0000" \
+  RT::Extension::HelpDesk~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-ChangeManagement
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ChangeManagement~">= 0.0000, < 1.0000" \
+  RT::Extension::ChangeManagement~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-SwitchUsers
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::SwitchUsers~">= 0.0000, < 1.0000" \
+  RT::Extension::SwitchUsers~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-ResetPassword
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
+  RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Captcha
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::Captcha~">= 1.0000, < 2.0000" \
+  RT::Extension::Captcha~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-QuickCalls
-  && cpanm -v --install --no-man-pages ${ADDITIONAL_CPANM_ARGS} RT::Extension::QuickCalls~">= 1.0000, < 2.0000" \
+  RT::Extension::QuickCalls~">= 1.0000, < 2.0000" \
   ;; \
   esac
 

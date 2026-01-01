@@ -175,6 +175,8 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::QuickCalls \
   # https://metacpan.org/dist/RT-Extension-PreviewInSearch (only for RT 6.0.x)
   RT::Extension::PreviewInSearch \
+  # https://metacpan.org/dist/RT-Extension-AWS-Assets (only for RT 6.0.x)
+  RT::Extension::AWS::Assets \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \

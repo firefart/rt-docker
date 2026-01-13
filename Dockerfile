@@ -132,6 +132,8 @@ RUN cpanm \
   RT::Extension::RepliesToResolved \
   # https://metacpan.org/dist/RT-Extension-ShowTransactionSquelching
   RT::Extension::ShowTransactionSquelching \
+  # https://metacpan.org/dist/RT-Extension-CommentOnCreate
+  RT::Extension::CommentOnCreate \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   App::wsgetmail

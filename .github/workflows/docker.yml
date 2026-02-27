@@ -132,7 +132,7 @@ jobs:
             create_major: "true" # only enable on the latest version of a major
     steps:
       - name: Download digests
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: ${{ runner.temp }}/digests
           pattern: digests-${{ matrix.versions.rt }}-*

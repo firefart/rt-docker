@@ -86,7 +86,7 @@ jobs:
 
       - name: Build and push by digest
         id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           build-args: |
             RT_VERSION=${{ matrix.versions.rt }}

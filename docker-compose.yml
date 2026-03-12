@@ -45,6 +45,7 @@ services:
       test: ["CMD", "pidof", "cron"]
       interval: 10s
       timeout: 10s
+      start_period: 10s
       retries: 3
     depends_on:
       # needs to be up so we can use mailgate from the cron container
@@ -75,6 +76,7 @@ services:
       test: ["CMD", "wget", "-O", "-", "-q", "http://127.0.0.1:1337/"]
       interval: 10s
       timeout: 10s
+      start_period: 15s
       retries: 3
     depends_on:
       rt:

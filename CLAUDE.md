@@ -9,17 +9,21 @@ This is a Docker-based deployment setup for [Request Tracker](https://bestpracti
 ## Running the Stack
 
 **Development** (builds image locally, includes local Postgres and pgadmin):
+
 ```bash
 ./dev.sh
 ```
 
 **Production** (uses prebuilt Docker Hub image):
+
 ```bash
 ./prod.sh        # pull new images and restart
 ./restart_prod.sh  # restart without pulling new images
+./logs_prod.sh   # tail logs from all services
 ```
 
 **Kubernetes**:
+
 ```bash
 ./dev-helm.sh    # dev setup: wipe and reinstall
 helm install rt helm/
@@ -29,17 +33,18 @@ helm install rt helm/
 
 These must exist before running the stack (checked by `bash_functions.sh`):
 
-| File | Source |
-|---|---|
-| `RT_SiteConfig.pm` | Copy from `RT_SiteConfig.pm.example` |
-| `Caddyfile` | Copy from `Caddyfile.example` |
-| `msmtp/msmtp.conf` | Copy from `msmtp.conf.example` |
-| `crontab` | Copy from `crontab.example` |
-| `getmail/getmailrc` | Copy from `getmailrc.example` |
+| File                | Source                               |
+| ------------------- | ------------------------------------ |
+| `RT_SiteConfig.pm`  | Copy from `RT_SiteConfig.pm.example` |
+| `Caddyfile`         | Copy from `Caddyfile.example`        |
+| `msmtp/msmtp.conf`  | Copy from `msmtp.conf.example`       |
+| `crontab`           | Copy from `crontab.example`          |
+| `getmail/getmailrc` | Copy from `getmailrc.example`        |
 
 Dev additionally requires `pgadmin_password.secret`, `certs/pub.pem`, and `certs/priv.pem`.
 
 Generate self-signed certs for dev:
+
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem -days 3650 -nodes
 ```
@@ -47,6 +52,7 @@ openssl req -x509 -newkey rsa:4096 -keyout ./certs/priv.pem -out ./certs/pub.pem
 ## Database Operations
 
 **Initialize (first run only)**:
+
 ```bash
 # Production (external DB)
 docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action init'
@@ -56,6 +62,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml run --rm rt bash 
 ```
 
 **Upgrade**:
+
 ```bash
 docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action upgrade --upgrade-from 4.4.4'
 docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-validator --check --resolve'
@@ -65,9 +72,9 @@ docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-validator --che
 
 ### Docker Image (Multi-stage Dockerfile)
 
-1. **`msmtp-builder`** stage: Compiles msmtp from source with GPG verification against the upstream signing key.
+1. **`msmtp-builder`** stage (debian:13-slim): Compiles msmtp from source with GPG verification against the upstream signing key.
 2. **`builder`** stage (perl:5.42.1): Downloads and builds RT + RT-IR with GPG signature verification, installs CPAN dependencies, and installs all RT extensions. Build args: `RT_VERSION` (default 6.0.2) and `RTIR_VERSION` (default 6.0.1). The `ADDITIONAL_CPANM_ARGS` build arg is used in dev to pass `-n` (skip tests).
-3. **Final image** (perl:5.42.1-slim): Copies compiled artifacts from builder stages, installs `getmail6` via `uv`, runs RT via `spawn-fcgi` on port 9000 (FastCGI).
+3. **Final image** (perl:5.42.1-slim): Copies compiled artifacts from builder stages, installs `getmail6` via `uv`, runs RT via `spawn-fcgi` on port 9000 (FastCGI). A final `rt-test-dependencies` check validates all Perl deps were copied correctly.
 
 The container exposes port 9000 (FastCGI) and uses a healthcheck via `cgi-fcgi`.
 
@@ -89,7 +96,7 @@ The `fix_file_perms` function in `bash_functions.sh` must be called before start
 
 ### CI/CD
 
-- **Docker builds** (`.github/workflows/docker.yml`): Builds multi-platform images (amd64/arm64) for all supported RT versions (5.0.8, 5.0.9, 6.0.0, 6.0.1, 6.0.2) on push to `main` and daily schedule. Only pushes to Docker Hub from `main`. Tags include full version, major version, and `latest` (pointing to 6.0.2).
+- **Docker builds** (`.github/workflows/docker.yml`): Builds multi-platform images (amd64/arm64) for all supported RT versions on push to `main` and daily schedule. Only pushes to Docker Hub from `main`. Tags include full version, major version, `latest` (pointing to 6.0.2), and nightly (`nightly-<rt_version>-YYYYMMDD`). RTIR versions per RT: 5.0.8→5.0.8, 5.0.9→5.0.8, 6.0.0→5.0.8, 6.0.1→6.0.1, 6.0.2→6.0.1.
 - **Linting**: `hadolint` for Dockerfile, `yamllint` for YAML files, `kube-linter` for Kubernetes manifests.
 - **Dependabot**: Daily updates for GitHub Actions and Docker base images.
 

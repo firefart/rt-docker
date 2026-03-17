@@ -32,3 +32,4 @@ docker-compose.override.yml
 *.patch
 # Added by goreleaser init:
 dist/
+*.pm

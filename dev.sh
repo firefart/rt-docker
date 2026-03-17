@@ -14,6 +14,7 @@ check_dev_files
 
 fix_file_perms
 
+docker compose -f docker-compose.yml -f docker-compose.dev.yml pull
 docker compose -f docker-compose.yml -f docker-compose.dev.yml stop
 docker compose -f docker-compose.yml -f docker-compose.dev.yml rm -f
 docker compose -f docker-compose.yml -f docker-compose.dev.yml --progress=plain build --pull

@@ -162,7 +162,7 @@ jobs:
             type=semver,pattern={{major}},value=${{ matrix.versions.rt }},enable=${{ matrix.versions.create_major == 'true' }}
             # Create a tag for the full version
             type=raw,value=${{ matrix.versions.rt }}
-            type=schedule,pattern={{date 'YYYYMMDD'}},prefix=nightly-${{ matrix.versions.rt }}-
+            type=raw,value=nightly-${{ matrix.versions.rt }}-{{date 'YYYYMMDD'}}
 
       - name: Create manifest list and push
         working-directory: ${{ runner.temp }}/digests

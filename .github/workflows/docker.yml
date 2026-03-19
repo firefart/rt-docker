@@ -174,3 +174,98 @@ jobs:
       - name: Inspect image
         run: |
           docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
+
+  diff:
+    runs-on: ubuntu-latest
+    needs:
+      - merge
+    if: env.DO_PUSH == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        versions:
+          - rt: "5.0.8"
+          - rt: "5.0.9"
+          - rt: "6.0.0"
+          - rt: "6.0.1"
+          - rt: "6.0.2"
+    steps:
+      - name: Compute image tags
+        id: tags
+        run: |
+          TODAY=$(date -u +%Y%m%d)
+          YESTERDAY=$(date -u -d "yesterday" +%Y%m%d)
+          echo "new_image=${{ env.REGISTRY_IMAGE }}:nightly-${{ matrix.versions.rt }}-${TODAY}" >> $GITHUB_OUTPUT
+          echo "old_image=${{ env.REGISTRY_IMAGE }}:nightly-${{ matrix.versions.rt }}-${YESTERDAY}" >> $GITHUB_OUTPUT
+
+      - name: Pull new image
+        run: docker pull ${{ steps.tags.outputs.new_image }}
+
+      - name: Pull old image
+        id: pull_old
+        run: |
+          if docker pull ${{ steps.tags.outputs.old_image }}; then
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "No previous nightly image found for ${{ steps.tags.outputs.old_image }}, skipping diff"
+          fi
+
+      - name: Compare images
+        if: steps.pull_old.outputs.found == 'true'
+        run: |
+          OLD_IMAGE="${{ steps.tags.outputs.old_image }}"
+          NEW_IMAGE="${{ steps.tags.outputs.new_image }}"
+
+          echo "Comparing ${OLD_IMAGE} -> ${NEW_IMAGE}"
+
+          get_files() {
+            docker run --rm --entrypoint="" "$1" \
+              sh -c 'find / -xdev -type f 2>/dev/null | sort | xargs -r md5sum 2>/dev/null' \
+              | awk -F'  ' '{print $2 "\t" $1}' | sort -t$'\t' -k1,1
+          }
+
+          get_files "$OLD_IMAGE" > old_files.txt
+          get_files "$NEW_IMAGE" > new_files.txt
+
+          {
+            echo "=== Image diff: RT ${{ matrix.versions.rt }} ==="
+            echo "Old: ${OLD_IMAGE}"
+            echo "New: ${NEW_IMAGE}"
+            echo ""
+
+            added=$(comm -13 <(awk -F'\t' '{print $1}' old_files.txt) <(awk -F'\t' '{print $1}' new_files.txt))
+            removed=$(comm -23 <(awk -F'\t' '{print $1}' old_files.txt) <(awk -F'\t' '{print $1}' new_files.txt))
+            changed=$(join -t$'\t' old_files.txt new_files.txt | awk -F'\t' '$2 != $3 {print $1}')
+
+            if [ -n "$added" ]; then
+              echo "--- Added ---"
+              echo "$added" | while read -r f; do echo "  + $f"; done
+              echo ""
+            fi
+
+            if [ -n "$removed" ]; then
+              echo "--- Removed ---"
+              echo "$removed" | while read -r f; do echo "  - $f"; done
+              echo ""
+            fi
+
+            if [ -n "$changed" ]; then
+              echo "--- Changed ---"
+              echo "$changed" | while read -r f; do echo "  ~ $f"; done
+              echo ""
+            fi
+
+            added_count=$(echo "$added" | grep -c . || true)
+            removed_count=$(echo "$removed" | grep -c . || true)
+            changed_count=$(echo "$changed" | grep -c . || true)
+            echo "Summary: ${added_count} added, ${removed_count} removed, ${changed_count} changed"
+          } | tee diff_rt_${{ matrix.versions.rt }}.txt
+
+      - name: Upload diff artifact
+        if: steps.pull_old.outputs.found == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: image-diff-rt-${{ matrix.versions.rt }}
+          path: diff_rt_${{ matrix.versions.rt }}.txt
+          retention-days: 30

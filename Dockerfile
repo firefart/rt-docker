@@ -89,7 +89,7 @@ RUN cpanm -n install Net::HTTP LWP::Protocol::https \
   # the build
   # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
   # The other packages are packages with failing tests
-  && cpanm -n install Server::Starter CSS::Inliner Cache::Cache Time::ParseDate \
+  && cpanm -n install Server::Starter CSS::Inliner Cache::Cache Time::ParseDate XML::Simple \
   # https://rt.cpan.org/Ticket/Display.html?id=173881
   && cpanm -n install DBIx::SearchBuilder
 

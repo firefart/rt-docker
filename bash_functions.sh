@@ -38,6 +38,11 @@ function check_dev_files() {
     exit 1
   fi
 
+  if [[ ! -f ./postgres_password.secret ]]; then
+    echo "./postgres_password.secret does not exist. Please set a password."
+    exit 1
+  fi
+
   if [[ ! -f ./certs/pub.pem ]]; then
     echo "./certs/pub.pem does not exist. Please see Readme.md if you want to create a self signed certificate."
     exit 1

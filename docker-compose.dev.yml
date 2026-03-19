@@ -31,7 +31,7 @@ services:
     environment:
       POSTGRES_DB: rt
       POSTGRES_USER: rt
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 30s
@@ -75,6 +75,8 @@ services:
 secrets:
   pgadmin_password:
     file: ./pgadmin_password.secret
+  postgres_password:
+    file: ./postgres_password.secret
 
 volumes:
   vol_pgadmin:

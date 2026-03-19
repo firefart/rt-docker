@@ -48,8 +48,8 @@ RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -m -s /bin/bash -d /home/rt r
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   ca-certificates wget gnupg graphviz libssl3 zlib1g \
-  gpg dirmngr gpg-agent \
-  libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl libgd-dev
+  gpg dirmngr gpg-agent libpq-dev libgd3 libexpat1 \
+  libpq5 w3m elinks links html2text lynx openssl libgd-dev
 
 # Download and extract RT
 RUN mkdir -p /src \

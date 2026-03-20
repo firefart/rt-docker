@@ -34,12 +34,13 @@ ENV RTIR="${RTIR_VERSION}"
 ENV RT_GPG_PUBLIC_KEY="C49B372F2BF84A19011660270DF0A283FEAC80B2"
 
 ARG ADDITIONAL_CPANM_ARGS=""
-
 ENV PERL_CPANM_OPT="--no-interactive -v --no-man-pages ${ADDITIONAL_CPANM_ARGS}"
 # use cpanm for dependencies
 ENV RT_FIX_DEPS_CMD="cpanm ${PERL_CPANM_OPT}"
 # cpan non interactive mode
 ENV PERL_MM_USE_DEFAULT=1
+# prevent the creation of "perllocal.pod"
+ENV NO_PERLLOCAL=1
 
 # Create RT user
 RUN groupadd -g 1000 rt && useradd -u 1000 -g 1000 -m -s /bin/bash -d /home/rt rt
@@ -311,7 +312,8 @@ EXPOSE 9000
 
 # install getmail as the rt user
 USER rt
-RUN uv tool install getmail6
+RUN uv tool install getmail6 \
+  && uv cache clean
 
 USER root
 # link getmail to /usr/bin for backwards compatibility

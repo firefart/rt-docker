@@ -73,8 +73,8 @@ docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-validator --che
 ### Docker Image (Multi-stage Dockerfile)
 
 1. **`msmtp-builder`** stage (debian:13-slim): Compiles msmtp from source with GPG verification against the upstream signing key.
-2. **`builder`** stage (perl:5.42.1): Downloads and builds RT + RT-IR with GPG signature verification, installs CPAN dependencies, and installs all RT extensions. Build args: `RT_VERSION` (default 6.0.2) and `RTIR_VERSION` (default 6.0.1). The `ADDITIONAL_CPANM_ARGS` build arg is used in dev to pass `-n` (skip tests).
-3. **Final image** (perl:5.42.1-slim): Copies compiled artifacts from builder stages, installs `getmail6` via `uv`, runs RT via `spawn-fcgi` on port 9000 (FastCGI). A final `rt-test-dependencies` check validates all Perl deps were copied correctly.
+2. **`builder`** stage (perl:5.42.2): Downloads and builds RT + RT-IR with GPG signature verification, installs CPAN dependencies, and installs all RT extensions. Build args: `RT_VERSION` (default 6.0.2) and `RTIR_VERSION` (default 6.0.1). The `ADDITIONAL_CPANM_ARGS` build arg is used in dev to pass `-n` (skip tests).
+3. **Final image** (perl:5.42.2-slim): Copies compiled artifacts from builder stages, installs `getmail6` via `uv`, runs RT via `spawn-fcgi` on port 9000 (FastCGI). A final `rt-test-dependencies` check validates all Perl deps were copied correctly.
 
 The container exposes port 9000 (FastCGI) and uses a healthcheck via `cgi-fcgi`.
 

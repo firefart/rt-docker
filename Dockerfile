@@ -99,6 +99,9 @@ RUN make -C /src/rt fixdeps \
   && make -C /src/rt testdeps \
   && make -C /src/rt install
 
+# TEMP fix for https://github.com/plack/Plack/issues/723 and https://github.com/firefart/rt-docker/issues/86 , downgrade Plack to a working version
+RUN cpanm -n Plack@1.0051
+
 ENV PERL5LIB=/opt/rt/lib/
 
 # install extensions and additional tools
@@ -227,12 +230,12 @@ RUN true \
 # Dumb fix for HTMX Bug which rt team refuses to fix
 # the main page does not honor WebPath and breaks if RT is not installed
 # in the webserver root
-RUN true && \
-  case "${RT_VERSION}" in \
-  "6."*) \
-  sed -i 's/hx-get="<% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/hx-get="<%RT->Config->Get('"'"'WebPath'"'"')%><% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/' /opt/rt/share/html/Elements/Header \
-  ;; \
-  esac
+# RUN true && \
+#   case "${RT_VERSION}" in \
+#   "6."*) \
+#   sed -i 's/hx-get="<% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/hx-get="<%RT->Config->Get('"'"'WebPath'"'"')%><% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/' /opt/rt/share/html/Elements/Header \
+#   ;; \
+#   esac
 
 #############################################################################
 

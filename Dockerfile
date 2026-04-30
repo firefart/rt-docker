@@ -99,9 +99,6 @@ RUN make -C /src/rt fixdeps \
   && make -C /src/rt testdeps \
   && make -C /src/rt install
 
-# TEMP fix for https://github.com/plack/Plack/issues/723 and https://github.com/firefart/rt-docker/issues/86 , downgrade Plack to a working version
-RUN cpanm -n Plack@1.0051
-
 ENV PERL5LIB=/opt/rt/lib/
 
 # install extensions and additional tools

@@ -104,6 +104,12 @@ RUN cpanm -n Plack@1.0051
 
 ENV PERL5LIB=/opt/rt/lib/
 
+# Configure RTIR
+RUN true \
+  && cd /src/rtir \
+  && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
+  && make install
+
 # install extensions and additional tools
 RUN cpanm \
   # https://metacpan.org/dist/RT-Extension-MergeUsers
@@ -140,6 +146,8 @@ RUN cpanm \
   RT::Extension::ShowTransactionSquelching \
   # https://metacpan.org/dist/RT-Extension-CommentOnCreate
   RT::Extension::CommentOnCreate \
+  # https://metacpan.org/dist/RTIR-Extension-MISP
+  RTIR::Extension::MISP \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   App::wsgetmail
@@ -220,12 +228,6 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::QuickCalls~">= 1.0000, < 2.0000" \
   ;; \
   esac
-
-# Configure RTIR
-RUN true \
-  && cd /src/rtir \
-  && perl -I /src/rtir/lib Makefile.PL --defaultdeps \
-  && make install
 
 # Dumb fix for HTMX Bug which rt team refuses to fix
 # the main page does not honor WebPath and breaks if RT is not installed

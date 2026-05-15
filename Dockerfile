@@ -146,8 +146,6 @@ RUN cpanm \
   RT::Extension::ShowTransactionSquelching \
   # https://metacpan.org/dist/RT-Extension-CommentOnCreate
   RT::Extension::CommentOnCreate \
-  # https://metacpan.org/dist/RTIR-Extension-MISP
-  RTIR::Extension::MISP \
   # https://github.com/bestpractical/app-wsgetmail
   # https://metacpan.org/dist/App-wsgetmail
   App::wsgetmail
@@ -193,6 +191,8 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::PreviewInSearch \
   # https://metacpan.org/dist/RT-Extension-AWS-Assets (only for RT 6.0.x)
   RT::Extension::AWS::Assets \
+  # https://metacpan.org/dist/RTIR-Extension-MISP
+  RTIR::Extension::MISP \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
@@ -226,6 +226,8 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::Captcha~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-QuickCalls
   RT::Extension::QuickCalls~">= 1.0000, < 2.0000" \
+  # https://metacpan.org/dist/RTIR-Extension-MISP
+  RTIR::Extension::MISP~">= 0.0000, < 1.0000" \
   ;; \
   esac
 

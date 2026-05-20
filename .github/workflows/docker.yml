@@ -47,11 +47,15 @@ jobs:
             rtir: "5.0.8"
           - rt: "5.0.9"
             rtir: "5.0.8"
+          - rt: "5.0.10"
+            rtir: "5.0.8"
           - rt: "6.0.0"
             rtir: "5.0.8"
           - rt: "6.0.1"
             rtir: "6.0.1"
           - rt: "6.0.2"
+            rtir: "6.0.1"
+          - rt: "6.0.3"
             rtir: "6.0.1"
 
     steps:
@@ -123,10 +127,12 @@ jobs:
         versions:
           - rt: "5.0.8"
           - rt: "5.0.9"
+          - rt: "5.0.10"
             create_major: "true" # only enable on the latest version of a major
           - rt: "6.0.0"
           - rt: "6.0.1"
           - rt: "6.0.2"
+          - rt: "6.0.3"
             latest_tag: "true" # point the latest tag to this version
             create_major: "true" # only enable on the latest version of a major
     steps:
@@ -185,9 +191,11 @@ jobs:
         versions:
           - rt: "5.0.8"
           - rt: "5.0.9"
+          - rt: "5.0.10"
           - rt: "6.0.0"
           - rt: "6.0.1"
           - rt: "6.0.2"
+          - rt: "6.0.3"
     steps:
       - name: Compute image tags
         id: tags

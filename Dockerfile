@@ -26,7 +26,7 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.42.2 AS builder
 
-ARG RT_VERSION="6.0.2"
+ARG RT_VERSION="6.0.3"
 ARG RTIR_VERSION="6.0.1"
 
 ENV RT="${RT_VERSION}"
@@ -98,9 +98,6 @@ RUN cpanm -n install Net::HTTP LWP::Protocol::https \
 RUN make -C /src/rt fixdeps \
   && make -C /src/rt testdeps \
   && make -C /src/rt install
-
-# Temp fix for https://github.com/plack/Plack/issues/723
-RUN cpanm -n Plack@1.0051
 
 ENV PERL5LIB=/opt/rt/lib/
 
@@ -230,16 +227,6 @@ RUN case "${RT_VERSION}" in \
   RTIR::Extension::MISP~">= 0.0000, < 1.0000" \
   ;; \
   esac
-
-# Dumb fix for HTMX Bug which rt team refuses to fix
-# the main page does not honor WebPath and breaks if RT is not installed
-# in the webserver root
-# RUN true && \
-#   case "${RT_VERSION}" in \
-#   "6."*) \
-#   sed -i 's/hx-get="<% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/hx-get="<%RT->Config->Get('"'"'WebPath'"'"')%><% RT::Interface::Web::RequestENV('"'"'REQUEST_URI'"'"') %>"/' /opt/rt/share/html/Elements/Header \
-#   ;; \
-#   esac
 
 #############################################################################
 

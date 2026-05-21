@@ -48,7 +48,7 @@ jobs:
           - rt: "5.0.9"
             rtir: "5.0.8"
           - rt: "5.0.10"
-            rtir: "5.0.8"
+            rtir: "5.0.10"
           - rt: "6.0.0"
             rtir: "5.0.8"
           - rt: "6.0.1"
@@ -56,7 +56,7 @@ jobs:
           - rt: "6.0.2"
             rtir: "6.0.1"
           - rt: "6.0.3"
-            rtir: "6.0.1"
+            rtir: "6.0.3"
 
     steps:
       - name: checkout sources

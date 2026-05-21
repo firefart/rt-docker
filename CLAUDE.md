@@ -73,7 +73,7 @@ docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-validator --che
 ### Docker Image (Multi-stage Dockerfile)
 
 1. **`msmtp-builder`** stage (debian:13-slim): Compiles msmtp from source with GPG verification against the upstream signing key.
-2. **`builder`** stage (perl:5.42.2): Downloads and builds RT + RT-IR with GPG signature verification, installs CPAN dependencies, and installs all RT extensions. Build args: `RT_VERSION` (default 6.0.3) and `RTIR_VERSION` (default 6.0.1). The `ADDITIONAL_CPANM_ARGS` build arg is used in dev to pass `-n` (skip tests).
+2. **`builder`** stage (perl:5.42.2): Downloads and builds RT + RT-IR with GPG signature verification, installs CPAN dependencies, and installs all RT extensions. Build args: `RT_VERSION` (default 6.0.3) and `RTIR_VERSION` (default 6.0.3). The `ADDITIONAL_CPANM_ARGS` build arg is used in dev to pass `-n` (skip tests).
 3. **Final image** (perl:5.42.2-slim): Copies compiled artifacts from builder stages, installs `getmail6` via `uv`, runs RT via `spawn-fcgi` on port 9000 (FastCGI). A final `rt-test-dependencies` check validates all Perl deps were copied correctly.
 
 The container exposes port 9000 (FastCGI) and uses a healthcheck via `cgi-fcgi`.
@@ -96,7 +96,7 @@ The `fix_file_perms` function in `bash_functions.sh` must be called before start
 
 ### CI/CD
 
-- **Docker builds** (`.github/workflows/docker.yml`): Builds multi-platform images (amd64/arm64) for all supported RT versions on push to `main` and daily schedule. Only pushes to Docker Hub from `main`. Tags include full version, major version, `latest` (pointing to 6.0.3), and nightly (`nightly-<rt_version>-YYYYMMDD`). RTIR versions per RT: 5.0.8→5.0.8, 5.0.9→5.0.8, 5.0.10→5.0.8, 6.0.0→5.0.8, 6.0.1→6.0.1, 6.0.2→6.0.1, 6.0.3→6.0.1.
+- **Docker builds** (`.github/workflows/docker.yml`): Builds multi-platform images (amd64/arm64) for all supported RT versions on push to `main` and daily schedule. Only pushes to Docker Hub from `main`. Tags include full version, major version, `latest` (pointing to 6.0.3), and nightly (`nightly-<rt_version>-YYYYMMDD`). RTIR versions per RT: 5.0.8→5.0.8, 5.0.9→5.0.8, 5.0.10→5.0.8, 6.0.0→5.0.8, 6.0.1→6.0.1, 6.0.2→6.0.1, 6.0.3→6.0.3.
 - **Linting**: `hadolint` for Dockerfile, `yamllint` for YAML files, `kube-linter` for Kubernetes manifests.
 - **Dependabot**: Daily updates for GitHub Actions and Docker base images.
 

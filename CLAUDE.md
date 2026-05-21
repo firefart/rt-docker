@@ -96,7 +96,7 @@ The `fix_file_perms` function in `bash_functions.sh` must be called before start
 
 ### CI/CD
 
-- **Docker builds** (`.github/workflows/docker.yml`): Builds multi-platform images (amd64/arm64) for all supported RT versions on push to `main` and daily schedule. Only pushes to Docker Hub from `main`. Tags include full version, major version, `latest` (pointing to 6.0.3), and nightly (`nightly-<rt_version>-YYYYMMDD`). RTIR versions per RT: 5.0.8→5.0.8, 5.0.9→5.0.8, 5.0.10→5.0.8, 6.0.0→5.0.8, 6.0.1→6.0.1, 6.0.2→6.0.1, 6.0.3→6.0.3.
+- **Docker builds** (`.github/workflows/docker.yml`): Builds multi-platform images (amd64/arm64) for all supported RT versions on push to `main` and daily schedule. Only pushes to Docker Hub from `main`. Tags include full version, major version, `latest` (pointing to 6.0.3), and nightly (`nightly-<rt_version>-YYYYMMDD`). RTIR versions per RT: 5.0.8→5.0.8, 5.0.9→5.0.8, 5.0.10→5.0.10, 6.0.0→5.0.8, 6.0.1→6.0.1, 6.0.2→6.0.1, 6.0.3→6.0.3.
 - **Linting**: `hadolint` for Dockerfile, `yamllint` for YAML files, `kube-linter` for Kubernetes manifests.
 - **Dependabot**: Daily updates for GitHub Actions and Docker base images.
 

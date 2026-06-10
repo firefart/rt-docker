@@ -85,12 +85,12 @@ RUN case "${RT_VERSION}" in \
 # install https support for cpanm
 # also disable tests on net http as the live tests often fail
 RUN cpanm -n install Net::HTTP LWP::Protocol::https \
-  # Install Sever::Starter without tests
-  # as they constanly fail with timeouts and thus break
-  # the build
+  # Install Server::Starter and Plack::Handler::Starlet without tests
+  # as they constantly fail with timeouts and thus break
+  # the build (both spawn real PSGI servers during tests)
   # Also install CSS::Inliner so users can use $EmailDashboardInlineCSS
   # The other packages are packages with failing tests
-  && cpanm -n install Server::Starter CSS::Inliner Cache::Cache Time::ParseDate XML::Simple \
+  && cpanm -n install Server::Starter Plack::Handler::Starlet CSS::Inliner Cache::Cache Time::ParseDate XML::Simple \
   # https://rt.cpan.org/Ticket/Display.html?id=173881
   && cpanm -n install DBIx::SearchBuilder
 

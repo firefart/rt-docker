@@ -1,3 +1,4 @@
+{{- include "request-tracker.validateValues" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,16 +10,21 @@ spec:
   {{- if not .Values.rt.autoscaling.enabled }}
   replicas: {{ .Values.rt.replicaCount }}
   {{- end }}
+  {{- with .Values.rt.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "request-tracker.selectorLabels" . | nindent 6 }}
       app.kubernetes.io/component: rt
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "request-tracker.labels" . | nindent 8 }}
         app.kubernetes.io/component: rt
@@ -71,17 +77,17 @@ spec:
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: {{ include "request-tracker.dbSecretName" . }}
                   key: dbname
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: {{ include "request-tracker.dbSecretName" . }}
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: {{ include "request-tracker.dbSecretName" . }}
                   key: password
         {{- end }}
         - name: generate-config
@@ -107,17 +113,17 @@ spec:
             - name: RT_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: {{ include "request-tracker.dbSecretName" . }}
                   key: dbname
             - name: RT_DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: {{ include "request-tracker.dbSecretName" . }}
                   key: username
             - name: RT_DB_PASS
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: {{ include "request-tracker.dbSecretName" . }}
                   key: password
           volumeMounts:
             - name: rt-config-template
@@ -133,15 +139,30 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.rt.image.repository }}:{{ .Values.rt.image.tag }}"
+          image: "{{ .Values.rt.image.repository }}:{{ include "request-tracker.rtImageTag" . }}"
           imagePullPolicy: {{ .Values.rt.image.pullPolicy }}
+          {{- with .Values.timezone }}
+          env:
+            - name: TZ
+              value: {{ . | quote }}
+          {{- end }}
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 10
+            # allow up to ~5 minutes for RT to come up before liveness kicks in
+            failureThreshold: 30
           livenessProbe:
             exec:
               command:
                 - /bin/sh
                 - -c
                 - "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:{{ .Values.rt.port }} -bind || exit 1"
-            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 10
             failureThreshold: 3
@@ -200,6 +221,11 @@ spec:
           {{- end }}
           image: "{{ .Values.caddy.image.repository }}:{{ .Values.caddy.image.tag }}"
           imagePullPolicy: {{ .Values.caddy.image.pullPolicy }}
+          {{- with .Values.timezone }}
+          env:
+            - name: TZ
+              value: {{ . | quote }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.caddy.ports.http }}

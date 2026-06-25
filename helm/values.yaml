@@ -10,7 +10,15 @@ rt:
   image:
     repository: firefart/requesttracker
     pullPolicy: Always
-    tag: "6.0.1"
+    # leave empty to use the chart appVersion as the tag
+    tag: ""
+
+  # Deployment update strategy. The rt pods mount ReadWriteOnce PVCs
+  # (gpg/smime/shredder/cron), so a RollingUpdate would deadlock waiting for
+  # the old pod to release the volume. Use Recreate unless those PVCs are
+  # ReadWriteMany. Set to {} to use the Kubernetes default (RollingUpdate).
+  strategy:
+    type: Recreate
 
   imagePullSecrets: []
 
@@ -54,8 +62,9 @@ rt:
 caddy:
   image:
     repository: caddy
-    pullPolicy: Always
-    tag: "latest"
+    pullPolicy: IfNotPresent
+    # pin to a concrete version for reproducible deploys
+    tag: "2.10"
 
   securityContext:
     readOnlyRootFilesystem: true
@@ -107,16 +116,17 @@ caddy:
 
 postgres:
   enabled: true
+  # Postgres must stay at a single replica: all replicas would share the same
+  # ReadWriteOnce data volume, which corrupts the database. There is
+  # deliberately no autoscaling here.
   replicaCount: 1
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
+  # The data PVC is ReadWriteOnce, so a RollingUpdate would deadlock. Recreate
+  # terminates the old pod before starting the new one.
+  strategy:
+    type: Recreate
   image:
     repository: postgres
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     tag: "17.6"
   imagePullSecrets: []
 
@@ -149,6 +159,42 @@ postgres:
     type: ClusterIP
     port: 5432
 
+# Database credentials, consumed via the "rt-db-creds" Secret.
+db:
+  # When true the chart creates the Secret from the values below.
+  # When false (default) you must create a Secret named "rt-db-creds"
+  # yourself (see dev-helm.sh) or point existingSecret at one.
+  create: false
+  # Use an already existing Secret instead of the chart-managed one.
+  # It must contain the keys: dbname, username, password.
+  existingSecret: ""
+  # only used when create is true
+  name: rt
+  username: rt
+  password: ""
+
+# Timezone applied to all containers via the TZ env var. Mirrors the
+# /etc/localtime bind mount used in the docker-compose setup.
+# Leave empty to inherit the image default (UTC).
+timezone: "UTC"
+
+# PodDisruptionBudget for the rt deployment (useful with multiple replicas/HPA).
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# Restrict traffic to the rt pods. The mailgate port (8080) is sensitive: in
+# docker-compose it is only bound to localhost. When enabled, only pods
+# carrying one of mailgateAllowLabels may reach it; the web port stays open.
+networkPolicy:
+  enabled: false
+  # additional namespace/pod selectors allowed to reach the web port
+  ingress: []
+  # pods allowed to reach the mailgate port (e.g. the getmail cronjob)
+  mailgateAllowLabels:
+    app.kubernetes.io/name: rt
+
 serviceAccount:
   create: true
   automount: true
@@ -160,8 +206,7 @@ podLabels: {}
 ingress:
   enabled: true
   className: "nginx"
-  annotations:
-    kubernetes.io/ingress.class: nginx
+  annotations: {}
   hosts:
     - host: chart-example.local
       paths:
@@ -184,6 +229,14 @@ tolerations: []
 
 affinity: {}
 
+# Kubernetes CronJobs replacing the persistent "cron" container from
+# docker-compose (crontab.example). Uncomment the entries you need:
+#   clean-sessions / refresh-fulltext-index : safe maintenance jobs
+#   getmail        : pulls mail and feeds rt-mailgate via the caddy mailgate
+#                    port; needs real getmailrc credentials and, if
+#                    networkPolicy is enabled, a pod label matching
+#                    networkPolicy.mailgateAllowLabels
+#   email-dashboards : scheduled dashboard mails (needs working msmtp)
 cronjobs:
   # - name: "clean-sessions"
   #   schedule: "0 0 * * *"
@@ -400,7 +453,9 @@ config:
     tls on
     tls_starttls on
     from test@test.com
-    tls_trust_file /msmtp/ca-bundle.crt
+    # use the system CA bundle shipped in the image; mount your own at
+    # /msmtp/ca-bundle.crt via rt.volumes/volumeMounts if you need a custom one
+    tls_trust_file /etc/ssl/certs/ca-certificates.crt
     tls_certcheck on
     auth on
     user user@domain.com

@@ -402,6 +402,19 @@ To include additional containers in this setup like pgadmin or change a default 
 
 ## Kubernetes setup
 
+The chart needs a Secret called `rt-db-creds` holding the database credentials
+(keys `dbname`, `username`, `password`). Either create it yourself:
+
+```bash
+kubectl create secret generic rt-db-creds \
+    --from-literal=dbname=rt \
+    --from-literal=username=rt \
+    --from-literal=password='changeme'
+```
+
+or let the chart manage it via values (`db.create=true`, `db.password=...`), or
+point the chart at an existing Secret with `db.existingSecret`.
+
 ```bash
 helm install rt helm/
 ```

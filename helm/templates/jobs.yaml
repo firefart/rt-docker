@@ -21,8 +21,14 @@ spec:
           - name: "{{ printf "rt-%s" .name | trunc -63 | replace "_" "-" }}"
             securityContext:
               {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 14 }}
-            image: "{{ .image.repository | default $.Values.rt.image.repository }}:{{ .image.tag | default $.Values.rt.image.tag }}"
-            imagePullPolicy: {{ .image.pullPolicy | default $.Values.rt.image.pullPolicy }}
+            {{- $img := .image | default dict }}
+            image: "{{ $img.repository | default $.Values.rt.image.repository }}:{{ $img.tag | default (include "request-tracker.rtImageTag" $) }}"
+            imagePullPolicy: {{ $img.pullPolicy | default $.Values.rt.image.pullPolicy }}
+            {{- with $.Values.timezone }}
+            env:
+              - name: TZ
+                value: {{ . | quote }}
+            {{- end }}
             command:
               {{- toYaml .command | nindent 14 }}
             {{- with .resources }}

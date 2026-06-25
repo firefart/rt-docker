@@ -2,7 +2,9 @@ apiVersion: v2
 name: request-tracker
 description: A Helm chart for installing request tracker on Kubernetes/OpenShift clusters.
 type: application
-version: 0.1.0
+version: 0.2.0
+# the default container image tag is derived from this when rt.image.tag is empty
+appVersion: "6.0.3"
 sources:
   - https://github.com/firefart/rt-docker
 maintainers:

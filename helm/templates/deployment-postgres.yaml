@@ -52,20 +52,14 @@ spec:
               protocol: TCP
           livenessProbe:
             exec:
-              command:
-                - bash
-                - -c
-                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+              command: ["pg_isready"]
             initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 10
             failureThreshold: 5
           readinessProbe:
             exec:
-              command:
-                - bash
-                - -c
-                - pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
+              command: ["pg_isready"]
             initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 10
@@ -87,6 +81,17 @@ spec:
               value: /etc/secrets/username
             - name: POSTGRES_PASSWORD_FILE
               value: /etc/secrets/password
+            # PGUSER/PGDATABASE let pg_isready run without a shell in the probes
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "request-tracker.dbSecretName" . }}
+                  key: username
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "request-tracker.dbSecretName" . }}
+                  key: dbname
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data

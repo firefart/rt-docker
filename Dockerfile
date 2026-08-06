@@ -190,6 +190,8 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::AWS::Assets \
   # https://metacpan.org/dist/RTIR-Extension-MISP
   RTIR::Extension::MISP \
+  # https://metacpan.org/dist/RT-Extension-AwayMode (only for RT 6.0.x)
+  RT::Extension::AwayMode \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \

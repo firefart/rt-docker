@@ -391,6 +391,14 @@ docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database 
 
 Restart docker setup after all steps to fully load RT-IR (just run `./restart_prod.sh`).
 
+### Plugins
+
+There are several RT plugins already installed. You can find them under `/opt/rt/local/plugins` inside the container. To enable them, please refer to the readme of each plugin. If a plugin needs database changes (usually noted in the readme with a `make initdb`) this can be done via the following command:
+
+```bash
+docker compose run --rm rt bash -c 'cd /opt/rt && perl ./sbin/rt-setup-database --action insert --skip-create --datafile /opt/rt/local/plugins/XXXXXXX/etc/initialdata'
+```
+
 ### Extending
 
 To include additional containers in this setup like pgadmin or change a default config, you can create a `docker-compose.override.yml` file in the projects root and it will automatically picked up and merged with the default config. Run `docker compose config` to view the merged config.

@@ -319,15 +319,15 @@ COPY --chown=root:root --chmod=0700 cron_entrypoint.sh /root/cron_entrypoint.sh
 EXPOSE 9000
 
 # install getmail as the rt user
-USER rt
+USER 1000
 RUN uv tool install getmail6 \
   && uv cache clean
 
-USER root
+USER 0
 # link getmail to /usr/bin for backwards compatibility
 RUN ln -s /home/rt/.local/bin/getmail /usr/bin/getmail
 
-USER rt
+USER 1000
 # update PATH
 ENV PATH="${PATH}:/opt/rt/sbin:/opt/rt/bin:/home/rt/.local/bin"
 
@@ -363,4 +363,4 @@ WORKDIR /opt/rt/
 #  -G <group>     change Unix domain socket group to group-id
 CMD [ "/usr/bin/spawn-fcgi", "-d", "/opt/rt/", "-p" ,"9000", "-a","0.0.0.0", "-u", "1000", "-n", "--", "/opt/rt/sbin/rt-server.fcgi" ]
 
-HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:9000 -bind || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 CMD [ "sh", "-c", "REQUEST_METHOD=GET REQUEST_URI=/ SCRIPT_NAME=/ cgi-fcgi -connect localhost:9000 -bind || exit 1" ]

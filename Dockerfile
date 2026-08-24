@@ -92,7 +92,9 @@ RUN cpanm -n install Net::HTTP LWP::Protocol::https \
   # The other packages are packages with failing tests
   && cpanm -n install Server::Starter Plack::Handler::Starlet CSS::Inliner Cache::Cache Time::ParseDate XML::Simple \
   # https://rt.cpan.org/Ticket/Display.html?id=173881
-  && cpanm -n install DBIx::SearchBuilder
+  && cpanm -n install DBIx::SearchBuilder \
+  # The Postgres tests try running against a live database and thus fail, so we disable them
+  && cpanm -n install DBD::Pg
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \

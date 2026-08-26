@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rt-db
+  name: {{ include "request-tracker.postgresName" . }}
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
     app.kubernetes.io/component: postgres
@@ -33,7 +33,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: rt
+      serviceAccountName: {{ include "request-tracker.serviceAccountName" . }}
       {{- with .Values.postgres.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -107,8 +107,12 @@ spec:
           {{- end }}
       volumes:
         - name: postgres-data
+          {{- if .Values.pvc.postgresData.enabled }}
           persistentVolumeClaim:
-            claimName: rt-postgres-data
+            claimName: {{ include "request-tracker.fullname" . }}-postgres-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: postgres-run
           emptyDir:
             sizeLimit: 100Mi

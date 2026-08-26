@@ -273,8 +273,8 @@ COPY --chown=rt:rt --from=builder /opt/rt /opt/rt
 # run a final dependency check if we copied all
 RUN perl /opt/rt/sbin/rt-test-dependencies --with-pg --with-fastcgi --with-gpg --with-graphviz --with-gd
 
-# uv and uvx (needed for getmail6)
-COPY --from=docker.io/astral/uv:latest /uv /uvx /bin/
+# uv and uvx (needed for getmail6); pin this independently from the base image.
+COPY --from=docker.io/astral/uv:0.8.13 /uv /uvx /bin/
 
 RUN true \
   # msmtp config
@@ -320,7 +320,7 @@ EXPOSE 9000
 
 # install getmail as the rt user
 USER rt
-RUN uv tool install getmail6 \
+RUN uv tool install getmail6==6.20.1 \
   && uv cache clean
 
 USER root

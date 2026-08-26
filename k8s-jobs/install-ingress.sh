@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
-helm install --namespace kube-system nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx
+set -euo pipefail
+
+helm upgrade --install nginx ingress-nginx \
+  --namespace ingress-nginx \
+  --create-namespace \
+  --repo https://kubernetes.github.io/ingress-nginx

@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rt
+  name: {{ include "request-tracker.fullname" . }}
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
     app.kubernetes.io/component: rt
@@ -36,7 +36,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: rt
+      serviceAccountName: {{ include "request-tracker.serviceAccountName" . }}
       {{- with .Values.rt.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -52,7 +52,10 @@ spec:
             allowPrivilegeEscalation: false
             runAsUser: 65534 # nobody user in the busybox image
             runAsGroup: 65534 # nobody user in the busybox image
-          command: ['sh', '-c', "until nslookup rt-db.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for rt-db; sleep 2; done"]
+          command:
+            - sh
+            - -c
+            - {{ printf "until nslookup %s; do echo waiting for database DNS; sleep 2; done" (include "request-tracker.postgresName" .) | quote }}
           {{- with .Values.rt.resourcesInitContainer }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -68,7 +71,7 @@ spec:
           command:
             - bash
             - -c
-            - until pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h rt-db; do echo waiting for database; sleep 2; done;
+            - until pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h {{ include "request-tracker.postgresName" . }}; do echo waiting for database; sleep 2; done;
           {{- with .Values.rt.resourcesInitContainer }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -91,20 +94,14 @@ spec:
                   key: password
         {{- end }}
         - name: generate-config
-          image: "hairyhenderson/gomplate:stable-alpine"
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.configRenderer.image | quote }}
+          imagePullPolicy: {{ .Values.configRenderer.pullPolicy }}
           securityContext:
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            runAsUser: 65534 # nobody user
-            runAsGroup: 65534 # nobody group
+            {{- toYaml .Values.configRenderer.securityContext | nindent 12 }}
           command:
-            - gomplate
-            - -f
-            - /templates/RT_SiteConfig.pm
-            - -o
-            - /output/RT_SiteConfig.pm
+            - sh
+            - -c
+            - gomplate -f /templates/RT_SiteConfig.pm -o /output/RT_SiteConfig.pm && gomplate -f /templates/getmailrc -o /output/getmailrc
           {{- with .Values.rt.resourcesInitContainer }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -115,6 +112,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "request-tracker.dbSecretName" . }}
                   key: dbname
+            - name: RT_DB_HOST
+              value: {{ include "request-tracker.dbHost" . | quote }}
+            - name: RT_CADDY_HOST
+              value: {{ include "request-tracker.mailgateName" . | quote }}
             - name: RT_DB_USER
               valueFrom:
                 secretKeyRef:
@@ -129,6 +130,10 @@ spec:
             - name: rt-config-template
               mountPath: /templates/RT_SiteConfig.pm
               subPath: RT_SiteConfig.pm
+              readOnly: true
+            - name: getmailrc-template
+              mountPath: /templates/getmailrc
+              subPath: getmailrc
               readOnly: true
             - name: rt-config
               mountPath: /output
@@ -265,36 +270,54 @@ spec:
       volumes:
         - name: rt-config-template
           configMap:
-            name: rt-config
+            name: {{ include "request-tracker.configName" . }}
             items:
               - key: rtSiteConfig
                 path: RT_SiteConfig.pm
         - name: rt-config
           emptyDir: {}
         - name: msmtp-config
-          configMap:
-            name: rt-config
+          secret:
+            secretName: {{ include "request-tracker.mailSecretName" . }}
             items:
               - key: msmtp
                 path: msmtp.conf
-        - name: getmailrc-config
-          configMap:
-            name: rt-config
+        - name: getmailrc-template
+          secret:
+            secretName: {{ include "request-tracker.mailSecretName" . }}
             items:
               - key: getmailrc
                 path: getmailrc
+        - name: getmailrc-config
+          emptyDir: {}
         - name: rt-gpg
+          {{- if .Values.pvc.gpg.enabled }}
           persistentVolumeClaim:
-            claimName: rt-gpg
+            claimName: {{ include "request-tracker.fullname" . }}-gpg
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: rt-smime
+          {{- if .Values.pvc.smime.enabled }}
           persistentVolumeClaim:
-            claimName: rt-smime
+            claimName: {{ include "request-tracker.fullname" . }}-smime
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: rt-shredder
+          {{- if .Values.pvc.shredder.enabled }}
           persistentVolumeClaim:
-            claimName: rt-shredder
+            claimName: {{ include "request-tracker.fullname" . }}-shredder
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: rt-cron
+          {{- if .Values.pvc.cron.enabled }}
           persistentVolumeClaim:
-            claimName: rt-cron
+            claimName: {{ include "request-tracker.fullname" . }}-cron
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: tmp
           emptyDir: {}
         - name: mason-data
@@ -304,16 +327,24 @@ spec:
       {{- end }}
         - name: caddy-configfile
           configMap:
-            name: rt-config
+            name: {{ include "request-tracker.configName" . }}
             items:
               - key: caddyfile
                 path: Caddyfile
         - name: caddy-data
+          {{- if .Values.pvc.caddyData.enabled }}
           persistentVolumeClaim:
-            claimName: rt-caddy-data
+            claimName: {{ include "request-tracker.fullname" . }}-caddy-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
         - name: caddy-config
+          {{- if .Values.pvc.caddyConfig.enabled }}
           persistentVolumeClaim:
-            claimName: rt-caddy-config
+            claimName: {{ include "request-tracker.fullname" . }}-caddy-config
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
       {{- with .Values.caddy.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

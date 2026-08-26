@@ -2,7 +2,7 @@
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: rt-route
+  name: {{ include "request-tracker.fullname" . }}
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
   {{- with .Values.route.annotations }}
@@ -18,5 +18,5 @@ spec:
     targetPort: http
   to:
     kind: Service
-    name: rt-caddy
+    name: {{ include "request-tracker.caddyName" . }}
 {{- end }}

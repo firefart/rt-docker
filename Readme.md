@@ -410,18 +410,24 @@ To include additional containers in this setup like pgadmin or change a default 
 
 ## Kubernetes setup
 
-The chart needs a Secret called `rt-db-creds` holding the database credentials
-(keys `dbname`, `username`, `password`). Either create it yourself:
+The chart scopes resource names to the Helm release. For release `rt`, it expects
+`rt-request-tracker-db-creds` with keys `dbname`, `username`, and `password`:
 
 ```bash
-kubectl create secret generic rt-db-creds \
+kubectl create secret generic rt-request-tracker-db-creds \
     --from-literal=dbname=rt \
     --from-literal=username=rt \
     --from-literal=password='changeme'
 ```
 
 or let the chart manage it via values (`db.create=true`, `db.password=...`), or
-point the chart at an existing Secret with `db.existingSecret`.
+point the chart at an existing Secret with `db.existingSecret`. For an external
+database, also set `postgres.enabled=false` and `db.host`.
+
+For production mail settings, create a Secret with keys `msmtp` and `getmailrc`,
+then set `mail.existingSecret`. Do not commit credentials in a values file. The
+mailgate port is protected by a NetworkPolicy and only chart CronJobs are allowed
+to connect by default.
 
 ```bash
 helm install rt helm/
@@ -438,3 +444,7 @@ kubectl apply -f k8s-jobs/db-init.yaml
 ```bash
 kubectl apply -f k8s-jobs/db-update.yaml
 ```
+
+The standalone jobs assume release `rt`; adjust their image and resource names
+for other releases. Back up PostgreSQL and RT data before upgrades. Chart PVCs
+use Helm's keep policy, so uninstall leaves them for deliberate manual cleanup.

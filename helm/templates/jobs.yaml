@@ -3,104 +3,89 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: "{{ printf "rt-%s" .name | trunc -63 | replace "_" "-" }}"
+  name: "{{ printf "%s-%s" (include "request-tracker.fullname" $) .name | trunc 63 | trimSuffix "-" | replace "_" "-" }}"
   labels:
     {{- include "request-tracker.labels" $ | nindent 4 }}
 spec:
-  schedule: "{{ .schedule }}"
+  schedule: {{ .schedule | quote }}
   concurrencyPolicy: {{ .concurrencyPolicy | default "Forbid" }}
-  timeZone: {{ .timeZone | default "UTC" }}
+  timeZone: {{ .timeZone | default $.Values.timezone | default "UTC" | quote }}
   jobTemplate:
     spec:
       template:
+        metadata:
+          labels:
+            {{- include "request-tracker.selectorLabels" $ | nindent 12 }}
+            app.kubernetes.io/component: cron
         spec:
-          serviceAccountName: rt
+          serviceAccountName: {{ include "request-tracker.serviceAccountName" $ }}
           securityContext:
-            {{- toYaml .podSecurityContext | default $.Values.rt.podSecurityContext | nindent 12 }}
+            {{- toYaml (.podSecurityContext | default $.Values.rt.podSecurityContext) | nindent 12 }}
+          initContainers:
+            - name: generate-config
+              image: {{ $.Values.configRenderer.image | quote }}
+              imagePullPolicy: {{ $.Values.configRenderer.pullPolicy }}
+              securityContext:
+                {{- toYaml $.Values.configRenderer.securityContext | nindent 16 }}
+              command: ["sh", "-c", "gomplate -f /templates/RT_SiteConfig.pm -o /output/RT_SiteConfig.pm && gomplate -f /templates/getmailrc -o /output/getmailrc"]
+              env:
+                - name: RT_DB_HOST
+                  value: {{ include "request-tracker.dbHost" $ | quote }}
+                - name: RT_CADDY_HOST
+                  value: {{ include "request-tracker.mailgateName" $ | quote }}
+                {{- range $env, $key := dict "RT_DB_NAME" "dbname" "RT_DB_USER" "username" "RT_DB_PASS" "password" }}
+                - name: {{ $env }}
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "request-tracker.dbSecretName" $ }}
+                      key: {{ $key }}
+                {{- end }}
+              volumeMounts:
+                - {name: rt-config-template, mountPath: /templates/RT_SiteConfig.pm, subPath: RT_SiteConfig.pm, readOnly: true}
+                - {name: getmailrc-template, mountPath: /templates/getmailrc, subPath: getmailrc, readOnly: true}
+                - {name: generated-config, mountPath: /output}
           containers:
-          - name: "{{ printf "rt-%s" .name | trunc -63 | replace "_" "-" }}"
-            securityContext:
-              {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 14 }}
-            {{- $img := .image | default dict }}
-            image: "{{ $img.repository | default $.Values.rt.image.repository }}:{{ $img.tag | default (include "request-tracker.rtImageTag" $) }}"
-            imagePullPolicy: {{ $img.pullPolicy | default $.Values.rt.image.pullPolicy }}
-            {{- with $.Values.timezone }}
-            env:
-              - name: TZ
-                value: {{ . | quote }}
-            {{- end }}
-            command:
-              {{- toYaml .command | nindent 14 }}
-            {{- with .resources }}
-            resources:
-              {{- toYaml . | nindent 14 }}
-            {{- end }}
-            volumeMounts:
-            - name: rt-config
-              mountPath: /opt/rt/etc/RT_SiteConfig.pm
-              subPath: RT_SiteConfig.pm
-              readOnly: true
-            - name: msmtp-config
-              mountPath: /msmtp/msmtp.conf
-              subPath: msmtp.conf
-              readOnly: true
-            - name: getmailrc-config
-              mountPath: /getmailrc
-              subPath: getmailrc
-              readOnly: true
-            - name: getmail-dir
-              mountPath: /getmail
-              readOnly: false
-            - name: rt-gpg
-              mountPath: /opt/rt/var/data/gpg
-              readOnly: false
-            - name: rt-smime
-              mountPath: /opt/rt/var/data/smime
-              readOnly: true
-            - name: rt-shredder
-              mountPath: /opt/rt/var/data/RT-Shredder
-              readOnly: false
-            - name: rt-cron
-              mountPath: /cron
-              readOnly: false
-          {{- with $.Values.rt.volumeMounts }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            - name: "{{ printf "rt-%s" .name | trunc 63 | trimSuffix "-" | replace "_" "-" }}"
+              securityContext:
+                {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 16 }}
+              {{- $img := .image | default dict }}
+              image: "{{ $img.repository | default $.Values.rt.image.repository }}:{{ $img.tag | default (include "request-tracker.rtImageTag" $) }}"
+              imagePullPolicy: {{ $img.pullPolicy | default $.Values.rt.image.pullPolicy }}
+              {{- with $.Values.timezone }}
+              env:
+                - {name: TZ, value: {{ . | quote }}}
+              {{- end }}
+              command:
+                {{- toYaml .command | nindent 16 }}
+              {{- with .resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              volumeMounts:
+                - {name: generated-config, mountPath: /opt/rt/etc/RT_SiteConfig.pm, subPath: RT_SiteConfig.pm, readOnly: true}
+                - {name: msmtp-config, mountPath: /etc/msmtprc, subPath: msmtp.conf, readOnly: true}
+                - {name: generated-config, mountPath: /getmailrc, subPath: getmailrc, readOnly: true}
+                - {name: getmail-dir, mountPath: /getmail}
+                {{- with $.Values.rt.volumeMounts }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
           volumes:
-            - name: rt-config
+            - name: rt-config-template
               configMap:
-                name: rt-config
-                items:
-                  - key: rtSiteConfig
-                    path: RT_SiteConfig.pm
+                name: {{ include "request-tracker.configName" $ }}
+                items: [{key: rtSiteConfig, path: RT_SiteConfig.pm}]
+            - name: getmailrc-template
+              secret:
+                secretName: {{ include "request-tracker.mailSecretName" $ }}
+                items: [{key: getmailrc, path: getmailrc}]
             - name: msmtp-config
-              configMap:
-                name: rt-config
-                items:
-                  - key: msmtp
-                    path: msmtp.conf
-            - name: getmailrc-config
-              configMap:
-                name: rt-config
-                items:
-                  - key: getmailrc
-                    path: getmailrc
-            - name: getmail-dir
-              emptyDir: {}
-            - name: rt-gpg
-              persistentVolumeClaim:
-                claimName: rt-gpg
-            - name: rt-smime
-              persistentVolumeClaim:
-                claimName: rt-smime
-            - name: rt-shredder
-              persistentVolumeClaim:
-                claimName: rt-shredder
-            - name: rt-cron
-              persistentVolumeClaim:
-                claimName: rt-cron
-          {{- with $.Values.rt.volumes }}
+              secret:
+                secretName: {{ include "request-tracker.mailSecretName" $ }}
+                items: [{key: msmtp, path: msmtp.conf}]
+            - {name: generated-config, emptyDir: {}}
+            - {name: getmail-dir, emptyDir: {}}
+            {{- with $.Values.rt.volumes }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- end }}
           restartPolicy: {{ .restartPolicy | default "Never" }}
 {{- end }}

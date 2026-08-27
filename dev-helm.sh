@@ -2,21 +2,17 @@
 
 set -euf -o pipefail
 
-echo "uninstalling old stuff"
-kubectl delete job --all --ignore-not-found
-helm uninstall --ignore-not-found rt
-kubectl delete secret --all --ignore-not-found
-echo "sleeping 15 seconds to let things settle"
-sleep 15
-echo "installing new stuff"
-kubectl create secret generic rt-db-creds \
+NAMESPACE="${RT_DEV_NAMESPACE:-rt-dev}"
+RELEASE="${RT_DEV_RELEASE:-rt}"
+
+kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+kubectl -n "${NAMESPACE}" create secret generic "${RELEASE}-request-tracker-db-creds" \
     --from-literal=dbname=rt \
     --from-literal=username=rt \
-    --from-literal=password='rt'
-helm install rt helm/
-echo "sleeping 2 minutes to let the database come up"
-sleep 120
-echo "initializing the database"
-kubectl apply -f k8s-jobs/db-init.yaml
-echo "done"
-kubectl get pods
+    --from-literal=password='rt' \
+    --dry-run=client -o yaml | kubectl apply -f -
+helm upgrade --install "${RELEASE}" helm/ --namespace "${NAMESPACE}"
+kubectl -n "${NAMESPACE}" rollout status "deployment/${RELEASE}-request-tracker-db" --timeout=180s
+kubectl -n "${NAMESPACE}" apply -f k8s-jobs/db-init.yaml
+kubectl -n "${NAMESPACE}" wait --for=condition=complete job/db-init-job --timeout=300s
+kubectl -n "${NAMESPACE}" get pods

@@ -2,7 +2,7 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: rt
+  name: {{ include "request-tracker.fullname" . }}
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:

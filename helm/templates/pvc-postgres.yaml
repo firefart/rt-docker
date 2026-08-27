@@ -1,8 +1,10 @@
-{{- if .Values.postgres.enabled -}}
+{{- if and .Values.postgres.enabled .Values.pvc.postgresData.enabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rt-postgres-data
+  name: {{ include "request-tracker.fullname" . }}-postgres-data
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:

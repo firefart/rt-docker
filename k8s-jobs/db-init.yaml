@@ -4,12 +4,15 @@ metadata:
   name: db-init-job
 spec:
   ttlSecondsAfterFinished: 3600 # Clean up the job after 1 hour
+  backoffLimit: 2
+  activeDeadlineSeconds: 600
   template:
     spec:
       restartPolicy: Never
+      automountServiceAccountToken: false
       initContainers:
         - name: generate-config
-          image: "hairyhenderson/gomplate:stable-alpine"
+          image: "hairyhenderson/gomplate:v4.3.3-alpine"
           imagePullPolicy: IfNotPresent
           securityContext:
             readOnlyRootFilesystem: true
@@ -31,20 +34,22 @@ spec:
               cpu: 50m
               memory: 64Mi
           env:
+            - name: RT_DB_HOST
+              value: rt-request-tracker-db
             - name: RT_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: rt-request-tracker-db-creds
                   key: dbname
             - name: RT_DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: rt-request-tracker-db-creds
                   key: username
             - name: RT_DB_PASS
               valueFrom:
                 secretKeyRef:
-                  name: rt-db-creds
+                  name: rt-request-tracker-db-creds
                   key: password
           volumeMounts:
             - name: rt-config-template
@@ -69,8 +74,8 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
-          image: "firefart/requesttracker:latest" # adjest the tag as needed
-          imagePullPolicy: "Always"
+          image: "firefart/requesttracker:6.0.3" # adjust the tag as needed
+          imagePullPolicy: "IfNotPresent"
           command: ["/opt/rt/sbin/rt-setup-database"]
           args: ["--action", "init", "--skip-create"]
           workingDir: /opt/rt
@@ -91,7 +96,7 @@ spec:
       volumes:
         - name: rt-config-template
           configMap:
-            name: rt-config
+            name: rt-request-tracker-config
             items:
               - key: rtSiteConfig
                 path: RT_SiteConfig.pm
@@ -99,9 +104,9 @@ spec:
           emptyDir: {}
         - name: rt-gpg
           persistentVolumeClaim:
-            claimName: rt-gpg
+            claimName: rt-request-tracker-gpg
         - name: rt-smime
           persistentVolumeClaim:
-            claimName: rt-smime
+            claimName: rt-request-tracker-smime
         - name: tmp
           emptyDir: {}

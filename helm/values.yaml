@@ -1,3 +1,6 @@
+nameOverride: ""
+fullnameOverride: ""
+
 rt:
   replicaCount: 1
   autoscaling:
@@ -28,9 +31,8 @@ rt:
     runAsUser: 1000 # the user id of the rt user in the container
     runAsGroup: 1000 # the group id of the rt user in the container
     allowPrivilegeEscalation: false
-    # capabilities:
-    #   drop:
-    #   - ALL
+    capabilities:
+      drop: ["ALL"]
 
   podSecurityContext:
     {}
@@ -59,6 +61,18 @@ rt:
   # the port the RT-FCGI server listens on
   port: 9000
 
+configRenderer:
+  image: hairyhenderson/gomplate:v4.3.3-alpine
+  pullPolicy: IfNotPresent
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 65534
+    runAsGroup: 65534
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
+
 caddy:
   image:
     repository: caddy
@@ -71,9 +85,9 @@ caddy:
     runAsNonRoot: true
     runAsUser: 65534 # nobody user in the caddy image
     runAsGroup: 65534 # nobody group in the caddy image
-    # capabilities:
-    #   drop:
-    #   - ALL
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
 
   resources:
     limits:
@@ -136,9 +150,8 @@ postgres:
     runAsNonRoot: true
     runAsUser: 999 # postgres user in the postgres image
     runAsGroup: 999 # postgres group in the postgres image
-    # capabilities:
-    #   drop:
-    #   - ALL
+    capabilities:
+      drop: ["ALL"]
 
   podSecurityContext:
     fsGroup: 999 # postgres group in the postgres image
@@ -159,10 +172,12 @@ postgres:
     type: ClusterIP
     port: 5432
 
-# Database credentials, consumed via the "rt-db-creds" Secret.
+# Database credentials, consumed via a release-scoped Secret.
 db:
+  # Set this to an external PostgreSQL hostname when postgres.enabled is false.
+  host: ""
   # When true the chart creates the Secret from the values below.
-  # When false (default) you must create a Secret named "rt-db-creds"
+  # When false (default) you must provide the release-scoped credentials Secret
   # yourself (see dev-helm.sh) or point existingSecret at one.
   create: false
   # Use an already existing Secret instead of the chart-managed one.
@@ -188,23 +203,24 @@ podDisruptionBudget:
 # docker-compose it is only bound to localhost. When enabled, only pods
 # carrying one of mailgateAllowLabels may reach it; the web port stays open.
 networkPolicy:
-  enabled: false
+  enabled: true
   # additional namespace/pod selectors allowed to reach the web port
   ingress: []
   # pods allowed to reach the mailgate port (e.g. the getmail cronjob)
   mailgateAllowLabels:
-    app.kubernetes.io/name: rt
+    app.kubernetes.io/component: cron
 
 serviceAccount:
   create: true
-  automount: true
+  name: ""
+  automount: false
   annotations: {}
 
 podAnnotations: {}
 podLabels: {}
 
 ingress:
-  enabled: true
+  enabled: false
   className: "nginx"
   annotations: {}
   hosts:
@@ -391,7 +407,7 @@ pvc:
     storageClass: ""
     size: 1Gi
 
-config:
+rtConfig:
   rtSiteConfig: |
     ### Base configuration ###
     Set($rtname, 'rt');
@@ -405,7 +421,7 @@ config:
 
     ### Database connection ###
     Set($DatabaseType, 'Pg' );
-    Set($DatabaseHost, 'rt-db');
+    Set($DatabaseHost, '{{ .Env.RT_DB_HOST }}');
     Set($DatabasePort, '5432');
     Set($DatabaseUser, '{{ .Env.RT_DB_USER }}');
     Set($DatabasePassword, '{{ .Env.RT_DB_PASS }}');
@@ -416,7 +432,7 @@ config:
 
     ### GnuPG configuration ###
     Set(%GnuPG,
-      Enable                 => 1,
+      Enable                 => 0,
       GnuPG                  => 'gpg',
       Passphrase             => undef,
       OutgoingMessagesFormat => 'RFC'
@@ -432,8 +448,8 @@ config:
 
     ### SMIME configuration ###
     Set(%SMIME,
-        Enable             => 1,
-        AcceptUntrustedCAs => 1,
+        Enable             => 0,
+        AcceptUntrustedCAs => 0,
         OpenSSL            => '/usr/bin/openssl',
         Keyring            => '/opt/rt/var/data/smime',
         CAPath             => '/opt/rt/var/data/smime/signing-ca.pem',
@@ -444,6 +460,10 @@ config:
     );
 
     1;
+mail:
+  # Use an existing Secret with the keys msmtp and getmailrc, or let the chart
+  # create one from these values. Do not commit real credentials to values files.
+  existingSecret: ""
   msmtp: |
     defaults
 
@@ -477,15 +497,15 @@ config:
     user = rt
     group = rt
     # 8080 is the mailgate vhost
-    arguments = ("--url", "http://rt-caddy:8080/", "--queue", "general", "--action", "correspond",)
+    arguments = ("--url", "http://{{ .Env.RT_CADDY_HOST }}:8080/", "--queue", "general", "--action", "correspond",)
 
     [options]
     read_all = false
     delete = true
     verbose = 0
+config:
   caddyfile: |
     {
-      debug
       admin off
       auto_https off
     }

@@ -1,15 +1,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rt-config
+  name: {{ include "request-tracker.configName" . }}
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 data:
   rtSiteConfig: |-
-{{ .Values.config.rtSiteConfig | indent 4}}
-  msmtp: |-
-{{ .Values.config.msmtp | indent 4 }}
-  getmailrc: |-
-{{ .Values.config.getmailrc | indent 4 }}
+{{ .Values.rtConfig.rtSiteConfig | indent 4 }}
   caddyfile: |-
 {{ .Values.config.caddyfile | indent 4 }}

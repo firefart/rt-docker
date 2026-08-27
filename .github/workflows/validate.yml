@@ -1,0 +1,46 @@
+name: Validate repository
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: azure/setup-helm@v4.3.1
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes shellcheck
+      - name: Check shell scripts
+        run: shellcheck ./*.sh k8s-jobs/*.sh
+      - name: Validate Helm chart
+        run: |
+          helm lint helm/
+          helm template rt helm/ > /tmp/rt-rendered.yaml
+          helm template custom helm/ --set fullnameOverride=custom --set postgres.enabled=false --set db.host=db.example.test > /tmp/rt-external-db.yaml
+          helm template rt helm/ --set-json 'cronjobs=[{"name":"getmail","schedule":"* * * * *","command":["/usr/bin/getmail","--rcfile=/getmailrc"]}]' > /tmp/rt-cronjob.yaml
+      - name: Validate Kubernetes schemas
+        run: |
+          docker run --rm -i ghcr.io/yannh/kubeconform:v0.7.0 -strict -summary -ignore-missing-schemas < /tmp/rt-rendered.yaml
+          docker run --rm -i ghcr.io/yannh/kubeconform:v0.7.0 -strict -summary -ignore-missing-schemas < /tmp/rt-external-db.yaml
+          docker run --rm -i ghcr.io/yannh/kubeconform:v0.7.0 -strict -summary -ignore-missing-schemas < /tmp/rt-cronjob.yaml
+      - name: Prepare example Compose configuration
+        run: |
+          cp RT_SiteConfig.pm.example RT_SiteConfig.pm
+          cp Caddyfile.example Caddyfile
+          cp msmtp.conf.example msmtp/msmtp.conf
+          cp getmailrc.example getmail/getmailrc
+          cp crontab.example crontab
+          printf 'test' > pgadmin_password.secret
+          printf 'test' > postgres_password.secret
+      - name: Validate Compose models
+        run: |
+          docker compose config --quiet
+          docker compose -f docker-compose.yml -f docker-compose.dev.yml config --quiet

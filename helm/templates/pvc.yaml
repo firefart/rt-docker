@@ -2,7 +2,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rt-gpg
+  name: {{ include "request-tracker.fullname" . }}-gpg
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -21,7 +23,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rt-smime
+  name: {{ include "request-tracker.fullname" . }}-smime
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -40,7 +44,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rt-shredder
+  name: {{ include "request-tracker.fullname" . }}-shredder
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -59,7 +65,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rt-cron
+  name: {{ include "request-tracker.fullname" . }}-cron
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -78,7 +86,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rt-caddy-data
+  name: {{ include "request-tracker.fullname" . }}-caddy-data
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:
@@ -96,7 +106,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: rt-caddy-config
+  name: {{ include "request-tracker.fullname" . }}-caddy-config
+  annotations:
+    helm.sh/resource-policy: keep
   labels:
     {{- include "request-tracker.labels" . | nindent 4 }}
 spec:

@@ -1,7 +1,7 @@
 x-app: &default-app
   build:
     context: .
-  image: firefart/requesttracker:latest
+  image: ${RT_IMAGE:-firefart/requesttracker:6.0.3}
   restart: unless-stopped
   configs:
     - source: rt_site_config
@@ -31,7 +31,7 @@ services:
     hostname: rt
     deploy:
       mode: replicated
-      replicas: 5
+      replicas: ${RT_REPLICAS:-5}
       endpoint_mode: vip
 
   cron:
@@ -58,7 +58,7 @@ services:
         restart: true
 
   caddy:
-    image: caddy:latest
+    image: caddy:2.10
     hostname: caddy
     restart: unless-stopped
     ports:

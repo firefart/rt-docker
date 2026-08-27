@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -euf pipefail
 
 helm upgrade --install nginx ingress-nginx \
   --namespace ingress-nginx \

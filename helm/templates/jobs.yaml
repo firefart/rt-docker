@@ -66,6 +66,10 @@ spec:
                 - {name: msmtp-config, mountPath: /etc/msmtprc, subPath: msmtp.conf, readOnly: true}
                 - {name: generated-config, mountPath: /getmailrc, subPath: getmailrc, readOnly: true}
                 - {name: getmail-dir, mountPath: /getmail}
+                - {name: rt-gpg, mountPath: /opt/rt/var/data/gpg, readOnly: false}
+                - {name: rt-smime, mountPath: /opt/rt/var/data/smime, readOnly: true}
+                - {name: rt-shredder, mountPath: /opt/rt/var/data/RT-Shredder, readOnly: false}
+                - {name: rt-cron, mountPath: /cron, readOnly: false}
                 {{- with $.Values.rt.volumeMounts }}
                 {{- toYaml . | nindent 16 }}
                 {{- end }}
@@ -84,6 +88,34 @@ spec:
                 items: [{key: msmtp, path: msmtp.conf}]
             - {name: generated-config, emptyDir: {}}
             - {name: getmail-dir, emptyDir: {}}
+            - name: rt-gpg
+              {{- if $.Values.pvc.gpg.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ include "request-tracker.fullname" $ }}-gpg
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+            - name: rt-smime
+              {{- if $.Values.pvc.smime.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ include "request-tracker.fullname" $ }}-smime
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+            - name: rt-shredder
+              {{- if $.Values.pvc.shredder.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ include "request-tracker.fullname" $ }}-shredder
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+            - name: rt-cron
+              {{- if $.Values.pvc.cron.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ include "request-tracker.fullname" $ }}-cron
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
             {{- with $.Values.rt.volumes }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

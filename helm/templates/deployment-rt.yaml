@@ -191,7 +191,7 @@ spec:
               subPath: RT_SiteConfig.pm
               readOnly: true
             - name: msmtp-config
-              mountPath: /msmtp/msmtp.conf
+              mountPath: /etc/msmtprc
               subPath: msmtp.conf
               readOnly: true
             - name: getmailrc-config

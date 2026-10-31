@@ -50,7 +50,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   ca-certificates wget gnupg graphviz libssl3 zlib1g \
   gpg dirmngr gpg-agent libpq-dev libgd3 libexpat1 \
-  libpq5 w3m elinks links html2text lynx openssl libgd-dev
+  libpq5 w3m elinks links html2text lynx openssl libgd-dev libqrencode-dev
 
 # Download and extract RT
 RUN mkdir -p /src \
@@ -70,15 +70,17 @@ RUN mkdir -p /src \
   && tar --strip-components=1 -C /src/rtir -xzf /src/rtir.tar.gz
 
 # Configure RT
+# --enable-mfa (TOTP multi-factor authentication) is available since 5.0.11
+# and 6.0.4, older versions only print a warning about the unknown option
 RUN case "${RT_VERSION}" in \
   "6."*) \
   cd /src/rt \
-  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-dashboard-chart-emails --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-dashboard-chart-emails --enable-graphviz --enable-smime --enable-externalauth --enable-mfa --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
   ;; \
   # older versions for RT 5.0.x
   "5."*) \
   cd /src/rt \
-  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
+  && ./configure --prefix=/opt/rt --with-db-type=Pg --enable-gpg --enable-gd --enable-graphviz --enable-smime --enable-externalauth --enable-mfa --with-web-user=rt --with-web-group=rt --with-rt-group=rt --with-bin-owner=rt --with-libs-owner=rt \
   ;; \
   esac
 
@@ -264,7 +266,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
   && apt-get -q -y install --no-install-recommends \
   procps spawn-fcgi ca-certificates wget curl gnupg graphviz libssl3 \
   zlib1g libgd3 libexpat1 libpq5 w3m elinks links html2text lynx openssl cron bash \
-  libfcgi-bin libgsasl18 libsecret-1-0 tzdata \
+  libfcgi-bin libgsasl18 libsecret-1-0 libqrencode4 tzdata \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 # msmtp - disabled for now to use the newer version

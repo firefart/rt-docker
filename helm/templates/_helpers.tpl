@@ -67,6 +67,14 @@ Uses db.existingSecret when set, otherwise a release-scoped chart Secret.
 {{- end }}
 
 {{/*
+Name of the Secret holding RT's $SecretKey.
+Uses secretKey.existingSecret when set, otherwise a release-scoped chart Secret.
+*/}}
+{{- define "request-tracker.secretKeySecretName" -}}
+{{- .Values.secretKey.existingSecret | default (printf "%s-secret-key" (include "request-tracker.fullname" .)) -}}
+{{- end }}
+
+{{/*
 The container image tag for the rt image, defaulting to the chart appVersion.
 */}}
 {{- define "request-tracker.rtImageTag" -}}

@@ -34,8 +34,7 @@ rt:
     capabilities:
       drop: ["ALL"]
 
-  podSecurityContext:
-    {}
+  podSecurityContext: {}
     # fsGroup: 2000
 
   resources:
@@ -187,6 +186,15 @@ db:
   name: rt
   username: rt
   password: ""
+
+# RT $SecretKey (RT 5.0.11+ and 6.0.4+), set it before enabling MFA.
+# When unset RT falls back to $DatabasePassword.
+# https://docs.bestpractical.com/rt/6.0.4/RT_Config.html#SecretKey
+secretKey:
+  # Use an existing Secret with the key secretKey, or let the chart create one
+  # from value. Do not commit real credentials to values files.
+  existingSecret: ""
+  value: ""
 
 # Timezone applied to all containers via the TZ env var. Mirrors the
 # /etc/localtime bind mount used in the docker-compose setup.
@@ -427,6 +435,18 @@ rtConfig:
     Set($DatabasePassword, '{{ .Env.RT_DB_PASS }}');
     Set($DatabaseName, '{{ .Env.RT_DB_NAME }}');
     Set($DatabaseAdmin, '{{ .Env.RT_DB_USER }}');
+
+    ### MFA configuration ###
+    # Set before enabling MFA, e.g. openssl rand -hex 32 (RT 5.0.11+ and 6.0.4+)
+    # https://docs.bestpractical.com/rt/6.0.4/RT_Config.html#SecretKey
+    Set($SecretKey, '{{ getenv "RT_SECRET_KEY" }}');
+    Set($DisableMFA, 0);
+    Set($MFAPolicy, {
+        Default => {
+            Mode  => 'Off',
+            Drift => 0,
+        },
+    });
 
     Set($SendmailPath, '/usr/bin/msmtp');
 

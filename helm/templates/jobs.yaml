@@ -40,6 +40,13 @@ spec:
                       name: {{ include "request-tracker.dbSecretName" $ }}
                       key: {{ $key }}
                 {{- end }}
+                {{- if or $.Values.secretKey.existingSecret $.Values.secretKey.value }}
+                - name: RT_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "request-tracker.secretKeySecretName" $ }}
+                      key: secretKey
+                {{- end }}
               volumeMounts:
                 - {name: rt-config-template, mountPath: /templates/RT_SiteConfig.pm, subPath: RT_SiteConfig.pm, readOnly: true}
                 - {name: getmailrc-template, mountPath: /templates/getmailrc, subPath: getmailrc, readOnly: true}

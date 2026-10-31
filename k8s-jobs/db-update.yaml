@@ -74,7 +74,7 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
-          image: "firefart/requesttracker:6.0.3" # adjust the tag as needed
+          image: "firefart/requesttracker:6.0.4" # adjust the tag as needed
           imagePullPolicy: "IfNotPresent"
           command: ["/opt/rt/sbin/rt-setup-database"]
           args: ["--action", "upgrade", "--upgrade-from=4.4.2"] # adjust the version as needed

@@ -1,7 +1,7 @@
 x-app: &default-app
   build:
     context: .
-  image: ${RT_IMAGE:-firefart/requesttracker:6.0.3}
+  image: ${RT_IMAGE:-firefart/requesttracker:6.0.4}
   restart: unless-stopped
   configs:
     - source: rt_site_config

@@ -26,8 +26,8 @@ RUN wget -O /msmtp.tar.xz -nv https://marlam.de/msmtp/releases/msmtp-${MSMTP_VER
 
 FROM perl:5.44.0 AS builder
 
-ARG RT_VERSION="6.0.3"
-ARG RTIR_VERSION="6.0.3"
+ARG RT_VERSION="6.0.4"
+ARG RTIR_VERSION="6.0.4"
 
 ENV RT="${RT_VERSION}"
 ENV RTIR="${RTIR_VERSION}"
@@ -180,8 +180,6 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::ChangeManagement \
   # https://metacpan.org/dist/RT-Extension-SwitchUsers
   RT::Extension::SwitchUsers \
-  # https://metacpan.org/dist/RT-Extension-ResetPassword
-  RT::Extension::ResetPassword \
   # https://metacpan.org/dist/RT-Extension-Captcha
   RT::Extension::Captcha \
   # https://metacpan.org/dist/RT-Extension-QuickCalls
@@ -229,6 +227,15 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::QuickCalls~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RTIR-Extension-MISP
   RTIR::Extension::MISP~">= 0.0000, < 1.0000" \
+  ;; \
+  esac
+
+# RT-Extension-ResetPassword is part of RT core since 6.0.4
+# so only install it on older versions
+RUN case "${RT_VERSION}" in \
+  "6.0."[0-3]) \
+  # https://metacpan.org/dist/RT-Extension-ResetPassword
+  cpanm RT::Extension::ResetPassword \
   ;; \
   esac
 

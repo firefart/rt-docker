@@ -126,6 +126,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "request-tracker.dbSecretName" . }}
                   key: password
+            {{- if or .Values.secretKey.existingSecret .Values.secretKey.value }}
+            - name: RT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "request-tracker.secretKeySecretName" . }}
+                  key: secretKey
+            {{- end }}
           volumeMounts:
             - name: rt-config-template
               mountPath: /templates/RT_SiteConfig.pm

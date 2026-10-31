@@ -424,6 +424,10 @@ or let the chart manage it via values (`db.create=true`, `db.password=...`), or
 point the chart at an existing Secret with `db.existingSecret`. For an external
 database, also set `postgres.enabled=false` and `db.host`.
 
+For RT's `$SecretKey` (RT 5.0.11+ and 6.0.4+), create a Secret with the key
+`secretKey` and set `secretKey.existingSecret`, or set `secretKey.value`. When
+unset, RT falls back to `$DatabasePassword`.
+
 For production mail settings, create a Secret with keys `msmtp` and `getmailrc`,
 then set `mail.existingSecret`. Do not commit credentials in a values file. The
 mailgate port is protected by a NetworkPolicy and only chart CronJobs are allowed

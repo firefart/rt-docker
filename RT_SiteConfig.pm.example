@@ -17,6 +17,18 @@ Set($DatabasePassword, 'password');
 Set($DatabaseName, 'rt');
 Set($DatabaseAdmin, "rt");
 
+### MFA configuration ###
+# Set before enabling MFA, e.g. openssl rand -hex 32 (RT 5.0.11+ and 6.0.4+)
+# https://docs.bestpractical.com/rt/6.0.4/RT_Config.html#SecretKey
+Set($SecretKey, 'CHANGEME');
+Set($DisableMFA, 0);
+Set($MFAPolicy, {
+    Default => {
+        Mode  => 'Off',
+        Drift => 0,
+    },
+});
+
 Set($SendmailPath, '/usr/bin/msmtp');
 
 ### GnuPG configuration ###

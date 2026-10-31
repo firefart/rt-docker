@@ -228,20 +228,18 @@ RUN case "${RT_VERSION}" in \
   ;; \
   esac
 
-# RT-Extension-ResetPassword is part of RT core since 5.11 and 6.0.4
-# so only install it on older versions
-RUN case "${RT_VERSION}" in \
-  "6.0."[0-3]) \
-  # https://metacpan.org/dist/RT-Extension-ResetPassword
-  cpanm RT::Extension::ResetPassword \
-  ;; \
-  "5.1"[1-9]*|"5."[2-9][0-9]*) \
-  ;; \
-  "5."*) \
-  # https://metacpan.org/dist/RT-Extension-ResetPassword
-  cpanm RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
-  ;; \
-  esac
+# RT-Extension-ResetPassword is part of RT core since 5.0.11 and 6.0.4,
+# so only install it on older versions.
+# https://metacpan.org/dist/RT-Extension-ResetPassword
+RUN set -eu; \
+    case "${RT_VERSION:?RT_VERSION must be set}" in \
+      5.0.[0-9]|5.0.10) \
+        cpanm RT::Extension::ResetPassword~">= 1.0000, < 2.0000" ;; \
+      6.0.[0-3]) \
+        cpanm RT::Extension::ResetPassword ;; \
+      *) \
+        echo "RT ${RT_VERSION}: ResetPassword is in core, skipping" ;; \
+    esac
 
 # Dumb fix for HTMX Bug which rt team refuses to fix
 # the main page does not honor WebPath and breaks if RT is not installed

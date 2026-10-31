@@ -219,8 +219,6 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::ChangeManagement~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-SwitchUsers
   RT::Extension::SwitchUsers~">= 0.0000, < 1.0000" \
-  # https://metacpan.org/dist/RT-Extension-ResetPassword
-  RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Captcha
   RT::Extension::Captcha~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-QuickCalls
@@ -236,6 +234,12 @@ RUN case "${RT_VERSION}" in \
   "6.0."[0-3]) \
   # https://metacpan.org/dist/RT-Extension-ResetPassword
   cpanm RT::Extension::ResetPassword \
+  ;; \
+  "5.11"|"5.11."*) \
+  ;; \
+  "5."*) \
+  # https://metacpan.org/dist/RT-Extension-ResetPassword
+  cpanm RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
   ;; \
   esac
 

@@ -219,8 +219,6 @@ RUN case "${RT_VERSION}" in \
   RT::Extension::ChangeManagement~">= 0.0000, < 1.0000" \
   # https://metacpan.org/dist/RT-Extension-SwitchUsers
   RT::Extension::SwitchUsers~">= 0.0000, < 1.0000" \
-  # https://metacpan.org/dist/RT-Extension-ResetPassword
-  RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-Captcha
   RT::Extension::Captcha~">= 1.0000, < 2.0000" \
   # https://metacpan.org/dist/RT-Extension-QuickCalls
@@ -230,12 +228,18 @@ RUN case "${RT_VERSION}" in \
   ;; \
   esac
 
-# RT-Extension-ResetPassword is part of RT core since 6.0.4
+# RT-Extension-ResetPassword is part of RT core since 5.11 and 6.0.4
 # so only install it on older versions
 RUN case "${RT_VERSION}" in \
   "6.0."[0-3]) \
   # https://metacpan.org/dist/RT-Extension-ResetPassword
   cpanm RT::Extension::ResetPassword \
+  ;; \
+  "5.1"[1-9]*|"5."[2-9][0-9]*) \
+  ;; \
+  "5."*) \
+  # https://metacpan.org/dist/RT-Extension-ResetPassword
+  cpanm RT::Extension::ResetPassword~">= 1.0000, < 2.0000" \
   ;; \
   esac
 

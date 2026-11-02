@@ -96,7 +96,9 @@ RUN cpanm -n install Net::HTTP LWP::Protocol::https \
   # https://rt.cpan.org/Ticket/Display.html?id=173881
   && cpanm -n install DBIx::SearchBuilder \
   # The Postgres tests try running against a live database and thus fail, so we disable them
-  && cpanm -n install DBD::Pg
+  && cpanm -n install DBD::Pg \
+  # Needed for Dashboards in E-Mails
+  && cpanm WWW::Mechanize::Chrome
 
 # Install dependencies
 RUN make -C /src/rt fixdeps \

@@ -54,7 +54,7 @@ spec:
           containers:
             - name: "{{ printf "rt-%s" .name | trunc 63 | trimSuffix "-" | replace "_" "-" }}"
               securityContext:
-                {{- toYaml (.securityContext | default $.Values.rt.securityContext) | nindent 16 }}
+                {{- include "request-tracker.rtSecurityContext" (dict "securityContext" (.securityContext | default $.Values.rt.securityContext) "seccompProfile" (.seccompProfile | default $.Values.rt.seccompProfile)) | nindent 16 }}
               {{- $img := .image | default dict }}
               image: "{{ $img.repository | default $.Values.rt.image.repository }}:{{ $img.tag | default (include "request-tracker.rtImageTag" $) }}"
               imagePullPolicy: {{ $img.pullPolicy | default $.Values.rt.image.pullPolicy }}
@@ -77,6 +77,9 @@ spec:
                 - {name: rt-smime, mountPath: /opt/rt/var/data/smime, readOnly: true}
                 - {name: rt-shredder, mountPath: /opt/rt/var/data/RT-Shredder, readOnly: false}
                 - {name: rt-cron, mountPath: /cron, readOnly: false}
+                {{- if $.Values.rt.shm.enabled }}
+                - {name: dshm, mountPath: /dev/shm}
+                {{- end }}
                 {{- with $.Values.rt.volumeMounts }}
                 {{- toYaml . | nindent 16 }}
                 {{- end }}
@@ -123,6 +126,14 @@ spec:
               {{- else }}
               emptyDir: {}
               {{- end }}
+            {{- if $.Values.rt.shm.enabled }}
+            - name: dshm
+              emptyDir:
+                medium: Memory
+                {{- with $.Values.rt.shm.sizeLimit }}
+                sizeLimit: {{ . }}
+                {{- end }}
+            {{- end }}
             {{- with $.Values.rt.volumes }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

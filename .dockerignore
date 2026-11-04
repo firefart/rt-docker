@@ -15,6 +15,11 @@ gpg/
 msmtp/
 shredder/
 smime/
+seccomp/
+helm/
+k8s-jobs/
+.claude/
+.prettierignore
 .env
 .keep
 **/.keep

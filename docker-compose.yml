@@ -19,6 +19,12 @@ x-app: &default-app
     - ./shredder/:/opt/rt/var/data/RT-Shredder
     - /etc/localtime:/etc/localtime:ro
     - ./cron/:/cron
+  # chromium is used to render charts in dashboard emails. It needs a larger
+  # /dev/shm than the docker default of 64MB and a seccomp profile that allows
+  # user namespaces for its sandbox (see seccomp/generate.sh)
+  shm_size: "1gb"
+  security_opt:
+    - seccomp=./seccomp/chrome.json
   # make the host available inside the image
   extra_hosts:
     - "host.docker.internal:host-gateway"

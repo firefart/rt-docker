@@ -147,7 +147,7 @@ spec:
               readOnly: false
       containers:
         - name: rt
-          {{- with .Values.rt.securityContext }}
+          {{- with include "request-tracker.rtSecurityContext" (dict "securityContext" .Values.rt.securityContext "seccompProfile" .Values.rt.seccompProfile) | fromYaml }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -223,6 +223,11 @@ spec:
             - name: mason-data
               mountPath: /opt/rt/var/mason_data/
               readOnly: false
+            {{- if .Values.rt.shm.enabled }}
+            - name: dshm
+              mountPath: /dev/shm
+              readOnly: false
+            {{- end }}
           {{- with .Values.rt.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -329,6 +334,14 @@ spec:
           emptyDir: {}
         - name: mason-data
           emptyDir: {}
+        {{- if .Values.rt.shm.enabled }}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            {{- with .Values.rt.shm.sizeLimit }}
+            sizeLimit: {{ . }}
+            {{- end }}
+        {{- end }}
       {{- with .Values.rt.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

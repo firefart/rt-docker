@@ -96,3 +96,16 @@ Validate value combinations that would otherwise fail silently at runtime.
 {{- end -}}
 {{- end -}}
 {{- end }}
+
+{{/*
+Container securityContext for RT containers (deployment and cronjobs) with the
+optional seccomp profile merged in.
+Usage: include "request-tracker.rtSecurityContext" (dict "securityContext" $sc "seccompProfile" $profile)
+*/}}
+{{- define "request-tracker.rtSecurityContext" -}}
+{{- $sc := deepCopy (.securityContext | default dict) -}}
+{{- with .seccompProfile -}}
+{{- $_ := set $sc "seccompProfile" . -}}
+{{- end -}}
+{{- toYaml $sc -}}
+{{- end }}

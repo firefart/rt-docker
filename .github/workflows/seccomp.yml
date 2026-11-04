@@ -1,0 +1,40 @@
+name: Update seccomp profile
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "seccomp/generate.sh"
+      - ".github/workflows/seccomp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Regenerate seccomp profile
+        run: ./seccomp/generate.sh
+      - name: Validate profile
+        run: |
+          jq -e '.defaultAction and (.syscalls | length > 0)' seccomp/chrome.json > /dev/null
+          docker run --rm --security-opt seccomp=seccomp/chrome.json busybox:stable true
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          commit-message: "chore: update seccomp profile from upstream"
+          title: "chore: update seccomp profile from upstream"
+          body: |
+            Regenerated `seccomp/chrome.json` from the upstream Docker default seccomp profile
+            (https://github.com/moby/profiles/blob/main/seccomp/default.json) using `seccomp/generate.sh`.
+          branch: update-seccomp-profile
+          delete-branch: true

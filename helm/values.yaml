@@ -37,6 +37,23 @@ rt:
   podSecurityContext: {}
     # fsGroup: 2000
 
+  # Seccomp profile for the rt container and the cronjobs. Chromium (used to
+  # render charts in dashboard emails) needs user namespaces for its sandbox,
+  # which the RuntimeDefault profile blocks. Copy seccomp/chrome.json from this
+  # repository to <kubelet-root>/seccomp/ (usually /var/lib/kubelet/seccomp/)
+  # on every node, or deploy it with the Security Profiles Operator, and
+  # reference it here. Left empty, the cluster/node default is used.
+  seccompProfile: {}
+    # type: Localhost
+    # localhostProfile: rt-chrome.json
+
+  # Memory-backed /dev/shm for the rt container and the cronjobs. Chromium
+  # needs more shared memory than the container runtime default of 64MB.
+  # Note: usage counts against the container memory limit.
+  shm:
+    enabled: true
+    sizeLimit: 1Gi
+
   resources:
     limits:
       cpu: 500m
@@ -362,13 +379,18 @@ cronjobs:
   #     runAsUser: 1000 # the user id of the rt user in the container
   #     runAsGroup: 1000 # the group id of the rt user in the container
   #     allowPrivilegeEscalation: false
+  #   # defaults to rt.seccompProfile; chromium renders the charts here
+  #   # seccompProfile:
+  #   #   type: Localhost
+  #   #   localhostProfile: rt-chrome.json
+  #   # chromium plus the memory-backed /dev/shm (rt.shm) need more memory
   #   resources:
   #     limits:
-  #       cpu: 100m
-  #       memory: 128Mi
+  #       cpu: 1000m
+  #       memory: 1536Mi
   #     requests:
   #       cpu: 100m
-  #       memory: 128Mi
+  #       memory: 512Mi
 
 # used to store shredder backups
 pvc:

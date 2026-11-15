@@ -72,3 +72,21 @@ function fix_file_perms() {
   find ./smime -type f -exec chmod 0600 {} \;
   find ./shredder -type f -exec chmod 0600 {} \;
 }
+
+function retry() {
+  # retry a command with a delay between attempts
+  # usage: retry <attempts> <delay_seconds> <command...>
+  local attempts="$1"
+  local delay="$2"
+  shift 2
+  local n=1
+  until "$@"; do
+    if (( n >= attempts )); then
+      echo "Command failed after ${attempts} attempts: $*" >&2
+      return 1
+    fi
+    echo "Command failed (attempt ${n}/${attempts}), retrying in ${delay}s: $*" >&2
+    sleep "${delay}"
+    n=$((n + 1))
+  done
+}

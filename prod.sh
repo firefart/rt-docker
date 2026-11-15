@@ -15,7 +15,7 @@ check_files
 
 fix_file_perms
 
-docker compose pull
+retry 5 10 docker compose pull
 docker compose stop
 docker compose rm -f -v -s
 docker compose up -d --remove-orphans

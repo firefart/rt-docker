@@ -294,7 +294,6 @@
         "renameat",
         "renameat2",
         "restart_syscall",
-        "riscv_hwprobe",
         "rmdir",
         "rseq",
         "rt_sigaction",
@@ -372,7 +371,6 @@
         "sigprocmask",
         "sigreturn",
         "socketcall",
-        "socketpair",
         "splice",
         "stat",
         "stat64",
@@ -828,6 +826,32 @@
     },
     {
       "names": [
+        "socketpair"
+      ],
+      "action": "SCMP_ACT_ALLOW",
+      "args": [
+        {
+          "index": 0,
+          "value": 1,
+          "op": "SCMP_CMP_EQ"
+        }
+      ]
+    },
+    {
+      "names": [
+        "socketpair"
+      ],
+      "action": "SCMP_ACT_ALLOW",
+      "args": [
+        {
+          "index": 0,
+          "value": 30,
+          "op": "SCMP_CMP_EQ"
+        }
+      ]
+    },
+    {
+      "names": [
         "personality"
       ],
       "action": "SCMP_ACT_ALLOW",
@@ -961,7 +985,8 @@
     },
     {
       "names": [
-        "riscv_flush_icache"
+        "riscv_flush_icache",
+        "riscv_hwprobe"
       ],
       "action": "SCMP_ACT_ALLOW",
       "includes": {
